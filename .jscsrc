@@ -1,4 +1,5 @@
 {
+    "disallowArrowFunctions": false,
     "requireCurlyBraces": [
         "if",
         "else",

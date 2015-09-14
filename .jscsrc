@@ -1,5 +1,4 @@
 {
-    "strict": true,
     "requireCurlyBraces": [
         "if",
         "else",

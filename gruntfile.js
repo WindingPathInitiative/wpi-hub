@@ -25,23 +25,28 @@ module.exports = grunt => {
 		jshint: {
 			app: {
                 options: {
-                    esnext: true
+                    esnext: true,
+					node: true
                 },
-                files: [ '*.js', 'routes/*.js' ]
+                files: {
+					src: [ '*.js', 'routes/*.js' ]
+				}
             },
             frontend: {
                 options: {
                     browser: true
                 },
-                files: [ 'public/javascripts/*.js' ]
+                files: {
+					src: [ 'public/javascripts/*.js' ]
+				}
             },
 			options: {
 				strict: true,
                 reporter: require( 'jshint-stylish' )
-			},
+			}
 		},
 		jscs: {
-			all: [ '**/*js' ],
+			all: [ '**/*.js' ]
 		},
 
 		csslint: {
@@ -50,9 +55,9 @@ module.exports = grunt => {
 					import: 2,
 					csslintrc: '.csslintrc'
 				},
-				src: [ 'public/stylesheets/*.css' ],
-			},
-		},
+				src: [ 'public/stylesheets/*.css' ]
+			}
+		}
 	});
 
 	// Sets watch to prevent exit.

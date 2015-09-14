@@ -1,3 +1,6 @@
+/**
+ * Reset.
+ */
 html,
 body,
 div,
@@ -89,10 +92,138 @@ td {
 a img {
   border: none;
 }
+/**
+ * Layout.
+ */
+html {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: inherit;
+  -moz-box-sizing: inherit;
+  box-sizing: inherit;
+}
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 15px/1.2 'Georgia', 'Times New Roman', Times, serif;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+body:before {
+  content: '';
+  display: block;
+  height: 300px;
+  width: 100%;
+  border-bottom: 5px solid #5e0000;
+  background-color: #000;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong {
+  font-weight: bold;
+}
+h1,
+h2,
+h3 {
+  margin-bottom: 1rem;
+}
+h1 {
+  font-size: 150%;
+}
+em {
+  font-style: oblique;
+}
+p {
+  margin: 1rem 0;
 }
 a {
-  color: #00b7ff;
+  color: #5e0000;
+  text-decoration: none;
+}
+a:hover,
+a:active {
+  color: #800;
+}
+/**
+ * Common styles
+ */
+/**
+ * Header and Navigation
+ */
+.header {
+  position: relative;
+}
+.header__branding {
+  background-image: url("/images/site-header.png");
+  width: 1000px;
+  height: 190px;
+  display: block;
+}
+.header__menu-user {
+  text-align: right;
+  position: absolute;
+  top: 0.5rem;
+  right: 0;
+  font: 0.9em/1.5rem 'Lucida Sans Unicode', 'Lucida Sans', sans-serif;
+}
+.header__menu-user,
+.header__menu-user a {
+  color: #fff;
+}
+.header__menu-user a:hover {
+  text-decoration: underline;
+}
+.header__nav {
+  position: absolute;
+  top: 124px;
+  background-color: #5e0000;
+  width: 100%;
+  font: 13px 'Century Gothic', Futura, 'URW Gothic L', Verdana, sans-serif;
+}
+.header__nav-menu {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: -webkit-box;
+  display: -moz-box;
+  display: flex;
+  margin: 5px;
+  background-color: #433d3d;
+  padding: 0.25rem;
+  border: 1px solid #221e1e;
+  border-top-color: #a49b9b;
+  -webkit-box-shadow: 0 2px 2px rgba(0,0,0,0.8);
+  -moz-box-shadow: 0 2px 2px rgba(0,0,0,0.8);
+  box-shadow: 0 2px 2px rgba(0,0,0,0.8);
+}
+.header__nav-link {
+  display: block;
+  padding: 0.25rem 1rem;
+}
+.header__nav-link,
+.header__nav-link:hover {
+  color: #fff;
+}
+.header__nav-link:hover {
+  color: #fff;
+  background-color: #800;
+}
+/**
+ * Content
+ */
+.main {
+  border: 1px solid #000;
+  background-color: #e6d099;
+  padding: 1rem;
 }

@@ -4,5 +4,8 @@
 	"box-model": false,
 	"non-link-hover": false,
 	"box-sizing": false,
-	"ids": false
+	"ids": false,
+	"outline-none": false,
+	"universal-selector": false,
+	"unique-headings": false
 }

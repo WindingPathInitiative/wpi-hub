@@ -154,16 +154,41 @@ a {
 }
 a:hover,
 a:active {
-  color: #800;
+  color: #94474d;
 }
 /**
  * Common styles
  */
+.ui-bar__child,
+.main {
+  -webkit-box-shadow: 0 2px 2px rgba(0,0,0,0.8);
+  -moz-box-shadow: 0 2px 2px rgba(0,0,0,0.8);
+  box-shadow: 0 2px 2px rgba(0,0,0,0.8);
+}
+.header__menu-user a,
+.footer a {
+  color: #fff;
+}
+.header__menu-user a:hover,
+.footer a:hover {
+  text-decoration: underline;
+}
+.ui-bar {
+  background-color: #5e0000;
+  overflow: auto;
+}
+.ui-bar__child {
+  margin: 5px;
+  background-color: #433d3d;
+  border: 1px solid #221e1e;
+  border-top-color: #a49b9b;
+}
 /**
  * Header and Navigation
  */
 .header {
   position: relative;
+  margin-bottom: -51px;
 }
 .header__branding {
   background-image: url("/images/site-header.png");
@@ -177,19 +202,11 @@ a:active {
   top: 0.5rem;
   right: 0;
   font: 0.9em/1.5rem 'Lucida Sans Unicode', 'Lucida Sans', sans-serif;
-}
-.header__menu-user,
-.header__menu-user a {
   color: #fff;
 }
-.header__menu-user a:hover {
-  text-decoration: underline;
-}
 .header__nav {
-  position: absolute;
-  top: 124px;
-  background-color: #5e0000;
-  width: 100%;
+  position: relative;
+  top: -67px;
   font: 13px 'Century Gothic', Futura, 'URW Gothic L', Verdana, sans-serif;
 }
 .header__nav-menu {
@@ -198,14 +215,7 @@ a:active {
   display: -webkit-box;
   display: -moz-box;
   display: flex;
-  margin: 5px;
-  background-color: #433d3d;
   padding: 0.25rem;
-  border: 1px solid #221e1e;
-  border-top-color: #a49b9b;
-  -webkit-box-shadow: 0 2px 2px rgba(0,0,0,0.8);
-  -moz-box-shadow: 0 2px 2px rgba(0,0,0,0.8);
-  box-shadow: 0 2px 2px rgba(0,0,0,0.8);
 }
 .header__nav-link {
   display: block;
@@ -216,8 +226,24 @@ a:active {
   color: #fff;
 }
 .header__nav-link:hover {
+  background-color: #94474d;
+}
+.footer {
+  margin-top: 1rem;
   color: #fff;
-  background-color: #800;
+}
+.footer__child {
+  overflow: hidden;
+  padding: 1rem;
+}
+.footer p {
+  margin: 0;
+}
+.footer__left {
+  float: left;
+}
+.footer__right {
+  float: right;
 }
 /**
  * Content

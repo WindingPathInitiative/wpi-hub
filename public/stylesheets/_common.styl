@@ -19,3 +19,23 @@ display( type, args... )
             display: vendor-value(arguments, only: webkit official) // overwrites old webkit
     else
         display: arguments
+
+$common-box-shadow
+    box-shadow 0 2px 2px rgba( color-dark, 0.8 )
+
+$common-simple-link
+    color color-light
+
+    &:hover
+        text-decoration underline
+
+.ui-bar
+    background-color color-accent
+    overflow auto
+
+    &__child
+        @extends $common-box-shadow
+        margin size-border
+        background-color color-nav
+        border 1px solid darken( color-nav, 50% )
+        border-top-color lighten( color-nav, 50% )

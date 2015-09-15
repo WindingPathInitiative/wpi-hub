@@ -7,6 +7,7 @@ html
         link(rel='icon', href='/favicon.ico')
         meta(name='viewport', content='width=device-width, initial-scale=1')
         block head
+
     body
         header.header
             block header
@@ -17,9 +18,9 @@ html
                     a(href='/user/view') View Account
                     |  | 
                     a(href='/logout') Log Off
-                    
-                nav.header__nav
-                    ul.header__nav-menu
+
+                nav.header__nav.ui-bar
+                    ul.header__nav-menu.ui-bar__child
                         li.header__nav-item: a.header__nav-link(href='/') Home
                         li.header__nav-item: a.header__nav-link(href='#') My Account
                         li.header__nav-item: a.header__nav-link(href='/user/view') My Information
@@ -27,9 +28,10 @@ html
         .main
             block content
 
-        footer.footer
-            block footer
-                p.footer__left: a(href='http://www.mindseyesociety.org/about-us/faqs/', target='_blank') Questions? Problems? Click here.
-                p.footer__right
-                    a(href="/privacy") Privacy Policy
-                    |  | v2.0
+        footer.footer.ui-bar
+            .footer__child.ui-bar__child
+                block footer
+                    p.footer__left: a(href='http://www.mindseyesociety.org/about-us/faqs/', target='_blank') Questions? Problems? Click here.
+                    p.footer__right
+                        a(href="/privacy") Privacy Policy
+                        |  | v2.0

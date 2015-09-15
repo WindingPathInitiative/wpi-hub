@@ -188,7 +188,7 @@ a:active {
  */
 .header {
   position: relative;
-  margin-bottom: -51px;
+  height: 180px;
 }
 .header__branding {
   background-image: url("/images/site-header.png");

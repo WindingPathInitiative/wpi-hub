@@ -12,7 +12,8 @@ html(lang='en')
             block header
                 a.header__branding(href=rootPath)
                 .header__menu-user
-                    strong Welcome, User
+                    strong Welcome, 
+                        = name ? name : 'User'
                     br
                     a(href=rootPath + '/user/view') View Account
                     |  | 

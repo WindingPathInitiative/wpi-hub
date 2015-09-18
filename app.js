@@ -7,6 +7,7 @@ var express      = require( 'express' ),
     cookieParser = require( 'cookie-parser' ),
     bodyParser   = require( 'body-parser' ),
     stylus       = require( 'stylus' ),
+    session      = require( 'express-session' ),
     passport     = require( 'passport' ),
 
     common       = require( './common' ),
@@ -36,7 +37,13 @@ app.use( stylus.middleware({
     }
 }));
 app.use( express.static( path.join( __dirname, 'public' ) ) );
+app.use( session({
+    secret: 'diablerie ftw', // TODO: Make this a config option.
+    resave: false,
+    saveUninitialized: false
+}));
 app.use( passport.initialize() );
+app.use( passport.session() );
 
 app.use( common );
 

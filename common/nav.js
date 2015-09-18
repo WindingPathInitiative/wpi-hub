@@ -22,7 +22,10 @@ navMap = i => {
 
 nav.map( navMap );
 
-module.exports = ( res ) => {
+module.exports = ( req, res ) => {
     res.locals.nav      = nav;
     res.locals.rootPath = rootPath;
+    if ( req.user && req.user.firstName ) {
+        res.locals.name = req.user.firstName;
+    }
 };

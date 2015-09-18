@@ -10,14 +10,27 @@
 var config         = require( './config/auth.json' ),
     passport       = require( 'passport' ),
     OAuth2Strategy = require( 'passport-oauth' ).OAuth2Strategy,
-    callback;
-
-callback = ( accessToken, refreshToken, profile, done ) => {
-    console.log( 'HERE', accessToken, refreshToken, profile );
-    done( null, false );
-};
+    request        = require( 'request' ),
+    stringify      = require( 'querystring' ).stringify;
 
 module.exports = ( req, res ) => {
-    console.log( 'authenticating...' );
+    var callback = ( accessToken, refreshToken, profile, done ) => {
+        request(
+            config.userURL + '?' + stringify({ access_token: accessToken }),
+            ( err, res, body ) => {
+                if ( err ) done( err, false );
+                var user = JSON.parse( body );
+                done( null, user );
+            }
+        );
+    };
     passport.use( 'provider', new OAuth2Strategy( config, callback ) );
+
+    passport.serializeUser( ( user, done ) => {
+        done( null, user );
+    });
+
+    passport.deserializeUser( ( user, done ) => {
+        done( null, user );
+    });
 };

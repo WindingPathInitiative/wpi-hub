@@ -2,11 +2,11 @@
 
 module.exports = ( req, res, next ) => {
 
-    // Navigation.
-    require( './nav' )( res );
-
     // Authentication.
     require( './auth' )( req, res );
+
+    // Navigation.
+    require( './nav' )( req, res );
 
     next();
 };

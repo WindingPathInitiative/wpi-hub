@@ -1,0 +1,5 @@
+{
+    "redirect": "http://example.com",
+    "client": "client id here",
+    "secret": "your secret here"
+}

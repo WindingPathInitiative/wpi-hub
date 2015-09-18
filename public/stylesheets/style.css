@@ -159,7 +159,8 @@ a:active {
 /**
  * Common styles
  */
-.ui-bar__child,
+.header__nav-menu,
+.footer__child,
 .main {
   -webkit-box-shadow: 0 2px 2px rgba(0,0,0,0.8);
   -moz-box-shadow: 0 2px 2px rgba(0,0,0,0.8);
@@ -173,11 +174,13 @@ a:active {
 .footer a:hover {
   text-decoration: underline;
 }
-.ui-bar {
+.header__nav,
+.footer {
   background-color: #5e0000;
   overflow: auto;
 }
-.ui-bar__child {
+.header__nav-menu,
+.footer__child {
   margin: 5px;
   background-color: #433d3d;
   border: 1px solid #221e1e;
@@ -208,6 +211,8 @@ a:active {
   position: relative;
   top: -67px;
   font: 13px 'Century Gothic', Futura, 'URW Gothic L', Verdana, sans-serif;
+  overflow: visible;
+  height: 40px;
 }
 .header__nav-menu {
   display: -webkit-flex;
@@ -220,13 +225,27 @@ a:active {
 .header__nav-link {
   display: block;
   padding: 0.25rem 1rem;
+  cursor: pointer;
 }
 .header__nav-link,
 .header__nav-link:hover {
   color: #fff;
 }
-.header__nav-link:hover {
+.header__nav-item:hover {
   background-color: #94474d;
+}
+.header__nav-child {
+  width: 200px;
+  margin: 0;
+  position: absolute;
+  background-color: #5e0000;
+  -webkit-box-shadow: 0 3px 3px #000;
+  -moz-box-shadow: 0 3px 3px #000;
+  box-shadow: 0 3px 3px #000;
+  display: none;
+}
+.header__nav-item:hover .header__nav-child {
+  display: block;
 }
 .footer {
   margin-top: 1rem;

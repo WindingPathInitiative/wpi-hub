@@ -22,31 +22,49 @@
 
     // Navigation
     &__nav
+        @extends $common-bar
         position relative
         top -67px
         font 13px 'Century Gothic', Futura, 'URW Gothic L', Verdana, sans-serif
+        overflow visible
+        height size-nav
 
         &-menu
+            @extends $common-bar-child
             display flex
             padding .25rem
 
         &-link
             display block
             padding .25rem 1rem
+            cursor pointer
 
             &,
             &:hover
                 color color-light
 
-            &:hover
-                background-color color-hover
+        &-item:hover
+            background-color color-hover
+
+        &-child
+            width 200px
+            margin 0
+            position absolute
+            background-color color-accent
+            box-shadow 0 3px 3px color-dark
+            display none
+
+        &-item:hover &-child
+            display block
 
 // Footer
 .footer
+    @extends $common-bar
     margin-top 1rem
     color color-light
 
     &__child
+        @extends $common-bar-child
         overflow hidden
         padding 1rem
 

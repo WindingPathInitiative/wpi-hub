@@ -3,7 +3,7 @@
  * @author Ephraim Gregor
  */
 
-module.exports = grunt => {
+module.exports = ( grunt ) => {
 	'use strict';
 
 	grunt.initConfig({

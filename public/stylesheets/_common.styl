@@ -29,13 +29,13 @@ $common-simple-link
     &:hover
         text-decoration underline
 
-.ui-bar
+$common-bar
     background-color color-accent
     overflow auto
 
-    &__child
-        @extends $common-box-shadow
-        margin size-border
-        background-color color-nav
-        border 1px solid darken( color-nav, 50% )
-        border-top-color lighten( color-nav, 50% )
+$common-bar-child
+    @extends $common-box-shadow
+    margin size-border
+    background-color color-nav
+    border 1px solid darken( color-nav, 50% )
+    border-top-color lighten( color-nav, 50% )

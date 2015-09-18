@@ -1,35 +1,44 @@
 doctype html
-html
+html(lang='en')
     head
         meta(charset='UTF-8')
         title= title
         link(rel='stylesheet', href='/stylesheets/style.css')
-        link(rel='icon', href='/favicon.ico')
         meta(name='viewport', content='width=device-width, initial-scale=1')
         block head
 
     body
         header.header
             block header
-                a.header__branding(href='/')
+                a.header__branding(href=rootPath)
                 .header__menu-user
                     strong Welcome, User
                     br
-                    a(href='/user/view') View Account
+                    a(href=rootPath + '/user/view') View Account
                     |  | 
-                    a(href='/logout') Log Off
+                    a(href=rootPath + '/logout') Log Off
 
-                nav.header__nav.ui-bar
-                    ul.header__nav-menu.ui-bar__child
-                        li.header__nav-item: a.header__nav-link(href='/') Home
-                        li.header__nav-item: a.header__nav-link(href='#') My Account
-                        li.header__nav-item: a.header__nav-link(href='/user/view') My Information
+                nav.header__nav
+                    ul.header__nav-menu
+                        each item in nav
+                            li.header__nav-item
+                                if item.url
+                                    a.header__nav-link(href=item.url)
+                                        = item.text
+                                else
+                                    span.header__nav-link
+                                        = item.text
+                                if item.children
+                                    ul.header__nav-child
+                                        each child in item.children
+                                            li.header__nav-item.header__nav-item--child
+                                                a.header__nav-link(href=child.url)= child.text
 
         .main
             block content
 
-        footer.footer.ui-bar
-            .footer__child.ui-bar__child
+        footer.footer
+            .footer__child
                 block footer
                     p.footer__left: a(href='http://www.mindseyesociety.org/about-us/faqs/', target='_blank') Questions? Problems? Click here.
                     p.footer__right

@@ -1,5 +1,7 @@
 {
-    "redirect": "http://example.com",
-    "client": "client id here",
-    "secret": "your secret here"
+    "authorizationURL": "http://portal.mindseyesociety.org/oauth/v2/auth",
+    "tokenURL": "http://portal.mindseyesociety.org/oauth/v2/token",
+    "clientID": "client id here",
+    "clientSecret": "your secret here",
+    "callbackURL": "http://example.com",
 }

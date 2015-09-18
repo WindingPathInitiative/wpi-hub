@@ -7,11 +7,12 @@ var express      = require( 'express' ),
     cookieParser = require( 'cookie-parser' ),
     bodyParser   = require( 'body-parser' ),
     stylus       = require( 'stylus' ),
+    passport     = require( 'passport' ),
 
     common       = require( './common' ),
 
     routes       = require( './routes/index' ),
-    users        = require( './routes/users' ),
+    auth         = require( './routes/auth' ),
 
     app          = express();
 
@@ -35,11 +36,12 @@ app.use( stylus.middleware({
     }
 }));
 app.use( express.static( path.join( __dirname, 'public' ) ) );
+app.use( passport.initialize() );
 
 app.use( common );
 
 app.use( '/', routes );
-app.use( '/users', users );
+app.use( '/auth', auth );
 
 // catch 404 and forward to error handler
 app.use( ( req, res, next ) => {

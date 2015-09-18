@@ -250,6 +250,7 @@ a:active {
 .footer {
   margin-top: 1rem;
   color: #fff;
+  font: 0.9em/1.5rem 'Lucida Sans Unicode', 'Lucida Sans', sans-serif;
 }
 .footer__child {
   overflow: hidden;

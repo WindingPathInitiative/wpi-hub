@@ -1,7 +1,6 @@
 'use strict';
 
-var express  = require( 'express' ),
-    router   = express.Router(),
+var router   = require( 'express' ).Router(),
     passport = require( 'passport' );
 
 // Authenticate user.

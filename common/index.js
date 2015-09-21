@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = ( app ) => {
+module.exports.init = ( app ) => {
 
     // Sessions.
     require( './sessions' )( app );
@@ -11,4 +11,10 @@ module.exports = ( app ) => {
     // Navigation.
     app.use( require( './nav' ) );
 
+    // Database.
+    app.set( 'bookshelf', require( './db' ) );
+};
+
+module.exports.route = ( app ) => {
+    app.use( '/auth', require( './routes/auth' ) );
 };

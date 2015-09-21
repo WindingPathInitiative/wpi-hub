@@ -35,11 +35,13 @@ app.use( stylus.middleware({
 }));
 
 // Central login and auth logic.
-common( app );
+common.init( app );
 
 app.use( express.static( path.join( __dirname, 'public' ) ) );
 
-app.use( '/auth', require( './routes/auth' ) );
+// Sets up common routes.
+common.route( app );
+
 app.use( '/', routes );
 
 // catch 404 and forward to error handler

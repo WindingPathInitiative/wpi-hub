@@ -5,9 +5,10 @@ var express = require( 'express' ),
 
 /* GET home page. */
 router.get( '/', ( req, res, next ) => {
-    console.log( req.user );
+    console.log( req.user ); // Debug.
     if ( ! req.user ) {
         res.redirect( '/auth' );
+        return;
     }
 
     res.render( 'index', { title: 'Express' } );

@@ -1,12 +1,14 @@
 'use strict';
 
-module.exports = ( req, res, next ) => {
+module.exports = ( app ) => {
+
+    // Sessions.
+    require( './sessions' )( app );
 
     // Authentication.
-    require( './auth' )( req, res );
+    require( './auth' )( app );
 
     // Navigation.
-    require( './nav' )( req, res );
+    app.use( require( './nav' ) );
 
-    next();
 };

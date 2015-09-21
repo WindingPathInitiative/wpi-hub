@@ -13,7 +13,11 @@ var config         = require( './config/auth.json' ),
     request        = require( 'request' ),
     stringify      = require( 'querystring' ).stringify;
 
-module.exports = ( req, res ) => {
+module.exports = ( app ) => {
+
+    app.use( passport.initialize() );
+    app.use( passport.session() );
+
     var callback = ( accessToken, refreshToken, profile, done ) => {
         request(
             config.userURL + '?' + stringify({ 'access_token': accessToken }),

@@ -7,10 +7,6 @@ var express      = require( 'express' ),
     cookieParser = require( 'cookie-parser' ),
     bodyParser   = require( 'body-parser' ),
     stylus       = require( 'stylus' ),
-    session      = require( 'express-session' ),
-    passport     = require( 'passport' ),
-
-    dbConfig     = require( './common/config/db.json' ),
 
     common       = require( './common' ),
 
@@ -37,16 +33,11 @@ app.use( stylus.middleware({
             .import( 'nib' );
     }
 }));
-app.use( express.static( path.join( __dirname, 'public' ) ) );
-app.use( session({
-    secret: 'diablerie ftw', // TODO: Make this a config option.
-    resave: false,
-    saveUninitialized: false
-}));
-app.use( passport.initialize() );
-app.use( passport.session() );
 
-app.use( common );
+// Central login and auth logic.
+common( app );
+
+app.use( express.static( path.join( __dirname, 'public' ) ) );
 
 app.use( '/auth', require( './routes/auth' ) );
 app.use( '/', routes );

@@ -10,10 +10,11 @@ var express      = require( 'express' ),
     session      = require( 'express-session' ),
     passport     = require( 'passport' ),
 
+    dbConfig     = require( './common/config/db.json' ),
+
     common       = require( './common' ),
 
-    routes       = require( './routes/index' ),
-    auth         = require( './routes/auth' ),
+    routes       = require( './routes/' ),
 
     app          = express();
 
@@ -47,8 +48,8 @@ app.use( passport.session() );
 
 app.use( common );
 
+app.use( '/auth', require( './routes/auth' ) );
 app.use( '/', routes );
-app.use( '/auth', auth );
 
 // catch 404 and forward to error handler
 app.use( ( req, res, next ) => {

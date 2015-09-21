@@ -16,9 +16,11 @@ var config         = require( './config/auth.json' ),
 module.exports = ( req, res ) => {
     var callback = ( accessToken, refreshToken, profile, done ) => {
         request(
-            config.userURL + '?' + stringify({ access_token: accessToken }),
+            config.userURL + '?' + stringify({ 'access_token': accessToken }),
             ( err, res, body ) => {
-                if ( err ) done( err, false );
+                if ( err ) {
+                    done( err, false );
+                }
                 var user = JSON.parse( body );
                 done( null, user );
             }

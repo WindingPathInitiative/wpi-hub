@@ -4,18 +4,16 @@ var express  = require( 'express' ),
     router   = express.Router(),
     passport = require( 'passport' );
 
-/* GET users listing. */
+// Authenticate user.
 router.get( '/', passport.authenticate( 'provider' ) );
 
+// Verifies user.
 router.get( '/verify',
     passport.authenticate( 'provider', {
+        // Routes absolute, not relative.
         successRedirect: '/',
-        failureRedirect: '/auth/fail'
+        failureRedirect: 'http://portal.mindseyesociety.org'
     })
 );
-
-router.get( '/fail', ( req, res ) => {
-    res.send( '<a href="/auth">failure! :(</a>' );
-});
 
 module.exports = router;

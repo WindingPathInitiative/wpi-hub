@@ -12,7 +12,7 @@ module.exports.init = ( app ) => {
     app.use( require( './nav' ) );
 
     // Database.
-    app.set( 'bookshelf', require( './db' ) );
+    app.set( 'bookshelf', require( './db' ).Bookshelf );
 };
 
 module.exports.route = ( app ) => {

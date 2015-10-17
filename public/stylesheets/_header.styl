@@ -1,82 +1,82 @@
 // Header
 .header
-    position relative
-    height 180px
+	position relative
+	height 180px
 
-    // Branding image
-    &__branding
-        background-image url( '/images/site-header.png' )
-        width size-body
-        height 190px
-        display block
+	// Branding image
+	&__branding
+		background-image url( '/images/site-header.png' )
+		width size-body
+		height 190px
+		display block
 
-    // Top right menu
-    &__menu-user
-        text-align right
-        absolute top 0.5rem right 0
-        font .9em / 1.5rem font-sans
-        color color-light
+	// Top right menu
+	&__menu-user
+		text-align right
+		absolute top 0.5rem right 0
+		font .9em / 1.5rem font-sans
+		color color-light
 
-        a
-            @extends $common-simple-link
+		a
+			@extends $common-simple-link
 
-    // Navigation
-    &__nav
-        @extends $common-bar
-        position relative
-        top -67px
-        font 13px 'Century Gothic', Futura, 'URW Gothic L', Verdana, sans-serif
-        overflow visible
-        height size-nav
+	// Navigation
+	&__nav
+		@extends $common-bar
+		position relative
+		top -67px
+		font 13px 'Century Gothic', Futura, 'URW Gothic L', Verdana, sans-serif
+		overflow visible
+		height size-nav
 
-        &-menu
-            @extends $common-bar-child
-            display flex
-            padding .25rem
+		&-menu
+			@extends $common-bar-child
+			display flex
+			padding .25rem
 
-        &-link
-            display block
-            padding .25rem 1rem
-            cursor pointer
+		&-link
+			display block
+			padding .25rem 1rem
+			cursor pointer
 
-            &,
-            &:hover
-                color color-light
+			&,
+			&:hover
+				color color-light
 
-        &-item:hover
-            background-color color-hover
+		&-item:hover
+			background-color color-hover
 
-        &-child
-            width 200px
-            margin 0
-            position absolute
-            background-color color-accent
-            box-shadow 0 3px 3px color-dark
-            display none
+		&-child
+			width 200px
+			margin 0
+			position absolute
+			background-color color-accent
+			box-shadow 0 3px 3px color-dark
+			display none
 
-        &-item:hover &-child
-            display block
+		&-item:hover &-child
+			display block
 
 // Footer
 .footer
-    @extends $common-bar
-    margin-top 1rem
-    color color-light
-    font .9em / 1.5rem font-sans
+	@extends $common-bar
+	margin-top 1rem
+	color color-light
+	font .9em / 1.5rem font-sans
 
-    &__child
-        @extends $common-bar-child
-        overflow hidden
-        padding 1rem
+	&__child
+		@extends $common-bar-child
+		overflow hidden
+		padding 1rem
 
-    a
-        @extends $common-simple-link
+	a
+		@extends $common-simple-link
 
-    p
-        margin 0
+	p
+		margin 0
 
-    &__left
-        float left
+	&__left
+		float left
 
-    &__right
-        float right
+	&__right
+		float right

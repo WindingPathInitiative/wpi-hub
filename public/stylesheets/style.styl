@@ -4,11 +4,11 @@ color-accent = #5e0000
 color-hover  = #94474d
 color-dark   = #000
 color-light  = #fff
-color-nav    = #433d3d
+color-nav	= #433d3d
 
 // Sizes
-size-body    = 1000px
-size-nav     = 40px
+size-body	= 1000px
+size-nav	 = 40px
 size-border  = 5px
 
 // Fonts
@@ -23,49 +23,49 @@ global-reset()
  * Layout.
  */
 html
-    box-sizing border-box
+	box-sizing border-box
 
 *, *:before, *:after
-    box-sizing inherit
+	box-sizing inherit
 
 body
-    font 15px/1.2 'Georgia', 'Times New Roman', Times, serif
-    width 100%
-    max-width size-body
-    margin 0 auto
+	font 15px/1.2 'Georgia', 'Times New Roman', Times, serif
+	width 100%
+	max-width size-body
+	margin 0 auto
 
-    &:before
-        content ''
-        display block
-        height 300px
-        width 100%
-        border-bottom size-border solid color-accent
-        background-color color-dark
-        absolute left 0 top 0
-        z-index -1
+	&:before
+		content ''
+		display block
+		height 300px
+		width 100%
+		border-bottom size-border solid color-accent
+		background-color color-dark
+		absolute left 0 top 0
+		z-index -1
 
 h1, h2, h3, h4, h5, h6, strong
-    font-weight bold
+	font-weight bold
 
 h1, h2, h3
-    margin-bottom 1rem
+	margin-bottom 1rem
 
 h1
-    font-size 150%
+	font-size 150%
 
 em
-    font-style oblique
+	font-style oblique
 
 p
-    margin 1rem 0
+	margin 1rem 0
 
 a
-    color color-accent
-    text-decoration none
+	color color-accent
+	text-decoration none
 
-    &:hover,
-    &:active
-        color color-hover
+	&:hover,
+	&:active
+		color color-hover
 
 /**
  * Common styles

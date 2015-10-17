@@ -2,19 +2,19 @@
 
 module.exports.init = ( app ) => {
 
-    // Sessions.
-    require( './sessions' )( app );
+	// Sessions.
+	require( './sessions' )( app );
 
-    // Authentication.
-    require( './auth' )( app );
+	// Authentication.
+	require( './auth' )( app );
 
-    // Navigation.
-    app.use( require( './nav' ) );
+	// Navigation.
+	app.use( require( './nav' ) );
 
-    // Database.
-    app.set( 'bookshelf', require( './db' ).Bookshelf );
+	// Database.
+	app.set( 'bookshelf', require( './db' ).Bookshelf );
 };
 
 module.exports.route = ( app ) => {
-    app.use( '/auth', require( './routes/auth' ) );
+	app.use( '/auth', require( './routes/auth' ) );
 };

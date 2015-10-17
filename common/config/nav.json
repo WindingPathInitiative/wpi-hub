@@ -1,74 +1,74 @@
 [
-    {
-        "text": "Home",
-        "url": "/"
-    },
-    {
-        "text": "My Account",
-        "children": [
-            {
-                "text": "My Information",
-                "url": "/user/view"
-            },
-            {
-                "text": "Edit My Information",
-                "url": "/user/edit"
-            },
-            {
-                "text": "Change Password",
-                "url": "/user/password-update"
-            }
-        ]
-    },
-    {
-        "text": "Membership",
-        "children": [
-            {
-                "text": "My Membership",
-                "url": "/membership"
-            },
-            {
-                "text": "Renewing & Gifting",
-                "url": "/membership/cart"
-            }
-        ]
-    },
-    {
-        "text": "Tools",
-        "children": [
-            {
-                "text": "Membership Lookup",
-                "url": "/member-search"
-            },
-            {
-                "text": "Wiki",
-                "url": "http://wiki.mindseyesociety.org"
-            }
-        ]
-    },
-    {
-        "text": "Legacy Tools",
-        "children": [
-            {
-                "text": "Approvals",
-                "url": "http://legacy.mindseyesociety.org/approvals_new"
-            },
-            {
-                "text": "CRD",
-                "url": "http://legacy.mindseyesociety.org/crd"
-            },
-            {
-                "text": "Mailing Lists",
-                "url": "http://listmx.mindseyesociety.org/mailman/listinfo"
-            },
-            {
-                "text": "Standards",
-                "url": "http://legacy.mindseyesociety.org/usnc/ordeals/"
-            }
-        ]
-    },
-    {
-        "text": "MES Homepage",
-        "url": "http://www.mindseyesociety.org"
-    }
+	{
+		"text": "Home",
+		"url": "/"
+	},
+	{
+		"text": "My Account",
+		"children": [
+			{
+				"text": "My Information",
+				"url": "/user/view"
+			},
+			{
+				"text": "Edit My Information",
+				"url": "/user/edit"
+			},
+			{
+				"text": "Change Password",
+				"url": "/user/password-update"
+			}
+		]
+	},
+	{
+		"text": "Membership",
+		"children": [
+			{
+				"text": "My Membership",
+				"url": "/membership"
+			},
+			{
+				"text": "Renewing & Gifting",
+				"url": "/membership/cart"
+			}
+		]
+	},
+	{
+		"text": "Tools",
+		"children": [
+			{
+				"text": "Membership Lookup",
+				"url": "/member-search"
+			},
+			{
+				"text": "Wiki",
+				"url": "http://wiki.mindseyesociety.org"
+			}
+		]
+	},
+	{
+		"text": "Legacy Tools",
+		"children": [
+			{
+				"text": "Approvals",
+				"url": "http://legacy.mindseyesociety.org/approvals_new"
+			},
+			{
+				"text": "CRD",
+				"url": "http://legacy.mindseyesociety.org/crd"
+			},
+			{
+				"text": "Mailing Lists",
+				"url": "http://listmx.mindseyesociety.org/mailman/listinfo"
+			},
+			{
+				"text": "Standards",
+				"url": "http://legacy.mindseyesociety.org/usnc/ordeals/"
+			}
+		]
+	},
+	{
+		"text": "MES Homepage",
+		"url": "http://www.mindseyesociety.org"
+	}
 ]

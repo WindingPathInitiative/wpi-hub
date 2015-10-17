@@ -15,28 +15,28 @@ var config         = require( './config/auth.json' ),
 
 module.exports = ( app ) => {
 
-    app.use( passport.initialize() );
-    app.use( passport.session() );
+	app.use( passport.initialize() );
+	app.use( passport.session() );
 
-    var callback = ( accessToken, refreshToken, profile, done ) => {
-        request(
-            config.userURL + '?' + stringify({ 'access_token': accessToken }),
-            ( err, res, body ) => {
-                if ( err ) {
-                    done( err, false );
-                }
-                var user = JSON.parse( body );
-                done( null, user );
-            }
-        );
-    };
-    passport.use( 'provider', new OAuth2Strategy( config, callback ) );
+	var callback = ( accessToken, refreshToken, profile, done ) => {
+		request(
+			config.userURL + '?' + stringify({ 'access_token': accessToken }),
+			( err, res, body ) => {
+				if ( err ) {
+					done( err, false );
+				}
+				var user = JSON.parse( body );
+				done( null, user );
+			}
+		);
+	};
+	passport.use( 'provider', new OAuth2Strategy( config, callback ) );
 
-    passport.serializeUser( ( user, done ) => {
-        done( null, user );
-    });
+	passport.serializeUser( ( user, done ) => {
+		done( null, user );
+	});
 
-    passport.deserializeUser( ( user, done ) => {
-        done( null, user );
-    });
+	passport.deserializeUser( ( user, done ) => {
+		done( null, user );
+	});
 };

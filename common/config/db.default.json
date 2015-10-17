@@ -1,14 +1,14 @@
 {
-    "global": {
-        "host": "localhost",
-        "port": 3306,
-        "user": "db_user",
-        "password": "password",
-        "database": "db_name"
-    },
-    "knex": {},
-    "sessions": {
-        "key": "cookie-name",
-        "secret": "diablerie-is-fun"
-    }
+	"global": {
+		"host": "localhost",
+		"port": 3306,
+		"user": "db_user",
+		"password": "password",
+		"database": "db_name"
+	},
+	"knex": {},
+	"sessions": {
+		"key": "cookie-name",
+		"secret": "diablerie-is-fun"
+	}
 }

@@ -1,8 +1,8 @@
 {
-    "authorizationURL": "http://portal.mindseyesociety.org/oauth/v2/auth",
-    "tokenURL": "http://portal.mindseyesociety.org/oauth/v2/token",
-    "clientID": "client id here",
-    "clientSecret": "your secret here",
-    "callbackURL": "http://example.com",
-    "userURL": "mes_user_api"
+	"authorizationURL": "http://portal.mindseyesociety.org/oauth/v2/auth",
+	"tokenURL": "http://portal.mindseyesociety.org/oauth/v2/token",
+	"clientID": "client id here",
+	"clientSecret": "your secret here",
+	"callbackURL": "http://example.com",
+	"userURL": "mes_user_api"
 }

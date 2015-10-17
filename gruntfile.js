@@ -16,33 +16,33 @@ module.exports = ( grunt ) => {
 				files: '**/*.js',
 				tasks: [ 'jshint', 'jscs' ]
 			},
-            css: {
-                files: 'public/stylesheets/*.css',
-                tasks: [ 'csslint' ]
-            }
+			css: {
+				files: 'public/stylesheets/*.css',
+				tasks: [ 'csslint' ]
+			}
 		},
 
 		jshint: {
 			app: {
-                options: {
-                    esnext: true,
+				options: {
+					esnext: true,
 					node: true
-                },
-                files: {
+				},
+				files: {
 					src: [ '*.js', 'routes/*.js' ]
 				}
-            },
-            frontend: {
-                options: {
-                    browser: true
-                },
-                files: {
+			},
+			frontend: {
+				options: {
+					browser: true
+				},
+				files: {
 					src: [ 'public/javascripts/*.js' ]
 				}
-            },
+			},
 			options: {
 				strict: true,
-                reporter: require( 'jshint-stylish' )
+				reporter: require( 'jshint-stylish' )
 			}
 		},
 		jscs: {
@@ -62,8 +62,8 @@ module.exports = ( grunt ) => {
 
 	// Sets watch to prevent exit.
 	grunt.event.on( 'watch', function() {
-        grunt.option( 'force', true );
-    });
+		grunt.option( 'force', true );
+	});
 
 	require( 'load-grunt-tasks' )( grunt );
 

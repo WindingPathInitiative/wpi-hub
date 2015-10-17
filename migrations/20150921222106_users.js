@@ -4,8 +4,8 @@ exports.up = ( knex, Promise ) => {
 		var membershipTypes = [ 'None', 'Trial', 'Full', 'Expelled' ];
 
 		table.increments().primary();
-		table.string( 'firstname' ).notNull();
-		table.string( 'lastname' ).notNull();
+		table.string( 'firstName' ).notNull();
+		table.string( 'lastName' ).notNull();
 		table.string( 'nickname' ).nullable();
 		table.string( 'email' ).notNull().index();
 		table

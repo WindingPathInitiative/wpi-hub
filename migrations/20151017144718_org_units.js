@@ -5,10 +5,11 @@ exports.up = ( knex, Promise ) => {
 
 		table.increments().primary();
 		table.string( 'name' ).notNull();
+		table.string( 'code' ).nullable();
 		table.string( 'location' ).nullable();
 		table.integer( 'parentID' ).index();
 		table.string( 'website' ).nullable();
-		table.enum( 'type', unitTypes ).notNull();
+		table.enum( 'type', unitTypes ).notNull().index();
 		table.text( 'defDoc' ).nullable();
 	});
 };

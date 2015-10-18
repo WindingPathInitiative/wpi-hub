@@ -2,10 +2,11 @@
 
 var express = require( 'express' ),
     models  = require( '../models' ),
-    router  = express.Router();
+    router  = express.Router(),
+    display;
 
 /* GET home page. */
-var display = ( user, res ) => {
+display = ( user, res ) => {
 	res.render( 'index', { title: 'Express', user: user } );
 };
 

@@ -1,13 +1,11 @@
 extends layout
 
 block content
-    h1= title
-    p Welcome to #{title}
-    p
-    | This line tests 
-    strong bold
-    |  and 
-    em emphasis.
-    |  Also, here's a 
-    a(href="") link
-    | .
+	h1= title
+	p
+		|	Welcome, 
+		=	user.get( 'firstName' ) + ' '
+		=	user.get( 'lastName' ) + '!'
+	p
+		| Your member number is: 
+		strong= user.get( 'membershipNumber' )

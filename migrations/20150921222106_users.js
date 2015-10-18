@@ -12,7 +12,7 @@ exports.up = ( knex, Promise ) => {
 			.enum( 'membershipType', membershipTypes )
 			.notNull()
 			.defaultTo( 'Full' );
-		table.string( 'membershipNumber', 10 ).notNull().index();
+		table.string( 'membershipNumber', 12 ).notNull().index();
 		table.date( 'membershipExpiration' ).notNull().index();
 		table.integer( 'portalId' ).notNull().index();
 		table.integer( 'orgUnit' ).nullable().index();

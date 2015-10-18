@@ -10,7 +10,14 @@ var bookshelf = require( '../common/db' ).Bookshelf;
 
 module.exports = bookshelf.model( 'User', {
 	tableName: 'users',
-	orgUnit:   function() {
-		return this.belongsTo( 'OrgUnit' );
+	orgUnit:   () => {
+		return this.belongsTo( 'OrgUnit', 'orgUnit' );
+	},
+	format:    ( attrs ) => {
+		attrs.email    = attrs.emailAddress;
+		attrs.portalID = attrs.remoteId;
+		delete attrs.emailAddress;
+		delete attrs.remoteId;
+		return attrs;
 	}
 });

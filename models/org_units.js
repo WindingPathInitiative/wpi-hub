@@ -9,7 +9,10 @@ var bookshelf = require( '../common/db' ).Bookshelf;
 
 module.exports = bookshelf.model( 'OrgUnit', {
 	tableName: 'org_units',
-	parentID:  function() {
-		return this.belongsTo( 'OrgUnit' );
+	parentID:  () => {
+		return this.belongsTo( 'OrgUnit', 'parentID' );
+	},
+	users:     () => {
+		return this.hasMany( 'User', 'orgUnit' );
 	}
 });

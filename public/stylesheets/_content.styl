@@ -3,3 +3,24 @@
 	border 1px solid color-dark
 	background-color color-back
 	padding 1rem
+
+.container
+	padding size-box
+	margin 0 0 0.75em 0
+
+.container--raised
+	background-color lighten( color-back, 30% )
+	border 1px solid color-dark
+	border-radius size-border
+	box-shadow 0 0 size-border color-dark
+
+.table
+	width 100%
+
+	&__cell
+		padding size-border
+
+		&--label
+			width 20%
+			text-align right
+			font-weight bold

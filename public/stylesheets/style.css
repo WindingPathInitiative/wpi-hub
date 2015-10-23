@@ -142,6 +142,9 @@ h3 {
 h1 {
   font-size: 150%;
 }
+h2 {
+  font-size: 123.1%;
+}
 em {
   font-style: oblique;
 }
@@ -272,4 +275,28 @@ a:active {
   border: 1px solid #000;
   background-color: #e6d099;
   padding: 1rem;
+}
+.container {
+  padding: 15px;
+  margin: 0 0 0.75em 0;
+}
+.container--raised {
+  background-color: #eedeb8;
+  border: 1px solid #000;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 0 5px #000;
+  -moz-box-shadow: 0 0 5px #000;
+  box-shadow: 0 0 5px #000;
+}
+.table {
+  width: 100%;
+}
+.table__cell {
+  padding: 5px;
+}
+.table__cell--label {
+  width: 20%;
+  text-align: right;
+  font-weight: bold;
 }

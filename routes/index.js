@@ -3,11 +3,27 @@
 var express = require( 'express' ),
     models  = require( '../models' ),
     router  = express.Router(),
+    _       = require( 'lodash' ),
     display;
 
 /* GET home page. */
 display = ( user, res ) => {
-	res.render( 'index', { title: 'Express', user: user } );
+
+	var domain = user.related( 'orgUnit' ),
+	    data   = {};
+
+	if ( domain ) {
+		data.code = domain.get( 'code' );
+		data.name = domain.get( 'name' );
+		data.link = '/location/' + domain.get( 'code' );
+		data.site = domain.get( 'site' );
+	}
+
+	res.render( 'index', {
+		title:  'Membership Information',
+		name:   user.get( 'firstName' ) + ' ' + user.get( 'lastName' ),
+		domain: data
+	});
 };
 
 router.get( '/', ( req, res, next ) => {
@@ -16,9 +32,27 @@ router.get( '/', ( req, res, next ) => {
 		return;
 	}
 
+	// Normalizes user for DB.
+	var user = _.chain( req.user )
+		.pick( req.user, [
+			'firstName',
+			'lastName',
+			'nickname',
+			'emailAddress',
+			'membershipType',
+			'membershipNumber',
+			'membershipExpiration'
+		])
+		.mapKeys( ( value, key ) => {
+			return key === 'emailAddress' ? 'email' : key;
+		})
+		.value();
+
 	models.Users
 		// Load the user.
-		.forge({ membershipNumber: req.user.membershipNumber })
+		.forge({
+			membershipNumber: user.membershipNumber
+		})
 		.fetch({ withRelated: 'orgUnit', require: true })
 		.then( ( model ) => {
 			display( model, res );
@@ -27,7 +61,7 @@ router.get( '/', ( req, res, next ) => {
 		// Can't find the user, so add it.
 		.catch( models.Users.NotFoundError, ( err ) => {
 			models.Users
-				.forge( req.user )
+				.forge( user )
 				.save()
 				.then( ( model ) => {
 					display( model, res );

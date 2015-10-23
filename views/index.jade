@@ -1,11 +1,16 @@
 extends layout
 
 block content
-	h1= title
-	p
-		|	Welcome, 
-		=	user.get( 'firstName' ) + ' '
-		=	user.get( 'lastName' ) + '!'
-	p
-		| Your member number is: 
-		strong= user.get( 'membershipNumber' )
+	h2= 'Welcome, ' + name
+	.container.container--raised
+		h2 Domain Information
+		table.table
+			tbody
+				tr
+					td.table__cell.table__cell--label Domain:
+					td.table__cell.table__cell--data
+						if domain
+							a( href=domain.link.toLowerCase() )
+								= domain.code + ': ' + domain.name
+						else
+							| None

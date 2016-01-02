@@ -2,4 +2,3 @@ node_modules
 npm-debug.log
 common/config/auth.json
 common/config/db.json
-seeds

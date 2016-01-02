@@ -11,7 +11,7 @@ var nav      = require( './config/nav.json' ),
 
 // Run nav object through a map to prepend root.
 navMap = i => {
-	if ( i.url && i.url.indexOf( '/' ) === 0 ) {
+	if ( i.url && 0 === i.url.indexOf( '/' ) ) {
 		i.url = rootPath + i.url;
 	}
 	if ( i.children ) {

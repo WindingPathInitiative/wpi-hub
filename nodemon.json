@@ -3,7 +3,7 @@
 	"ext": "js json jade",
 	"ignore": [
 		"migrations/",
-		"seeds/"
+		"seeds/",
 		"Dockerfile"
 	]
 }

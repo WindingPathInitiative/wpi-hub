@@ -9,11 +9,13 @@ var session      = require( 'express-session' ),
 store = new SessionStore( _.merge( config.global, config.sessions ) );
 
 module.exports = ( app ) => {
-	app.use( session({
-		key: config.sessions.key,
-		secret: config.sessions.secret,
-		store: store,
-		resave: true,
-		saveUninitialized: true
-	}));
+	app.use(
+		session({
+			key: config.sessions.key,
+			secret: config.sessions.secret,
+			store: store,
+			resave: true,
+			saveUninitialized: true
+		})
+	);
 };

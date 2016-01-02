@@ -44,11 +44,12 @@ router.get( '/', ( req, res, next ) => {
 			'membershipExpiration'
 		])
 		.mapKeys( ( value, key ) => {
-			return key === 'emailAddress' ? 'email' : key;
+			return 'emailAddress' === key ? 'email' : key;
 		})
 		.value();
 
 	models.Users
+
 		// Load the user.
 		.forge({
 			membershipNumber: user.membershipNumber

@@ -32,7 +32,7 @@ app.use( stylus.middleware({
 			.use( require( 'nib' )() )
 			.import( 'nib' );
 	}
-}));
+}) );
 
 // Central login and auth logic.
 common.init( app );
@@ -44,18 +44,18 @@ common.route( app );
 
 app.use( '/', routes );
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use( ( req, res, next ) => {
 	var err = new Error( 'Not Found' );
 	err.status = 404;
 	next( err );
 });
 
-// error handlers
+// Error handlers
 
-// development error handler
-// will print stacktrace
-if ( app.get( 'env' ) === 'development' ) {
+// Development error handler
+// Will print stacktrace
+if ( 'development' === app.get( 'env' ) ) {
 	app.use( ( err, req, res, next ) => {
 		res.status( err.status || 500 );
 		res.render( 'error', {
@@ -65,8 +65,8 @@ if ( app.get( 'env' ) === 'development' ) {
 	});
 }
 
-// production error handler
-// no stacktraces leaked to user
+// Production error handler
+// No stacktraces leaked to user
 app.use( ( err, req, res, next ) => {
 	res.status( err.status || 500 );
 	res.render( 'error', {

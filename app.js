@@ -4,7 +4,6 @@ const express    = require( 'express' );
 const path       = require( 'path' );
 const bodyParser = require( 'body-parser' );
 const stylus     = require( 'stylus' );
-const common     = require( './common' );
 
 const app        = express();
 
@@ -33,10 +32,18 @@ app.use( stylus.middleware({
 // Sets the main configuration options.
 GLOBAL.config = require( './config' );
 
+// Main logic.
+const common  = require( './common' );
+const modules = require( './modules' );
+
 // Central login and auth logic.
 common.init( app );
+modules.init( app );
 
 app.use( express.static( path.join( __dirname, 'public' ) ) );
+
+// Routing.
+modules.routes( app );
 
 // Catch 404 and forward to error handler
 app.use( ( req, res, next ) => {

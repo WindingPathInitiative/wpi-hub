@@ -34,6 +34,9 @@ app.use( stylus.middleware({
 	}
 }) );
 
+// Sets the main configuration options.
+app.locals.config = require( './config' );
+
 // Central login and auth logic.
 common.init( app );
 

@@ -25,9 +25,6 @@
     "morgan": "~1.6.1",
     "mysql": "^2.9.0",
     "nib": "^1.1.0",
-    "passport": "^0.3.0",
-    "passport-oauth": "^1.0.0",
-    "request": "^2.62.0",
     "serve-favicon": "~2.3.0",
     "stylus": "0.42.3"
   },

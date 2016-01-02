@@ -6,6 +6,8 @@
 module.exports = ( grunt ) => {
 	'use strict';
 
+	const APP_JS = [ 'common', 'config', 'models', 'migrations', 'seeds', '.' ].map( i => i + '/*.js' );
+
 	grunt.initConfig({
 		watch: {
 			options: {
@@ -13,7 +15,7 @@ module.exports = ( grunt ) => {
 				livereload: true
 			},
 			js: {
-				files: [ '**/*.js', '!node_modules' ],
+				files: APP_JS,
 				tasks: [ 'jshint', 'jscs' ]
 			},
 			css: {
@@ -29,7 +31,7 @@ module.exports = ( grunt ) => {
 					node: true
 				},
 				files: {
-					src: [ '*.js', 'routes/*.js' ]
+					src: APP_JS
 				}
 			},
 			frontend: {
@@ -37,7 +39,7 @@ module.exports = ( grunt ) => {
 					browser: true
 				},
 				files: {
-					src: [ 'public/javascripts/*.js' ]
+					src: [ 'public/javascripts/**/*.js' ]
 				}
 			},
 			options: {
@@ -46,7 +48,7 @@ module.exports = ( grunt ) => {
 			}
 		},
 		jscs: {
-			all: [ '**/*.js' ]
+			all: APP_JS
 		},
 
 		csslint: {

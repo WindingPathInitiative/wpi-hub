@@ -1,12 +1,11 @@
 'use strict';
 
-var session      = require( 'express-session' ),
-    SessionStore = require( 'express-mysql-session' ),
-    _            = require( 'lodash' ),
-    config       = require( './config/db' ),
-    store;
+const session = require( 'express-session' );
+const _       = require( 'lodash' );
+const config  = GLOBAL.config.get( 'db' );
 
-store = new SessionStore( _.merge( config.global, config.sessions ) );
+let SessionStore = require( 'express-mysql-session' );
+let store = new SessionStore( _.merge( config.global, config.sessions ) );
 
 module.exports = ( app ) => {
 	app.use(

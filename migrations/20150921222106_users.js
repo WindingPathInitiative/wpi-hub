@@ -1,3 +1,4 @@
+'use strict';
 
 exports.up = ( knex, Promise ) => {
 	return knex.schema.createTable( 'users', ( table ) => {

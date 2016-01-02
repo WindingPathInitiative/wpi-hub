@@ -1,29 +1,25 @@
 'use strict';
 
-var express      = require( 'express' ),
-    path         = require( 'path' ),
-    favicon      = require( 'serve-favicon' ),
-    logger       = require( 'morgan' ),
-    cookieParser = require( 'cookie-parser' ),
-    bodyParser   = require( 'body-parser' ),
-    stylus       = require( 'stylus' ),
+const express    = require( 'express' );
+const path       = require( 'path' );
+const bodyParser = require( 'body-parser' );
+const stylus     = require( 'stylus' );
+const common     = require( './common' );
 
-    common       = require( './common' ),
-
-    routes       = require( './routes/' ),
-
-    app          = express();
+const app        = express();
 
 // View engine setup.
 app.set( 'views', path.join( __dirname, 'views' ) );
 app.set( 'view engine', 'jade' );
 
 // Middleware.
-app.use( favicon( path.join( __dirname, 'public/images', 'favicon.png' ) ) );
-app.use( logger( 'dev' ) );
+app.use( require( 'serve-favicon' )(
+	path.join( __dirname, 'public/images', 'favicon.png' ) )
+);
+app.use( require( 'morgan' )( 'dev' ) );
 app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded({ extended: false }) );
-app.use( cookieParser() );
+app.use( require( 'cookie-parser' )() );
 app.use( stylus.middleware({
 	src: path.join( __dirname, 'public' ),
 	compile: ( str, path ) => {
@@ -35,17 +31,12 @@ app.use( stylus.middleware({
 }) );
 
 // Sets the main configuration options.
-app.locals.config = require( './config' );
+GLOBAL.config = require( './config' );
 
 // Central login and auth logic.
 common.init( app );
 
 app.use( express.static( path.join( __dirname, 'public' ) ) );
-
-// Sets up common routes.
-common.route( app );
-
-app.use( '/', routes );
 
 // Catch 404 and forward to error handler
 app.use( ( req, res, next ) => {

@@ -4,13 +4,9 @@
  * Module to set up navigation for system.
  */
 
-var nav      = require( './config/nav.json' ),
-    _        = require( 'lodash' ),
-    rootPath = process.env.domain || 'http://portal.mindseyesociety.org',
-    navMap;
-
-// Run nav object through a map to prepend root.
-navMap = i => {
+const _        = require( 'lodash' );
+const rootPath = process.env.domain || 'http://portal.mindseyesociety.org';
+const navMap   = i => {
 	if ( i.url && 0 === i.url.indexOf( '/' ) ) {
 		i.url = rootPath + i.url;
 	}
@@ -20,11 +16,13 @@ navMap = i => {
 	return i;
 };
 
-nav.map( navMap );
-
 module.exports = ( req, res, next ) => {
-	res.locals.nav      = nav;
+
+	// Run nav object through a map to prepend root.
+	let nav = GLOBAL.config.get( 'nav' );
+	res.locals.nav      = nav.map( navMap );
 	res.locals.rootPath = rootPath;
+
 	if ( req.user && req.user.firstName ) {
 		res.locals.name = req.user.firstName;
 	}

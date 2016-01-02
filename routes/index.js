@@ -1,7 +1,6 @@
 'use strict';
 
 var express = require( 'express' ),
-    models  = require( '../models' ),
     router  = express.Router(),
     _       = require( 'lodash' ),
     display;
@@ -47,6 +46,8 @@ router.get( '/', ( req, res, next ) => {
 			return 'emailAddress' === key ? 'email' : key;
 		})
 		.value();
+
+	const models = require( '../models' );
 
 	models.Users
 

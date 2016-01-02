@@ -1,18 +1,15 @@
 'use strict';
 
-var _	  = require( 'lodash' ),
-    config = require( './config/db.json' ),
-    settings, knex, bookshelf;
-
-settings = {
+const _        = require( 'lodash' );
+const config   = GLOBAL.config.db;
+const settings = {
 	client:	 'mysql',
 	connection: _.defaults( config.global, { charset: 'utf8' }, config.knex )
 };
 
-knex = require( 'knex' )( settings );
+let knex = require( 'knex' )( settings );
 
-bookshelf = require( 'bookshelf' )( knex );
-
+let bookshelf = require( 'bookshelf' )( knex );
 bookshelf.plugin( 'registry' );
 
 module.exports = {

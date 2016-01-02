@@ -1,3 +1,4 @@
+'use strict';
 
 exports.seed = ( knex, Promise ) => {
 	return Promise.join(

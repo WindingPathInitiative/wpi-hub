@@ -1,5 +1,6 @@
 {
 	"preset": "wordpress",
 	"validateIndentation": "\t",
-	"requireVarDeclFirst": false
+	"requireVarDeclFirst": false,
+	"disallowMultipleLineBreaks": false
 }

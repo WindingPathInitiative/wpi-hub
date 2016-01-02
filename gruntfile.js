@@ -13,7 +13,7 @@ module.exports = ( grunt ) => {
 				livereload: true
 			},
 			js: {
-				files: '**/*.js',
+				files: [ '**/*.js', '!node_modules' ],
 				tasks: [ 'jshint', 'jscs' ]
 			},
 			css: {

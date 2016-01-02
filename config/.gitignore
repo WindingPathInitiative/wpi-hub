@@ -1,2 +1,2 @@
-*.json
-!*default.json
+auth.json
+db.json

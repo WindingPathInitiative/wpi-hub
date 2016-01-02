@@ -1,5 +1,5 @@
 
-exports.seed = (knex, Promise) => {
+exports.seed = ( knex, Promise ) => {
 	return Promise.join(
 		// Deletes ALL existing entries
 		knex( 'org_units' ).del(),

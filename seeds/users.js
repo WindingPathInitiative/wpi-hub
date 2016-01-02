@@ -1,5 +1,5 @@
 
-exports.seed = (knex, Promise) => {
+exports.seed = ( knex, Promise ) => {
 	return Promise.join(
 		// Deletes ALL existing entries
 		knex( 'users' ).del(),
@@ -42,6 +42,7 @@ exports.seed = (knex, Promise) => {
 			membershipExpiration: '2020-01-01'
 		}),
 		knex( 'users' ).insert({
+			id: 5,
 			firstName: 'Test',
 			lastName: 'User',
 			email: 'test@test.com',
@@ -50,6 +51,7 @@ exports.seed = (knex, Promise) => {
 			membershipExpiration: '2020-01-01'
 		}),
 		knex( 'users' ).insert({
+			id: 6,
 			firstName: 'Test',
 			lastName: 'Expired',
 			email: 'expired@test.com',
@@ -58,6 +60,7 @@ exports.seed = (knex, Promise) => {
 			membershipExpiration: '2000-01-01'
 		}),
 		knex( 'users' ).insert({
+			id: 7,
 			firstName: 'Test',
 			lastName: 'Trial',
 			email: 'trial@test.com',

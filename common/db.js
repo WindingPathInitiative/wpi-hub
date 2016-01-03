@@ -12,7 +12,7 @@ let knex = require( 'knex' )( settings );
 let bookshelf = require( 'bookshelf' )( knex );
 bookshelf.plugin( 'registry' );
 
-module.exports = {
+GLOBAL.db = module.exports = {
 	Bookshelf: bookshelf,
 	Knex:      knex,
 	Config:    settings

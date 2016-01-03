@@ -6,7 +6,16 @@
 module.exports = ( grunt ) => {
 	'use strict';
 
-	const APP_JS = [ 'common', 'config', 'models', 'migrations', 'seeds', 'modules', '.' ].map( i => i + '/*.js' );
+	const APP_JS = [
+		'.',
+		'common',
+		'config',
+		'models',
+		'migrations',
+		'seeds',
+		'modules/**',
+		'!modules/*/node_modules/**'
+	].map( i => i + '/*.js' );
 
 	grunt.initConfig({
 		watch: {

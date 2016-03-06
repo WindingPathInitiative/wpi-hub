@@ -4,6 +4,8 @@
  * Module to set up navigation for system.
  */
 
+// NOTE: Should deprecate this functionality.
+
 const _        = require( 'lodash' );
 const rootPath = process.env.domain || 'http://portal.mindseyesociety.org';
 const navMap   = i => {

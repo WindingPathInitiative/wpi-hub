@@ -23,8 +23,8 @@ module.exports = ( req, res, next ) => {
 	res.locals.nav      = nav.map( navMap );
 	res.locals.rootPath = rootPath;
 
-	if ( req.session.name ) {
-		res.locals.name = req.session.name;
+	if ( req.user && req.user.firstName ) {
+		res.locals.name = req.user.firstName;
 	}
 	next();
 };

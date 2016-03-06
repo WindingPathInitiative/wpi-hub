@@ -26,9 +26,7 @@ const invoke = ( type, app ) => {
 };
 
 // Exports.
-GLOBAL.modules = module.exports = {
-	init:   app => invoke( 'init', app ),
-	routes: app => invoke( 'routes', app ),
-	prefix: _.pluck( modules, 'prefix' ),
-	get:    name => modules[ name ]
-};
+module.exports.init   = app => invoke( 'init', app );
+module.exports.routes = app => invoke( 'routes', app );
+module.exports.prefix = _.pluck( modules, 'prefix' );
+module.exports.get    = name => modules[ name ];

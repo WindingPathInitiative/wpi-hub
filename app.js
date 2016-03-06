@@ -4,7 +4,7 @@ const express    = require( 'express' );
 const path       = require( 'path' );
 const bodyParser = require( 'body-parser' );
 const stylus     = require( 'stylus' );
-const common     = require( './common' );
+const helpers    = require( './helpers' );
 
 const app        = express();
 
@@ -33,8 +33,8 @@ app.use( stylus.middleware({
 // Sets the main configuration options.
 GLOBAL.config = require( './config' );
 
-// Central login and auth logic.
-common.init( app );
+// Initializes helpers.
+helpers.init( app );
 
 app.use( express.static( path.join( __dirname, 'public' ) ) );
 

@@ -1,9 +1,28 @@
 extends layout
 
 block content
-	h2 Index of Modules
-	.container
-		ul.modules
-			each module in modules
-				li.module
-					a(href='/' + module)= module
+	h2= 'Welcome, ' + name
+	.container.container--raised
+		h2 Domain Information
+		table.table
+			tbody
+				tr
+					td.table__cell.table__cell--label Domain:
+					td.table__cell.table__cell--data
+						if domain
+							a( href=domain.link.toLowerCase() ).table__cell--link
+								= domain.code + ': ' + domain.name
+						else
+							| None
+
+				tr
+					td.table__cell.table__cell--label Region:
+					td.table__cell.table__cell--data North East
+
+				tr
+					td.table__cell.table__cell--label Coordinator:
+					td.table__cell.table__cell--data TBD
+
+				tr
+					td.table__cell.table__cell--label Positions:
+					td.table__cell.table__cell--data None

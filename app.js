@@ -44,7 +44,6 @@ app.use( express.static( path.join( __dirname, 'public' ) ) );
 
 // Routing.
 modules.routes( app );
-app.use( '/', common.route );
 
 // Catch 404 and forward to error handler
 app.use( ( req, res, next ) => {

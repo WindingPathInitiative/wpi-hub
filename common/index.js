@@ -12,5 +12,3 @@ module.exports.init = ( app ) => {
 	let db = require( './db' );
 	app.set( 'bookshelf', db.Bookshelf );
 };
-
-module.exports.route = require( './route' );

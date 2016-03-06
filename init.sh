@@ -7,4 +7,4 @@ echo 'Inserting seed data.'
 knex seed:run
 
 echo 'Starting application.'
-nodemon bin/www
+nodemon www

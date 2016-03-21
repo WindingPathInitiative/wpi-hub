@@ -9,20 +9,13 @@ router.get( '/', passport.authenticate( 'provider', { session: false } ) );
 
 router.get( '/verify',
 	passport.authenticate( 'provider', {
-		failureRedirect: 'http://portal.mindseyesociety.org'
+		failureRedirect: 'http://portal.mindseyesociety.org',
+		session: false
 	}),
 	( req, res ) => {
 		res.json( req.user );
 	}
 );
-
-router.get( '/test', ( req, res, next ) => {
-	req.session.token = Date.now();
-	res.json({
-		id: req.session.id,
-		token: req.session.token
-	});
-});
 
 var saveUser = ( req, res ) => {
 

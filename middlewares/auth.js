@@ -17,27 +17,20 @@ const stringify      = require( 'querystring' ).stringify;
 module.exports = ( app ) => {
 
 	app.use( passport.initialize() );
-	app.use( passport.session() );
 
-	let callback = ( accessToken, refreshToken, profile, done ) => {
-		request(
-			config.userURL + '?' + stringify({ 'access_token': accessToken }),
-			( err, res, body ) => {
-				if ( err ) {
-					done( err, false );
+	passport.use( 'provider', new OAuth2Strategy(
+		config,
+		( accessToken, refreshToken, profile, done ) => {
+			console.log( accessToken, refreshToken );
+			request(
+				config.userURL + '?' + stringify({ 'access_token': accessToken }),
+				( err, res, body ) => {
+					if ( err ) {
+						done( err );
+					}
+					done( null, JSON.parse( body ) );
 				}
-				done( null, JSON.parse( body ) );
-			}
-		);
-	};
-
-	passport.serializeUser( ( user, done ) => {
-		done( null, user );
-	});
-
-	passport.deserializeUser( ( user, done ) => {
-		done( null, user );
-	});
-
-	passport.use( 'provider', new OAuth2Strategy( config, callback ) );
+			);
+		})
+	);
 };

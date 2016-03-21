@@ -19,11 +19,11 @@ app.use( require( 'morgan' )( 'dev' ) );
 app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded({ extended: false }) );
 app.use( require( 'cookie-parser' )() );
-require( './middlewares/sessions.js' )( app );
-require( './middlewares/auth.js' )( app );
 
 // Load routes.
 app.use( require( './routes' ) );
+
+require( './middlewares/auth.js' )( app );
 
 // Catch 404 and forward to error handler
 app.use( ( req, res, next ) => {

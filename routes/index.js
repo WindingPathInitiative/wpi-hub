@@ -1,35 +1,30 @@
 'use strict';
 
-var express = require( 'express' ),
-    router  = express.Router(),
-    _       = require( 'lodash' ),
-    display;
+const passport = require( 'passport' );
+const router   = require( 'express' ).Router();
+const _        = require( 'lodash' );
 
-/* GET home page. */
-display = ( user, res ) => {
+// Authenticate user.
+router.get( '/', passport.authenticate( 'provider', { session: false } ) );
 
-	var domain = user.related( 'orgUnit' ),
-	    data   = {};
-
-	if ( domain ) {
-		data.code = domain.get( 'code' );
-		data.name = domain.get( 'name' );
-		data.link = '/location/' + domain.get( 'code' );
-		data.site = domain.get( 'site' );
+router.get( '/verify',
+	passport.authenticate( 'provider', {
+		failureRedirect: 'http://portal.mindseyesociety.org'
+	}),
+	( req, res ) => {
+		res.json( req.user );
 	}
+);
 
-	res.render( 'index', {
-		title:  'Membership Information',
-		name:   user.get( 'firstName' ) + ' ' + user.get( 'lastName' ),
-		domain: data
+router.get( '/test', ( req, res, next ) => {
+	req.session.token = Date.now();
+	res.json({
+		id: req.session.id,
+		token: req.session.token
 	});
-};
+});
 
-router.get( '/', ( req, res, next ) => {
-	if ( ! req.user || ! req.user.membershipNumber ) {
-		res.redirect( '/auth' );
-		return;
-	}
+var saveUser = ( req, res ) => {
 
 	// Normalizes user for DB.
 	var user = _.chain( req.user )
@@ -51,34 +46,32 @@ router.get( '/', ( req, res, next ) => {
 
 	models.Users
 
-		// Load the user.
-		.forge({
-			membershipNumber: user.membershipNumber
-		})
-		.fetch({ withRelated: 'orgUnit', require: true })
-		.then( ( model ) => {
-			display( model, res );
-		})
+	// Load the user.
+	.forge({
+		membershipNumber: user.membershipNumber
+	})
+	.fetch({ withRelated: 'orgUnit', require: true })
+	.then( ( model ) => {
+	})
 
-		// Can't find the user, so add it.
-		.catch( models.Users.NotFoundError, ( err ) => {
-			models.Users
-				.forge( user )
-				.save()
-				.then( ( model ) => {
-					display( model, res );
-				})
-				.catch( ( err ) => {
-					console.error( err );
-					res.status( 500 ).send( 'Could not save user.' );
-				});
-		})
+	// Can't find the user, so add it.
+	.catch( models.Users.NotFoundError, ( err ) => {
+		models.Users
+			.forge( user )
+			.save()
+			.then( ( model ) => {
+			})
+			.catch( ( err ) => {
+				console.error( err );
+				res.status( 500 ).send( 'Could not save user.' );
+			});
+	})
 
-		// Throw a generic error.
-		.catch( ( err ) => {
-			console.error( err );
-			res.status( 404 ).send( 'Error retrieving user.' );
-		});
-});
+	// Throw a generic error.
+	.catch( ( err ) => {
+		console.error( err );
+		res.status( 404 ).send( 'Error retrieving user.' );
+	});
+};
 
 module.exports = router;

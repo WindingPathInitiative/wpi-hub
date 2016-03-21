@@ -16,25 +16,22 @@
     "debug": "~2.2.0",
     "es6-promisify": "^3.0.0",
     "express": "~4.13.1",
-    "express-mysql-session": "^0.4.1",
-    "express-session": "^1.11.3",
     "glob": "^6.0.3",
-    "jade": "~1.11.0",
     "knex": "^0.9.0",
     "lodash": "^3.10.1",
     "morgan": "~1.6.1",
-    "mysql": "^2.9.0",
     "nib": "^1.1.0",
-    "serve-favicon": "~2.3.0",
-    "stylus": "0.42.3"
+    "passport": "^0.3.2",
+    "passport-oauth": "^1.0.0",
+    "pg": "^4.5.1",
+    "querystring": "^0.2.0",
+    "request": "^2.69.0"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
-    "grunt-contrib-csslint": "^0.5.0",
     "grunt-contrib-jshint": "^0.11.3",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-jscs": "^2.1.0",
-    "jshint-stylish": "^2.0.1",
     "load-grunt-tasks": "^3.2.0"
   }
 }

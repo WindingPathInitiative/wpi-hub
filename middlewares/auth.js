@@ -31,8 +31,6 @@ module.exports = ( app ) => {
 		);
 	};
 
-	passport.use( 'provider', new OAuth2Strategy( config, callback ) );
-
 	passport.serializeUser( ( user, done ) => {
 		done( null, user );
 	});
@@ -40,4 +38,6 @@ module.exports = ( app ) => {
 	passport.deserializeUser( ( user, done ) => {
 		done( null, user );
 	});
+
+	passport.use( 'provider', new OAuth2Strategy( config, callback ) );
 };

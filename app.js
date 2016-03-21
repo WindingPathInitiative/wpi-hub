@@ -3,32 +3,10 @@
 const express    = require( 'express' );
 const path       = require( 'path' );
 const bodyParser = require( 'body-parser' );
-const stylus     = require( 'stylus' );
 const helpers    = require( './helpers' );
+const passport   = require( 'passport' );
 
 const app        = express();
-
-// View engine setup.
-app.set( 'views', path.join( __dirname, 'views' ) );
-app.set( 'view engine', 'jade' );
-
-// Middleware.
-app.use( require( 'serve-favicon' )(
-	path.join( __dirname, 'public/images', 'favicon.png' ) )
-);
-app.use( require( 'morgan' )( 'dev' ) );
-app.use( bodyParser.json() );
-app.use( bodyParser.urlencoded({ extended: false }) );
-app.use( require( 'cookie-parser' )() );
-app.use( stylus.middleware({
-	src: path.join( __dirname, 'public' ),
-	compile: ( str, path ) => {
-		return stylus( str )
-			.set( 'filename', path )
-			.use( require( 'nib' )() )
-			.import( 'nib' );
-	}
-}) );
 
 // Sets the main configuration options.
 GLOBAL.config = require( './config' );
@@ -36,7 +14,16 @@ GLOBAL.config = require( './config' );
 // Initializes helpers.
 helpers.init( app );
 
-app.use( express.static( path.join( __dirname, 'public' ) ) );
+// Middleware.
+app.use( require( 'morgan' )( 'dev' ) );
+app.use( bodyParser.json() );
+app.use( bodyParser.urlencoded({ extended: false }) );
+app.use( require( 'cookie-parser' )() );
+require( './middlewares/sessions.js' )( app );
+require( './middlewares/auth.js' )( app );
+
+// Load routes.
+app.use( require( './routes' ) );
 
 // Catch 404 and forward to error handler
 app.use( ( req, res, next ) => {
@@ -52,7 +39,7 @@ app.use( ( req, res, next ) => {
 if ( 'development' === app.get( 'env' ) ) {
 	app.use( ( err, req, res, next ) => {
 		res.status( err.status || 500 );
-		res.render( 'error', {
+		res.json({
 			message: err.message,
 			error: err
 		});
@@ -63,9 +50,9 @@ if ( 'development' === app.get( 'env' ) ) {
 // No stacktraces leaked to user
 app.use( ( err, req, res, next ) => {
 	res.status( err.status || 500 );
-	res.render( 'error', {
+	res.json({
 		message: err.message,
-		error: {}
+		error: err
 	});
 });
 

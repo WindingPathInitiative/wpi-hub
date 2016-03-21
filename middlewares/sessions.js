@@ -1,19 +1,21 @@
 'use strict';
 
 const session = require( 'express-session' );
-const _       = require( 'lodash' );
 const config  = GLOBAL.config.get( 'db' );
-
-let SessionStore = require( 'express-mysql-session' );
-let store = new SessionStore( _.merge( config.global, config.sessions ) );
+const pgSess  = require( 'connect-pg-simple' )( session );
 
 module.exports = ( app ) => {
+	let db = config.global;
+
 	app.use(
 		session({
-			key: config.sessions.key,
 			secret: config.sessions.secret,
-			store: store,
-			resave: true,
+			store: new pgSess({
+				conString: db,
+				tableName: 'sessions'
+			}),
+			name: 'mes-session',
+			resave: false,
 			saveUninitialized: true
 		})
 	);

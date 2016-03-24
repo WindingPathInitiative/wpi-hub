@@ -1,2 +1,2 @@
-auth.json
-db.json
+*.json
+!*.default.json

@@ -5,5 +5,6 @@
  */
 module.exports = {
 	Users:    require( './users' ),
-	OrgUnits: require( './org_units' )
+	OrgUnits: require( './org_units' ),
+	Tokens:   require( './tokens' )
 };

@@ -5,7 +5,7 @@
  *
  * Stores information about an org unit.
  */
-var bookshelf = require( '../common/db' ).Bookshelf;
+var bookshelf = require( '../helpers/db' ).Bookshelf;
 
 module.exports = bookshelf.model( 'OrgUnit', {
 	tableName: 'org_units',

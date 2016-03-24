@@ -2,7 +2,6 @@
 
 const passport   = require( 'passport' );
 const router     = require( 'express' ).Router();
-const _          = require( 'lodash' );
 const controller = require( '../controllers/auth' );
 
 router.get( '/:code',

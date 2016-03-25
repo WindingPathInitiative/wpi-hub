@@ -17,8 +17,10 @@ function getExpire() {
 	return new Date( Date.now() + 3600000 );
 }
 
+const tableName = 'tokens';
+
 module.exports = bookshelf.model( 'Token', {
-	tableName: 'tokens',
+	tableName: tableName,
 	idAttribute: 'token',
 
 	initialize: function() {
@@ -47,5 +49,10 @@ module.exports = bookshelf.model( 'Token', {
 	},
 	exists: function( token ) {
 		return this.count({ token: token });
+	},
+	removeExpired: function() {
+		return bookshelf.knex( tableName )
+			.where( 'expires', '<', 'NOW' )
+			.del();
 	}
 });

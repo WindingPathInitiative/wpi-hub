@@ -4,10 +4,11 @@
  * Authentication and login controller.
  */
 
-const config         = GLOBAL.config.get( 'auth' );
-const passport       = require( 'passport' );
-const stringify      = require( 'querystring' ).stringify;
-const router         = require( 'express' ).Router();
+const config     = require( '../config' );
+const authConfig = config.get( 'auth' );
+const passport   = require( 'passport' );
+const stringify  = require( 'querystring' ).stringify;
+const router     = require( 'express' ).Router();
 
 
 /**
@@ -18,10 +19,10 @@ router.get( '/:code',
 	( req, res ) => {
 		let url = setupPassport( req );
 		res.json({
-			url: config.authorizationURL + '?' + stringify({
+			url: authConfig.authorizationURL + '?' + stringify({
 				response_type: 'code',
 				redirect_uri:  url,
-				client_id:     config.clientID
+				client_id:     authConfig.clientID
 			})
 		});
 	}
@@ -50,7 +51,7 @@ router.get( '/verify/:code',
 			return user.makeToken();
 		})
 		.then( token => {
-			let clients = GLOBAL.config.get( 'clients' );
+			let clients = config.get( 'clients' );
 			res.redirect(
 				clients[ req.params.code ] + '?' + stringify({
 					token: token.id
@@ -67,7 +68,7 @@ module.exports = router;
  * Validates whether a param is correctly passed.
  */
 function validateParam( req, res, next ) {
-	let clients = GLOBAL.config.get( 'clients' );
+	let clients = config.get( 'clients' );
 
 	if ( ! req.params.hasOwnProperty( 'code' ) || 'verify' === req.params.code ) {
 		next( new Error( 'No code provided' ) );
@@ -85,7 +86,7 @@ function validateParam( req, res, next ) {
  */
 function setupPassport( req ) {
 	let _    = require( 'lodash' );
-	let conf = _.clone( config );
+	let conf = _.clone( authConfig );
 	conf.callbackURL += req.params.code + '/';
 
 	let OAuth2Strategy = require( 'passport-oauth' ).OAuth2Strategy;
@@ -95,7 +96,7 @@ function setupPassport( req ) {
 		( accessToken, refreshToken, profile, done ) => {
 			let request = require( 'request' );
 			request(
-				config.userURL + '?' + stringify({ 'access_token': accessToken }),
+				conf.userURL + '?' + stringify({ 'access_token': accessToken }),
 				( err, res, body ) => {
 					if ( err ) {
 						done( err );

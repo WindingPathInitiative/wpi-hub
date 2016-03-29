@@ -1,22 +1,17 @@
 'use strict';
 
-let config = {};
-
-const glob = require( 'glob' ).sync;
 const _    = require( 'lodash' );
 
 // Get the files.
-let files = glob( __dirname + '/**/*.json', { ignore: '**/*.default.json' } );
+let files = [ 'auth', 'clients', 'db' ];
 
 // Generate configs.
-let objs = _.object(
-	files.map( ( file ) => {
-		return _.at( file.match( /(\w+)\.json$/i ), 1 );
-	}),
-	files.map( require )
+let config = _.zipObject(
+	files,
+	files.map( file => {
+		return './' + file + '.json';
+	}).map( require )
 );
-
-config = _.merge( config, objs );
 
 module.exports = config;
 

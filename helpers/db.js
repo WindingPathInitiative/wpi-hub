@@ -1,7 +1,7 @@
 'use strict';
 
 const _        = require( 'lodash' );
-const config   = GLOBAL.config.db;
+const config   = require( '../config' ).db;
 const settings = {
 	client:	 'pg',
 	connection: _.defaults( config.global, { charset: 'utf8' }, config.knex )

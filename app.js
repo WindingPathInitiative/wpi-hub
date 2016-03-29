@@ -5,9 +5,6 @@ const bodyParser = require( 'body-parser' );
 
 const app        = express();
 
-// Sets the main configuration options.
-GLOBAL.config = require( './config' );
-
 // Initializes the DB.
 require( './helpers/db' );
 

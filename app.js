@@ -22,7 +22,7 @@ app.use( require( 'cookie-parser' )() );
 app.use( require( 'passport' ).initialize() );
 
 // Load routes.
-app.use( require( './routes' ) );
+app.use( require( './controllers' ) );
 
 // Catch 404 and forward to error handler
 app.use( ( req, res, next ) => {

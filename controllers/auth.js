@@ -6,11 +6,7 @@
 
 const config         = GLOBAL.config.get( 'auth' );
 const passport       = require( 'passport' );
-const OAuth2Strategy = require( 'passport-oauth' ).OAuth2Strategy;
-const request        = require( 'request' );
 const stringify      = require( 'querystring' ).stringify;
-const _              = require( 'lodash' );
-const models         = require( '../models' );
 const router         = require( 'express' ).Router();
 
 
@@ -44,9 +40,11 @@ router.get( '/verify/:code',
 	( req, res ) => {
 		setupPassport( req );
 
-		models.Users.getByPortalId( req.user.remoteId )
+		let Users = require( '../models' ).Users;
+
+		Users.getByPortalId( req.user.remoteId )
 		.then( user => {
-			return user || new models.Users( req.user ).save();
+			return user || new Users( req.user ).save();
 		})
 		.then( user => {
 			return user.makeToken();
@@ -86,12 +84,16 @@ function validateParam( req, res, next ) {
  * @return {string} The callback URL.
  */
 function setupPassport( req ) {
+	let _    = require( 'lodash' );
 	let conf = _.clone( config );
 	conf.callbackURL += req.params.code + '/';
+
+	let OAuth2Strategy = require( 'passport-oauth' ).OAuth2Strategy;
 
 	passport.use( 'provider', new OAuth2Strategy(
 		conf,
 		( accessToken, refreshToken, profile, done ) => {
+			let request = require( 'request' );
 			request(
 				config.userURL + '?' + stringify({ 'access_token': accessToken }),
 				( err, res, body ) => {

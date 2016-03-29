@@ -1,18 +1,15 @@
 'use strict';
 
 const express    = require( 'express' );
-const path       = require( 'path' );
 const bodyParser = require( 'body-parser' );
-const helpers    = require( './helpers' );
-const passport   = require( 'passport' );
 
 const app        = express();
 
 // Sets the main configuration options.
 GLOBAL.config = require( './config' );
 
-// Initializes helpers.
-helpers.init( app );
+// Initializes the DB.
+require( './helpers/db' );
 
 // Middleware.
 app.use( require( 'morgan' )( 'dev' ) );

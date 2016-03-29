@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * User data routes.
+ */
+
 const router = require( 'express' ).Router();
 const token  = require( '../middlewares/token' );
 

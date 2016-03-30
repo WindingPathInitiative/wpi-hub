@@ -3,10 +3,19 @@
  * @author Ephraim Gregor
  */
 
-module.exports = ( grunt ) => {
+module.exports = grunt => {
 	'use strict';
 
-	const APP_JS = [ 'common', 'config', 'models', 'migrations', 'seeds', '.' ].map( i => i + '/*.js' );
+	const appjs = [
+		'config',
+		'controllers',
+		'helpers',
+		'models',
+		'middlewares',
+		'migrations',
+		'seeds',
+		'.'
+	].map( i => i + '/*.js' );
 
 	grunt.initConfig({
 		watch: {
@@ -15,50 +24,19 @@ module.exports = ( grunt ) => {
 				livereload: true
 			},
 			js: {
-				files: APP_JS,
-				tasks: [ 'jshint', 'jscs' ]
-			},
-			css: {
-				files: 'public/stylesheets/*.css',
-				tasks: [ 'csslint' ]
+				files: appjs,
+				tasks: [ 'esline', 'jscs' ]
 			}
 		},
 
-		jshint: {
-			app: {
-				options: {
-					esnext: true,
-					node: true
-				},
-				files: {
-					src: APP_JS
-				}
-			},
-			frontend: {
-				options: {
-					browser: true
-				},
-				files: {
-					src: [ 'public/javascripts/**/*.js' ]
-				}
-			},
+		eslint: {
+			target: appjs,
 			options: {
-				strict: true,
-				reporter: require( 'jshint-stylish' )
+				envs: [ 'node' ]
 			}
 		},
 		jscs: {
-			all: APP_JS
-		},
-
-		csslint: {
-			all: {
-				options: {
-					import: 2,
-					csslintrc: '.csslintrc'
-				},
-				src: [ 'public/stylesheets/*.css' ]
-			}
+			all: appjs
 		}
 	});
 

@@ -13,8 +13,7 @@ router.use( '/user', require( './user.js' ) );
 let token = require( '../middlewares/token' );
 
 router.get( '/test',
-token.optional,
-token.parse,
+token.parse(),
 ( req, res ) => {
 	let html = `<script src="https://code.jquery.com/jquery-2.2.2.min.js"   integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI="   crossorigin="anonymous"></script>
 	<button>Login</button>

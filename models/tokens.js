@@ -44,8 +44,12 @@ module.exports = bookshelf.model( 'Token', {
 }, {
 	refresh: function( token ) {
 		new this({ token: token })
-			.fetch({ require: true })
-			.refresh();
+			.fetch()
+			.then( token => {
+				if ( token ) {
+					token.refresh();
+				}
+			});
 	},
 	exists: function( token ) {
 		return this.count({ token: token });

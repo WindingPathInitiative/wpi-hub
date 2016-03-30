@@ -4,96 +4,94 @@ const Token = require( '../models' ).Tokens;
 
 
 /**
- * Normalizes the request object.
- * @param  {Object} req The request object.
+ * Refreshes a token, if it exists.
  * @return {void}
  */
-function normalize( req ) {
+exports.renew = ( req, res, next ) => {
+
+	// Normalize the query with cookie data.
 	if ( 'token' in req.cookies ) {
 		req.query.token = req.cookies.token;
 	}
-}
 
-
-/**
- * Validates the token exists.
- * @param  {object}   req  The request object.
- * @param  {Function} next Sends route to next middleware.
- * @return {boolean}       Returns true on invalid data.
- */
-function validate( req, next ) {
-
-	// Normalize first.
-	normalize( req );
-
-	// Skip to next middleware if there's no validation.
-	if ( ! ( 'token' in req.query ) ) {
-		if ( req.skipValidation ) {
-			next();
-			return false;
-		} else {
-			next( new Error( 'Token not provided' ) );
-			return false;
-		}
+	if ( 'token' in req.query ) {
+		Token.refresh( req.query.token );
 	}
-	return true;
-}
+	next();
+};
 
 
 /**
  * Checks for an existing token.
- * @return {void}
+ * @param {boolean} True if token is required.
+ * @return {Function}
  */
-exports.validate = ( req, res, next ) => {
-	if ( ! validate( req, next ) ) {
-		return;
-	}
-
-	new Token({ token: req.query.token })
-	.where( 'expires', '>', 'NOW' )
-	.fetch({ require: true })
-	.then( token => {
-		req.token = token;
-		next();
-	})
-	.catch( err => {
-		next( new Error( 'Invalid token' ) );
-	});
+exports.validate = required => {
+	return ( req, res, next ) => {
+		query( req, next, required );
+	};
 };
 
 
 /**
  * Checks for token data, and pulls user if it exists.
- * @return {void}
+ * @param {boolean} True if token is required.
+ * @return {Function}
  */
-exports.parse = ( req, res, next ) => {
-	if ( ! validate( req, next ) ) {
-		return;
-	}
-
-	new Token({ token: req.query.token })
-	.where( 'expires', '>', 'NOW' )
-	.fetch({ withRelated: 'user', require: true })
-	.then( token => {
-		req.token = token;
-		req.user  = token.related( 'user' );
-		next();
-	})
-	.catch( err => {
-		next( new Error( 'Invalid token' ) );
-	});
+exports.parse = required => {
+	return ( req, res, next ) => {
+		query( req, next, required, true );
+	};
 };
 
 
 /**
- * Bypasses next step if token not present.
- * Used for making token optional.
+ * Queries the token table.
+ * @param  {Object}   req      The request object.
+ * @param  {Function} next     Next function call.
+ * @param  {boolean}  required Optional. True if token is required.
+ * @param  {boolean}  fetch    Optional. True if should fetch user data.
  * @return {void}
  */
-exports.optional = ( req, res, next ) => {
-	normalize( req );
-	if ( ! ( 'token' in req.query ) ) {
-		req.skipValidation = true;
+function query( req, next, required, fetch ) {
+
+	// Sets default for requiring token.
+	if ( 'undefined' === required ) {
+		required = true;
 	}
-	next();
-};
+
+	// Sets default for fetching user.
+	if ( 'undefined' === fetch ) {
+		fetch = false;
+	}
+
+	// Throw error if a token is required.
+	if ( required && ! ( 'token' in req.query ) ) {
+		let err = new Error( 'Token not provided' );
+		err.status = 401;
+		next( err );
+		return;
+	}
+
+	let fetchParams = { require: required };
+	if ( fetch ) {
+		fetchParams.withRelated = 'user';
+	}
+
+	new Token({ token: req.query.token })
+	.where( 'expires', '>', 'NOW' )
+	.fetch( fetchParams )
+	.then( token => {
+		req.token = token;
+		if ( fetch && token ) {
+			req.user  = token.related( 'user' );
+		}
+		next();
+	})
+	.catch( () => {
+		let err = new Error( 'Invalid token' );
+		err.status = 401;
+		next( err );
+	});
+
+}

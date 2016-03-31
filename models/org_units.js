@@ -9,10 +9,16 @@ var bookshelf = require( '../helpers/db' ).Bookshelf;
 
 module.exports = bookshelf.model( 'OrgUnit', {
 	tableName: 'org_units',
-	parentID:  () => {
+	parentID: function() {
 		return this.belongsTo( 'OrgUnit', 'parentID' );
 	},
-	users:     () => {
+	users: function() {
 		return this.hasMany( 'User', 'orgUnit' );
+	}
+}, {
+	getParents: function( parents ) {
+		return new this()
+		.query( 'whereIn', 'id', parents )
+		.fetchAll();
 	}
 });

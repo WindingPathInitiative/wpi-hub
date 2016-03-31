@@ -5,11 +5,11 @@ exports.up = ( knex, Promise ) => {
 		var officeTypes = [ 'Primary', 'Assistant', 'Other' ];
 
 		table.increments().primary();
-		table.string( 'name' ).notNull();
-		table.string( 'email' ).nullable();
-		table.enum( 'type', officeTypes ).notNull();
+		table.string( 'name' ).notNullable();
+		table.string( 'email' );
+		table.enum( 'type', officeTypes ).notNullable();
 		table.integer( 'parentOfficeID' ).index();
-		table.integer( 'parentOrgID' ).index();
+		table.integer( 'parentOrgID' ).notNullable().index();
 		table.integer( 'userID' ).index();
 	});
 };

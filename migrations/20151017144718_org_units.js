@@ -5,13 +5,14 @@ exports.up = ( knex, Promise ) => {
 		var unitTypes = [ 'Venue', 'Domain', 'Region', 'Nation' ];
 
 		table.increments().primary();
-		table.string( 'name' ).notNull();
-		table.string( 'code' ).nullable().index();
-		table.string( 'location' ).nullable();
+		table.string( 'name' ).notNullable();
+		table.string( 'code' ).index();
+		table.string( 'location' );
 		table.integer( 'parentID' ).index();
-		table.string( 'website' ).nullable();
-		table.enum( 'type', unitTypes ).notNull().index();
-		table.text( 'defDoc' ).nullable();
+		table.string( 'website' );
+		table.enum( 'type', unitTypes ).notNullable().index();
+		table.text( 'defDoc' );
+		table.json( 'parents' );
 	});
 };
 

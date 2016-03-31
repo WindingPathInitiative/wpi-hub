@@ -19,7 +19,8 @@ exports.seed = ( knex, Promise ) => {
 			name: 'North East Region',
 			code: 'NE',
 			parentID: 1,
-			type: 'Region'
+			type: 'Region',
+			parents: JSON.stringify([ 1 ])
 		}),
 		knex( 'org_units' ).insert({
 			id: 3,
@@ -29,14 +30,16 @@ exports.seed = ( knex, Promise ) => {
 			type: 'Domain',
 			website: 'http://www.mesnyc.org',
 			location: 'New York, NY',
-			defDoc: 'City of New York, NY, Nassau and Suffolk County, Long Island, NY'
+			defDoc: 'City of New York, NY, Nassau and Suffolk County, Long Island, NY',
+			parents: JSON.stringify([ 2, 1 ])
 		}),
 		knex( 'org_units' ).insert({
 			id: 4,
 			name: 'The Bitten Apple',
 			parentID: 3,
 			code: 'CL',
-			type: 'Venue'
+			type: 'Venue',
+			parents: JSON.stringify([ 3, 2, 1 ])
 		})
 	);
 };

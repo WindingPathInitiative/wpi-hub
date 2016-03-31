@@ -4,10 +4,13 @@ const router   = require( 'express' ).Router();
 const _        = require( 'lodash' );
 
 // Authentication.
-router.use( '/auth', require( './auth.js' ) );
+router.use( '/auth', require( './auth' ) );
 
 // Users.
-router.use( '/user', require( './user.js' ) );
+router.use( '/user', require( './user' ) );
+
+// Org Units.
+router.use( '/orgunit', require( './org-units' ) );
 
 // Test code!
 let token = require( '../middlewares/token' );

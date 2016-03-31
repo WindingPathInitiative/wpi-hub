@@ -3,9 +3,9 @@
 
 exports.up = ( knex, Promise ) => {
 	return knex.schema.createTable( 'tokens', ( table ) => {
-		table.uuid( 'token' ).notNull().primary();
-		table.integer( 'user' ).notNull().index();
-		table.timestamp( 'expires' ).notNull().index();
+		table.uuid( 'token' ).notNullable().primary();
+		table.integer( 'user' ).notNullable().index();
+		table.timestamp( 'expires' ).notNullable().index();
 	});
 };
 

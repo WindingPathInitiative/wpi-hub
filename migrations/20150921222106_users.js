@@ -5,18 +5,19 @@ exports.up = ( knex, Promise ) => {
 		var membershipTypes = [ 'None', 'Trial', 'Full', 'Expelled' ];
 
 		table.increments().primary();
-		table.integer( 'portalID' ).nullable().index();
-		table.string( 'firstName' ).notNull();
-		table.string( 'lastName' ).notNull();
-		table.string( 'nickname' ).nullable();
-		table.string( 'email' ).notNull().index();
+		table.integer( 'portalID' ).index().unique();
+		table.string( 'firstName' ).notNullable();
+		table.string( 'lastName' ).notNullable();
+		table.string( 'nickname' );
+		table.text( 'address' );
+		table.string( 'email' ).notNullable().index();
 		table
 			.enum( 'membershipType', membershipTypes )
-			.notNull()
+			.notNullable()
 			.defaultTo( 'Full' );
-		table.string( 'membershipNumber', 12 ).notNull().index().unique();
-		table.date( 'membershipExpiration' ).notNull().index();
-		table.integer( 'orgUnit' ).nullable().index();
+		table.string( 'membershipNumber', 12 ).notNullable().index();
+		table.date( 'membershipExpiration' ).notNullable().index();
+		table.integer( 'orgUnit' ).index();
 	});
 };
 

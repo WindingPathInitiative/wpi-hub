@@ -6,12 +6,15 @@
 
 const router  = require( 'express' ).Router();
 const OrgUnit = require( '../models/org_units' );
+const Promise = require( 'bluebird' );
+
+const omitFields = [ 'lft', 'rgt', 'depth' ];
 
 /**
  * Gets node information and parents.
  */
 router.get( '/:code',
-	( req, res ) => {
+	( req, res, next ) => {
 
 		let code  = req.params.code;
 		let query = {};
@@ -22,44 +25,28 @@ router.get( '/:code',
 		}
 
 		new OrgUnit( query )
-		.fetch()
+		.fetch({ require: true })
 		.then( unit => {
-			OrgUnit.getParents( unit.get( 'parents' ) ).then( parents => {
+			Promise.join( unit.getParents(), unit.getChildren() )
+			.then( results => {
 
-				let resp = { unit: unit.toJSON() };
+				let resp = {
+					unit: unit.omit( omitFields ),
+					children: [],
+					parents: []
+				};
 
-				if ( parents ) {
-					resp.parents = parents.toArray();
+				if ( results[0] ) {
+					resp.parents = results[0].invoke( 'omit', omitFields );
+				}
+				if ( results[1] ) {
+					resp.children = results[1].invoke( 'omit', omitFields );
 				}
 				res.json( resp );
 			});
-		});
-	}
-);
-
-
-router.get( '/children/:code',
-	( req, res ) => {
-		let code  = req.params.code;
-		let query = {};
-		if ( isNaN( code ) ) {
-			query.code = code.toUpperCase();
-		} else {
-			query.id = code;
-		}
-
-		new OrgUnit( query )
-		.fetch()
-		.then( unit => {
-			OrgUnit.getParents( unit.get( 'parents' ) ).then( parents => {
-
-				let resp = { unit: unit.toJSON() };
-
-				if ( parents ) {
-					resp.parents = parents.toArray();
-				}
-				res.json( resp );
-			});
+		})
+		.catch( () => {
+			next( new Error( 'Org unit not found.' ) );
 		});
 	}
 );

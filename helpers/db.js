@@ -3,7 +3,7 @@
 const _        = require( 'lodash' );
 const config   = require( '../config' ).db;
 const settings = {
-	client:	 'pg',
+	client:	 'mysql',
 	connection: _.defaults( config.global, { charset: 'utf8' }, config.knex )
 };
 

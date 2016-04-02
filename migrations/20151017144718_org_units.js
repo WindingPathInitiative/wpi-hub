@@ -6,13 +6,14 @@ exports.up = ( knex, Promise ) => {
 
 		table.increments().primary();
 		table.string( 'name' ).notNullable();
-		table.string( 'code' ).index();
+		table.string( 'code' ).notNullable().index();
 		table.string( 'location' );
-		table.integer( 'parentID' ).index();
 		table.string( 'website' );
 		table.enum( 'type', unitTypes ).notNullable().index();
 		table.text( 'defDoc' );
-		table.json( 'parents' );
+		table.integer( 'lft' ).unsigned().unique().notNullable().index();
+		table.integer( 'rgt' ).unsigned().unique().notNullable().index();
+		table.integer( 'depth' ).unsigned().notNullable().index();
 	});
 };
 

@@ -63,6 +63,43 @@ const OrgUnit = bookshelf.model( 'OrgUnit', {
 		return query;
 	},
 
+	/**
+	 * Checks if current unit is child of provided one.
+	 * @param  {mixed} node Either an ID or an OrgUnit object.
+	 * @return {Promise}
+	 */
+	isChild: function( node ) {
+		if ( ! Number.isInteger( node ) ) {
+			node = node.id;
+		}
+
+		return this.getParents()
+		.then( coll => {
+			if ( ! coll ) {
+				return false;
+			}
+			return !! coll.filter({ id: node }).length;
+		});
+	},
+
+	/**
+	 * Checks if provided unit is below current one.
+	 * @param  {mixed} node Either an ID or an OrgUnit object.
+	 * @return {Promise}
+	 */
+	hasChild: function( node ) {
+		if ( ! Number.isInteger( node ) ) {
+			node = node.id;
+		}
+
+		return this.getChildren()
+		.then( coll => {
+			if ( ! coll ) {
+				return false;
+			}
+			return !! coll.filter({ id: node }).length;
+		});
+	},
 
 	/**
 	 * Adds WHERE statement for parents.

@@ -8,7 +8,7 @@ const router  = require( 'express' ).Router();
 const OrgUnit = require( '../models/org_units' );
 const _       = require( 'lodash' );
 
-const omitFields = [ 'lft', 'rgt', 'depth' ];
+const omitFields = [ 'lft', 'rgt' ];
 
 /**
  * Gets node information and parents.

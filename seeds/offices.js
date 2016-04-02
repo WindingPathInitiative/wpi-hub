@@ -35,6 +35,13 @@ exports.seed = ( knex, Promise ) => {
 			parentOfficeID: 3,
 			parentOrgID: 3,
 			userID: null
+		}),
+		knex( 'offices' ).insert({
+			name: 'DC',
+			type: 'Primary',
+			parentOrgID: 3,
+			userID: 8,
+			roles: JSON.stringify([ 'Change User Domain', 'Hire Assistants' ])
 		})
 	);
 };

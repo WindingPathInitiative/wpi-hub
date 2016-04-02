@@ -5,7 +5,7 @@ exports.up = ( knex, Promise ) => {
 	return knex.schema.createTable( 'tokens', ( table ) => {
 		table.uuid( 'token' ).notNullable().primary();
 		table.integer( 'user' ).notNullable().index();
-		table.timestamp( 'expires' ).notNullable().index();
+		table.datetime( 'expires' ).notNullable().index();
 	});
 };
 

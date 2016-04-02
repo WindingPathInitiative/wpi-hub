@@ -34,6 +34,10 @@ module.exports = bookshelf.model( 'User', {
 		return this.belongsTo( 'OrgUnit', 'orgUnit' );
 	},
 
+	offices: function() {
+		return this.hasMany( 'Office', 'userID' );
+	},
+
 	makeToken: function() {
 		let Token = bookshelf.model( 'Token' );
 		return new Token({ user: this.id }).save();

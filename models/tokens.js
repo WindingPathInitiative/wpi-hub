@@ -40,6 +40,14 @@ module.exports = bookshelf.model( 'Token', {
 
 	refresh: function() {
 		return this.save({ expires: getExpire() }, { patch: true });
+	},
+
+	notExpired: function() {
+		return this.query( 'whereRaw', '`expires` > CURRENT_TIMESTAMP' );
+	},
+
+	expired: function() {
+		return this.query( 'whereRaw', '`expires` < CURRENT_TIMESTAMP' );
 	}
 }, {
 	refresh: function( token ) {
@@ -56,7 +64,7 @@ module.exports = bookshelf.model( 'Token', {
 	},
 	removeExpired: function() {
 		return bookshelf.knex( tableName )
-			.where( 'expires', '<', 'NOW' )
+			.whereRaw( '`expires` < CURRENT_TIMESTAMP' )
 			.del();
 	}
 });

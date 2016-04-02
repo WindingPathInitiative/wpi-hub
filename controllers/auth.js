@@ -9,12 +9,13 @@ const authConfig = config.get( 'auth' );
 const passport   = require( 'passport' );
 const stringify  = require( 'querystring' ).stringify;
 const router     = require( 'express' ).Router();
+const token      = require( '../middlewares/token' );
 
 
 /**
  * Gets initial redirect URL for app.
  */
-router.get( '/:code',
+router.get( '/signin/:code',
 	validateParam,
 	( req, res ) => {
 		let url = setupPassport( req );
@@ -52,11 +53,25 @@ router.get( '/verify/:code',
 		})
 		.then( token => {
 			let clients = config.get( 'clients' );
-			res.redirect(
-				clients[ req.params.code ] + '?' + stringify({
-					token: token.id
-				})
-			);
+			let url     = require( 'url' );
+			let urlObj  = url.parse( clients[ req.params.code ], true );
+
+			res.cookie( 'token', token.id, { domain: urlObj.hostname } );
+			urlObj.query.token = token.id;
+			urlObj.search = null;
+			res.redirect( url.format( urlObj ) );
+		});
+	}
+);
+
+router.get( '/signout',
+	token.validate(),
+	( req, res ) => {
+		req.token.destroy()
+		.then( model => {
+			console.log( model );
+			res.clearCookie( 'token' );
+			res.json({ success: 1 });
 		});
 	}
 );

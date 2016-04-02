@@ -69,6 +69,15 @@ exports.seed = ( knex, Promise ) => {
 			membershipType: 'Trial',
 			membershipNumber: 'US2016010007',
 			membershipExpiration: '2020-01-01'
+		}),
+		knex( 'users' ).insert({
+			id: 8,
+			portalID: 375,
+			firstName: 'Ephraim',
+			lastName: 'Gregor',
+			email: 'ephraimgregor@gmail.com',
+			membershipNumber: 'US2012030038',
+			membershipExpiration: '2015-09-05'
 		})
 	);
 };

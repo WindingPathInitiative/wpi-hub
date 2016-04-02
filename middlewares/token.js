@@ -56,12 +56,12 @@ exports.parse = required => {
 function query( req, next, required, fetch ) {
 
 	// Sets default for requiring token.
-	if ( 'undefined' === required ) {
+	if ( undefined === required ) {
 		required = true;
 	}
 
 	// Sets default for fetching user.
-	if ( 'undefined' === fetch ) {
+	if ( undefined === fetch ) {
 		fetch = false;
 	}
 
@@ -79,12 +79,12 @@ function query( req, next, required, fetch ) {
 	}
 
 	new Token({ token: req.query.token })
-	.where( 'expires', '>', 'NOW' )
+	.notExpired()
 	.fetch( fetchParams )
 	.then( token => {
 		req.token = token;
 		if ( fetch && token ) {
-			req.user  = token.related( 'user' );
+			req.user = token.related( 'user' );
 		}
 		next();
 	})

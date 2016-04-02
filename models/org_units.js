@@ -6,6 +6,11 @@
  * Stores information about an org unit.
  */
 const bookshelf = require( '../helpers/db' ).Bookshelf;
+const types     = [ 'Nation', 'Region', 'Domain', 'Venue' ];
+
+function getDepth( node ) {
+	return types.indexOf( node.get( 'type' ) );
+}
 
 const OrgUnit = bookshelf.model( 'OrgUnit', {
 	tableName: 'org_units',
@@ -19,11 +24,11 @@ const OrgUnit = bookshelf.model( 'OrgUnit', {
 	 * @return {Promise}
 	 */
 	getParents: function( shallow ) {
-		let query = new OrgUnit()
-		.query( 'whereRaw', '? BETWEEN `lft` AND `rgt`', [ this.get( 'lft' ) - 1 ] );
+		let query = new OrgUnit().whereParents( this );
+		let depth = getDepth( this );
 
-		if ( shallow && 0 !== this.get( 'depth' ) ) {
-			query.where( 'depth', '=', this.get( 'depth' ) - 1 );
+		if ( shallow && 0 !== depth ) {
+			query.where( 'type', '=', types[ depth - 1 ] );
 		}
 
 		return query.fetchAll();
@@ -35,14 +40,48 @@ const OrgUnit = bookshelf.model( 'OrgUnit', {
 	 * @return {Promise}
 	 */
 	getChildren: function( shallow ) {
-		let query = new OrgUnit()
-		.query( 'whereBetween', 'lft', [ this.get( 'lft' ) + 1, this.get( 'rgt' ) - 1 ] );
+		let query = new OrgUnit().whereChildren( this );
 
 		if ( shallow ) {
-			query.where( 'depth', '=', this.get( 'depth' ) + 1 );
+			query.where( 'type', '=', types[ getDepth( this ) + 1 ] );
 		}
 
 		return query.fetchAll();
+	},
+
+	/**
+	 * Gets the entire org chain of a unit, highest to lowest.
+	 * @return {Promise}
+	 */
+	getChain: function() {
+		let query = new OrgUnit()
+		.whereParents( this )
+		.query( 'orWhereBetween', 'lft', [ this.get( 'lft' ) + 1, this.get( 'rgt' ) - 1 ] )
+		.query( 'orderBy', 'lft', 'asc' )
+		.fetchAll();
+
+		return query;
+	},
+
+
+	/**
+	 * Adds WHERE statement for parents.
+	 * @param {OrgUnit} node
+	 * @return {Promise}
+	 */
+	whereParents: function( node ) {
+		return this
+		.query( 'whereRaw', '? BETWEEN `lft` AND `rgt`', [ node.get( 'lft' ) - 1 ] )
+		.query( 'whereRaw', '? BETWEEN `lft` AND `rgt`', [ node.get( 'rgt' ) + 1 ] );
+	},
+
+	/**
+	 * Adds WHERE statement for children.
+	 * @param {OrgUnit} node
+	 * @return {Promise}
+	 */
+	whereChildren: function( node ) {
+		return this.query( 'whereBetween', 'lft', [ node.get( 'lft' ) + 1, node.get( 'rgt' ) - 1 ] );
 	}
 }, {
 	/**
@@ -52,7 +91,7 @@ const OrgUnit = bookshelf.model( 'OrgUnit', {
 	 */
 	getNewBounds: function( parent ) {
 		return new OrgUnit()
-		.query( 'whereBetween', 'lft', [ parent.get( 'lft' ) + 1, parent.get( 'rgt' ) - 1 ] )
+		.whereChildren( parent )
 		.query( 'orderBy', 'rgt', 'desc' )
 		.fetch()
 		.then( unit => {
@@ -62,8 +101,7 @@ const OrgUnit = bookshelf.model( 'OrgUnit', {
 			unit = unit.toJSON();
 			return {
 				lft: unit.rgt + 1,
-				rgt: unit.rgt + 1 + ( unit.rgt - unit.lft ),
-				depth: unit.depth
+				rgt: unit.rgt + 1 + ( unit.rgt - unit.lft )
 			};
 		});
 	}

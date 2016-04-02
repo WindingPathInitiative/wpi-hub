@@ -6,7 +6,7 @@
 
 const router  = require( 'express' ).Router();
 const OrgUnit = require( '../models/org_units' );
-const Promise = require( 'bluebird' );
+const _       = require( 'lodash' );
 
 const omitFields = [ 'lft', 'rgt', 'depth' ];
 
@@ -27,7 +27,7 @@ router.get( '/:code',
 		new OrgUnit( query )
 		.fetch({ require: true })
 		.then( unit => {
-			Promise.join( unit.getParents(), unit.getChildren() )
+			unit.getChain()
 			.then( results => {
 
 				let resp = {
@@ -36,11 +36,14 @@ router.get( '/:code',
 					parents: []
 				};
 
-				if ( results[0] ) {
-					resp.parents = results[0].invoke( 'omit', omitFields );
-				}
-				if ( results[1] ) {
-					resp.children = results[1].invoke( 'omit', omitFields );
+				if ( results ) {
+					let left  = unit.get( 'lft' );
+					let split = _.partition( results.toJSON(), r => r.lft < left );
+					if ( 2 === split.length ) {
+						let map = m => _.omit( m, omitFields );
+						resp.parents = _.map( split[0], map );
+						resp.children = _.map( split[1], map );
+					}
 				}
 				res.json( resp );
 			});

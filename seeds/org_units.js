@@ -13,18 +13,16 @@ exports.seed = ( knex, Promise ) => {
 			code: 'US',
 			website: 'http://mindseyesociety.org',
 			type: 'Nation',
-			lft: 1,
-			rgt: 1000000000,
-			depth: 0
+			lft: 0,
+			rgt: 1000000000
 		}),
 		knex( 'org_units' ).insert({
 			id: 2,
 			name: 'North East',
 			code: 'NE',
 			type: 'Region',
-			lft: 2,
-			rgt: 10000000,
-			depth: 1
+			lft: 1,
+			rgt: 10000000
 		}),
 		knex( 'org_units' ).insert({
 			id: 3,
@@ -34,18 +32,16 @@ exports.seed = ( knex, Promise ) => {
 			website: 'http://www.mesnyc.org',
 			location: 'New York, NY',
 			defDoc: 'City of New York, NY, Nassau and Suffolk County, Long Island, NY',
-			lft: 3,
-			rgt: 100,
-			depth: 2
+			lft: 2,
+			rgt: 100
 		}),
 		knex( 'org_units' ).insert({
 			id: 4,
 			name: 'The Bitten Apple',
-			code: 'CL',
+			venueType: 'CL',
 			type: 'Venue',
-			lft: 4,
-			rgt: 5,
-			depth: 3
+			lft: 3,
+			rgt: 4
 		}),
 		knex( 'org_units' ).insert({
 			id: 5,
@@ -53,8 +49,7 @@ exports.seed = ( knex, Promise ) => {
 			code: 'NC',
 			type: 'Region',
 			lft: 10000001,
-			rgt: 20000000,
-			depth: 1
+			rgt: 20000000
 		}),
 		knex( 'org_units' ).insert({
 			id: 6,
@@ -62,8 +57,7 @@ exports.seed = ( knex, Promise ) => {
 			code: 'ND-001',
 			type: 'Domain',
 			lft: 10000002,
-			rgt: 10000100,
-			depth: 2
+			rgt: 10000100
 		}),
 		knex( 'org_units' ).insert({
 			id: 7,
@@ -71,8 +65,7 @@ exports.seed = ( knex, Promise ) => {
 			code: 'ME-008',
 			type: 'Domain',
 			lft: 101,
-			rgt: 200,
-			depth: 2
+			rgt: 200
 		})
 	);
 };

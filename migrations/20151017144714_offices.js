@@ -11,6 +11,7 @@ exports.up = ( knex, Promise ) => {
 		table.integer( 'parentOfficeID' ).index();
 		table.integer( 'parentOrgID' ).notNullable().index();
 		table.integer( 'userID' ).index();
+		table.json( 'roles' );
 	});
 };
 

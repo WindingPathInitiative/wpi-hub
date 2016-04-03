@@ -6,18 +6,19 @@
 
 const router = require( 'express' ).Router();
 const token  = require( '../middlewares/token' );
-const Users  = require( '../models/users' );
 const Office = require( '../models/offices' );
 
 /**
  * Gets the current user permissions.
  */
 router.get( '/',
-	token.parse(),
+	token.validate(),
 	( req, res, next ) => {
-		req.user.load([ 'offices' ])
-		.then( user => {
-			res.json( user.toJSON() );
+		new Office()
+		.where( 'userID', '=', req.token.get( 'user' ) )
+		.fetchAll()
+		.then( offices => {
+			res.json( offices.toJSON() );
 		});
 	}
 );

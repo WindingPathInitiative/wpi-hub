@@ -14,6 +14,14 @@ function getDepth( node ) {
 
 const OrgUnit = bookshelf.model( 'OrgUnit', {
 	tableName: 'org_units',
+
+	serialize: function( options ) {
+		let attrs = bookshelf.Model.prototype.serialize.apply( this, arguments );
+		delete attrs.lft;
+		delete attrs.rgt;
+		return attrs;
+	},
+
 	users: function() {
 		return this.hasMany( 'User', 'orgUnit' );
 	},
@@ -135,10 +143,9 @@ const OrgUnit = bookshelf.model( 'OrgUnit', {
 			if ( ! unit ) {
 				return {};
 			}
-			unit = unit.toJSON();
 			return {
-				lft: unit.rgt + 1,
-				rgt: unit.rgt + 1 + ( unit.rgt - unit.lft )
+				lft: unit.get( 'rgt' ) + 1,
+				rgt: unit.get( 'rgt' ) + 1 + ( unit.get( 'rgt' ) - unit.get( 'lft' ) )
 			};
 		});
 	}

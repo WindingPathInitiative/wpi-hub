@@ -14,7 +14,8 @@ exports.seed = ( knex, Promise ) => {
 			email: 'admin@test.com',
 			membershipType: 'Full',
 			membershipNumber: 'US2016010001',
-			membershipExpiration: '2020-01-01'
+			membershipExpiration: '2020-01-01',
+			orgUnit: 7
 		}),
 		knex( 'users' ).insert({
 			id: 2,
@@ -23,7 +24,8 @@ exports.seed = ( knex, Promise ) => {
 			email: 'nc@test.com',
 			membershipType: 'Full',
 			membershipNumber: 'US2016010002',
-			membershipExpiration: '2020-01-01'
+			membershipExpiration: '2020-01-01',
+			orgUnit: 7
 		}),
 		knex( 'users' ).insert({
 			id: 3,
@@ -32,7 +34,8 @@ exports.seed = ( knex, Promise ) => {
 			email: 'rc@test.com',
 			membershipType: 'Full',
 			membershipNumber: 'US2016010003',
-			membershipExpiration: '2020-01-01'
+			membershipExpiration: '2020-01-01',
+			orgUnit: 3
 		}),
 		knex( 'users' ).insert({
 			id: 4,
@@ -41,7 +44,8 @@ exports.seed = ( knex, Promise ) => {
 			email: 'dst@test.com',
 			membershipType: 'Full',
 			membershipNumber: 'US2016010004',
-			membershipExpiration: '2020-01-01'
+			membershipExpiration: '2020-01-01',
+			orgUnit: 3
 		}),
 		knex( 'users' ).insert({
 			id: 5,
@@ -50,7 +54,8 @@ exports.seed = ( knex, Promise ) => {
 			email: 'test@test.com',
 			membershipType: 'Full',
 			membershipNumber: 'US2016010005',
-			membershipExpiration: '2020-01-01'
+			membershipExpiration: '2020-01-01',
+			orgUnit: 3
 		}),
 		knex( 'users' ).insert({
 			id: 6,
@@ -59,7 +64,8 @@ exports.seed = ( knex, Promise ) => {
 			email: 'expired@test.com',
 			membershipType: 'Full',
 			membershipNumber: 'US2016010006',
-			membershipExpiration: '2000-01-01'
+			membershipExpiration: '2000-01-01',
+			orgUnit: 3
 		}),
 		knex( 'users' ).insert({
 			id: 7,
@@ -68,7 +74,8 @@ exports.seed = ( knex, Promise ) => {
 			email: 'trial@test.com',
 			membershipType: 'Trial',
 			membershipNumber: 'US2016010007',
-			membershipExpiration: '2020-01-01'
+			membershipExpiration: '2020-01-01',
+			orgUnit: 3
 		}),
 		knex( 'users' ).insert({
 			id: 8,
@@ -77,7 +84,8 @@ exports.seed = ( knex, Promise ) => {
 			lastName: 'Gregor',
 			email: 'ephraimgregor@gmail.com',
 			membershipNumber: 'US2012030038',
-			membershipExpiration: '2015-09-05'
+			membershipExpiration: '2015-09-05',
+			orgUnit: 3
 		})
 	);
 };

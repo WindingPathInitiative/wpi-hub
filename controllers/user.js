@@ -7,6 +7,7 @@
 const router = require( 'express' ).Router();
 const token  = require( '../middlewares/token' );
 const Users  = require( '../models/users' );
+const _      = require( 'lodash' );
 
 /**
  * Gets the current user.
@@ -23,30 +24,28 @@ router.get( '/me',
  * Gets user data. Provides additional data if correct token is provided.
  */
 router.get( '/:id([a-zA-Z]{2}\\d{10})',
-	token.parse( false ),
+	token.validate(),
 	( req, res, next ) => {
 		let mes = req.params.id.toUpperCase();
-		let attrs = [
-			'membershipNumber',
-			'firstName',
-			'lastName',
-			'nickname',
-			'membershipType',
-			'membershipExpiration',
-			'orgUnit'
-		];
 		new Users({ membershipNumber: mes })
-		.fetch({ require: true })
-		.then( user => {
-
-			// Filter out private data if this is an open endpoint.
-			if ( ! req.user || req.user.id !== user.id ) {
-				user = user.pick( attrs );
-			}
-
-			res.json( user );
+		.fetch({
+			require: true,
+			columns: [
+				'membershipNumber',
+				'firstName',
+				'lastName',
+				'nickname',
+				'membershipType',
+				'membershipExpiration',
+				'orgUnit'
+			],
+			withRelated: 'orgUnit'
 		})
-		.catch( () => {
+		.then( user => {
+			res.json( user.toJSON() );
+		})
+		.catch( ( err ) => {
+			console.log( err );
 			next( new Error( 'User not found' ) );
 		});
 	}

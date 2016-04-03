@@ -7,10 +7,10 @@ const _        = require( 'lodash' );
 router.use( '/auth', require( './auth' ) );
 
 // Users.
-router.use( '/user', require( './user' ) );
+router.use( '/users', require( './user' ) );
 
 // Org Units.
-router.use( '/orgunit', require( './org-units' ) );
+router.use( '/orgunits', require( './org-units' ) );
 
 // Permissions.
 router.use( '/permissions', require( './permissions' ) );

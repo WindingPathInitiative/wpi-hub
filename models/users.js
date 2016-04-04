@@ -32,7 +32,8 @@ module.exports = bookshelf.model( 'User', {
 			.unset( 'emailAddress' )
 			.unset( 'remoteId' )
 			.unset( 'affiliateId' )
-			.unset( 'affiliateName' );
+			.unset( 'affiliateName' )
+			.unset( 'fullName' );
 	},
 
 	orgUnit: function() {

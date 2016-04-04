@@ -16,6 +16,11 @@ module.exports = bookshelf.model( 'User', {
 		this.on( 'saving', this.saving );
 	},
 
+	parse: function( attrs ) {
+		attrs.fullName = attrs.firstName + ' ' + attrs.lastName;
+		return attrs;
+	},
+
 	saving: function( model, attrs, options ) {
 		if ( ! model.has( 'email' ) ) {
 			model.set( 'email', model.get( 'emailAddress' ) );

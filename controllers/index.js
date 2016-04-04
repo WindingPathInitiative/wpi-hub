@@ -35,17 +35,42 @@ router.get( '/',
 
 		if ( req.user ) {
 			html += `
-			<h1>${ req.user.get( 'firstName' ) }!</h1>
+			<h1>${ req.user.get( 'fullName' ) }!</h1>
 			<h2>${ req.user.get( 'membershipNumber' ) }</h2>
 			<ul>
 				<li><a href="/permissions">Permissions</a></li>
 				<li><a href="/users/me">My profile</a></li>
+				<li><a href="/switch">Switch user</a></li>
 				<li><a href="/auth/signout">Log out</a></li>
 			</ul>
 			`;
 		}
 
 		res.send( html );
+	}
+);
+
+router.get( '/switch', ( req, res ) => {
+	let Users = require( '../models' ).Users;
+	Users.fetchAll()
+	.then( users => {
+		let html = '<h1>Switch to user:</h1><ul>';
+		_.each( users.toJSON(), user => {
+			html += `<li><a href="/switch/${ user.id }">${ user.fullName }</a></li>`;
+		});
+		html += '</ul>';
+		res.send( html );
+	});
+});
+
+router.get( '/switch/:id',
+	token.validate(),
+	( req, res ) => {
+		req.token
+		.save( 'user', req.params.id, { patch: true } )
+		.then( () => {
+			res.redirect( '/' );
+		});
 	}
 );
 

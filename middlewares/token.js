@@ -7,17 +7,15 @@ const Token = require( '../models' ).Tokens;
  * Refreshes a token, if it exists.
  * @return {void}
  */
-exports.renew = ( req, res, next ) => {
+exports.normalize = ( req, res, next ) => {
 
 	// Normalize the query with cookie data.
 	if ( 'token' in req.cookies ) {
 		req.query.token = req.cookies.token;
 	}
-
-	if ( 'token' in req.query ) {
-		Token.refresh( req.query.token );
-	}
 	next();
+
+	Token.removeExpired().return();
 };
 
 
@@ -87,6 +85,8 @@ function query( req, next, required, fetch ) {
 			req.user = token.related( 'user' );
 		}
 		next();
+
+		token.refresh();
 	})
 	.catch( () => {
 		let err = new Error( 'Invalid token' );

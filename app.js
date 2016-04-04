@@ -14,7 +14,9 @@ app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded({ extended: false }) );
 app.use( require( 'cookie-parser' )() );
 app.use( require( 'passport' ).initialize() );
-app.use( require( './middlewares/token' ).renew );
+
+// Runs token maintenance.
+app.use( require( './middlewares/token' ).normalize );
 
 // Load routes.
 app.use( require( './controllers' ) );

@@ -76,12 +76,9 @@ router.get( '/switch/:id',
 
 router.get( '/tokens', ( req, res ) => {
 	let Tokens = require( '../models' ).Tokens;
-	Tokens.removeExpired()
-	.then( result => {
-		Tokens.fetchAll()
-		.then( tokens => {
-			res.json( tokens.toJSON() );
-		});
+	Tokens.fetchAll()
+	.then( tokens => {
+		res.json( tokens.toJSON() );
 	});
 });
 

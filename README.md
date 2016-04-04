@@ -8,9 +8,12 @@ Still under active development!
 Current roadmap:
 - [x] Tokenize identity so that we can authenticate and identify the
 authenticated user
-- [ ] Fetch User Data endpoint without permissions for Open data only
-- [ ] Fetch Org Unit Data endpoint
+- [x] Fetch User Data endpoint without permissions for Open data only
+- [x] Fetch Org Unit Data endpoint
 - [ ] Fetch Office Data endpoint
-- [ ] Fetch Org Tree internal endpoint
-- [ ] Fetch Permissions internal endpoint
-- [ ] Expand Fetch User Data endpoint to include Private data where appropriate
+- [x] Fetch Org Tree internal endpoint
+- [x] Fetch Permissions internal endpoint
+- [x] Expand Fetch User Data endpoint to include private data where appropriate
+- [ ] Update User endpoint
+- [ ] Assign User endpoint
+- [ ] Update Org Unit data

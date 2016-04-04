@@ -75,7 +75,8 @@ router.get( '/private/:id([a-zA-Z]{2}\\d{10})',
 			}
 		}).then( user => {
 			res.json( user.toJSON() );
-		}).catch( () => {
+		}).catch( e => {
+			console.log( e );
 			let err = new Error( 'Authentication failed' );
 			err.status = 401;
 			next( err );

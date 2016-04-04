@@ -15,13 +15,16 @@ const _      = require( 'lodash' );
 router.get( '/me',
 	token.parse(),
 	( req, res ) => {
-		res.json( req.user.toJSON() );
+		req.user.load( 'orgUnit' )
+		.then( user => {
+			res.json( user.toJSON() );
+		});
 	}
 );
 
 
 /**
- * Gets user data. Provides additional data if correct token is provided.
+ * Gets open user data.
  */
 router.get( '/:id([a-zA-Z]{2}\\d{10})',
 	token.validate(),
@@ -41,12 +44,41 @@ router.get( '/:id([a-zA-Z]{2}\\d{10})',
 			],
 			withRelated: 'orgUnit'
 		})
+		.catch( () => {
+			next( new Error( 'User not found' ) );
+		})
 		.then( user => {
 			res.json( user.toJSON() );
+		});
+	}
+);
+
+
+router.get( '/private/:id([a-zA-Z]{2}\\d{10})',
+	token.validate(),
+	( req, res, next ) => {
+		let mes = req.params.id.toUpperCase();
+		new Users({ membershipNumber: mes })
+		.fetch({
+			require: true,
+			withRelated: 'orgUnit'
 		})
-		.catch( ( err ) => {
-			console.log( err );
+		.catch( () => {
 			next( new Error( 'User not found' ) );
+		})
+		.then( user => {
+			if ( req.token.user === user.id ) {
+				return user;
+			} else {
+				let perm = require( '../helpers/permissions' );
+				return perm.hasOverUser( user, 'user_read_private', req.token.get( 'user' ) );
+			}
+		}).then( user => {
+			res.json( user.toJSON() );
+		}).catch( () => {
+			let err = new Error( 'Authentication failed' );
+			err.status = 401;
+			next( err );
 		});
 	}
 );

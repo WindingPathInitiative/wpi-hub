@@ -1,12 +1,12 @@
 'use strict';
 
 /**
- * User data routes.
+ * Org unit data routes.
  */
-
 const router  = require( 'express' ).Router();
 const OrgUnit = require( '../models/org_units' );
 const token   = require( '../middlewares/token' );
+const network = require( '../middlewares/network' );
 const _       = require( 'lodash' );
 
 
@@ -27,7 +27,11 @@ router.get( /([a-zA-Z]{2}[\-\d]*)\/?$/,
 );
 
 
+/**
+ * Gets node information based off of ID.
+ */
 router.get( '/internal/:id',
+	network.internal,
 	( req, res, next ) => {
 		let id = parseInt( req.params.id );
 		if ( NaN === id ) {
@@ -48,6 +52,7 @@ router.get( '/internal/:id',
 /**
  * Queries the Org Unit table.
  * @param  {object} query The params to query.
+ * @todo   Make chain heirarchical.
  * @return {Promise}
  */
 function queryOrgUnit( query ) {

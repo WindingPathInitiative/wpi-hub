@@ -2,5 +2,6 @@
 	"preset": "wordpress",
 	"validateIndentation": "\t",
 	"requireVarDeclFirst": false,
-	"disallowMultipleLineBreaks": false
+	"disallowMultipleLineBreaks": false,
+	"requirePaddingNewLinesBeforeLineComments": false
 }

@@ -54,7 +54,10 @@ router.get( '/:id([a-zA-Z]{2}\\d{10})',
 );
 
 
-router.get( '/private/:id([a-zA-Z]{2}\\d{10})',
+/**
+ * Gets private user data.
+ */
+router.get( '/:id([a-zA-Z]{2}\\d{10})/private',
 	token.validate(),
 	( req, res, next ) => {
 		let mes = req.params.id.toUpperCase();

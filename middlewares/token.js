@@ -64,10 +64,14 @@ function query( req, next, required, fetch ) {
 	}
 
 	// Throw error if a token is required.
-	if ( required && ! ( 'token' in req.query ) ) {
-		let err = new Error( 'Token not provided' );
-		err.status = 401;
-		next( err );
+	if ( ! ( 'token' in req.query ) ) {
+		if ( required ) {
+			let err = new Error( 'Token not provided' );
+			err.status = 401;
+			next( err );
+		} else {
+			next();
+		}
 		return;
 	}
 
@@ -84,9 +88,12 @@ function query( req, next, required, fetch ) {
 		if ( fetch && token ) {
 			req.user = token.related( 'user' );
 		}
+
 		next();
 
-		token.refresh();
+		if ( token ) {
+			token.refresh();
+		}
 	})
 	.catch( () => {
 		let err = new Error( 'Invalid token' );

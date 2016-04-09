@@ -3,11 +3,12 @@
 /**
  * Org unit data routes.
  */
-const router  = require( 'express' ).Router();
-const OrgUnit = require( '../models/org_units' );
-const token   = require( '../middlewares/token' );
-const network = require( '../middlewares/network' );
-const _       = require( 'lodash' );
+const router    = require( 'express' ).Router();
+const OrgUnit   = require( '../models/org_units' );
+const token     = require( '../middlewares/token' );
+const network   = require( '../middlewares/network' );
+const _         = require( 'lodash' );
+const UserError = require( '../helpers/errors' );
 
 
 /**
@@ -20,8 +21,8 @@ router.get( /([a-zA-Z]{2}[\-\d]*)\/?$/,
 		.then( unit => {
 			res.json( unit );
 		})
-		.catch( () => {
-			next( new Error( 'Org unit not found' ) );
+		.catch( err => {
+			next( new UserError( 'Org unit not found', err ) );
 		});
 	}
 );
@@ -42,8 +43,8 @@ router.get( '/internal/:id',
 		.then( unit => {
 			res.json( unit );
 		})
-		.catch( () => {
-			next( new Error( 'Org unit not found' ) );
+		.catch( err => {
+			next( new UserError( 'Org unit not found', err ) );
 		});
 	}
 );
@@ -68,6 +69,7 @@ function queryOrgUnit( query ) {
 			parents: []
 		};
 
+		// Splits chain into children and parents.
 		if ( chain ) {
 			let left  = unit.get( 'lft' );
 			let units = _.map( chain.toArray(), u => {
@@ -83,8 +85,38 @@ function queryOrgUnit( query ) {
 				resp.children = _.map( split[1], map );
 			}
 		}
+
+		// Sorts children.
+		if ( resp.children.length > 1 ) {
+			resp.children = sortChain( resp.children );
+		}
 		return resp;
 	});
+}
+
+
+/**
+ * Makes chain heirarchical.
+ * @param  {array} units Array of org units.
+ * @return {array}
+ */
+function sortChain( units ) {
+	let types = OrgUnit.getTypes();
+	let depth = index => types.indexOf( units[ index ].type );
+	_.each( units, unit => {
+		unit.children = [];
+	});
+	for ( let i = units.length - 1; i > 0; i-- ) {
+		let d1 = depth( i );
+		for ( let u = i - 1; u >= 0; u-- ) {
+			if ( depth( i ) > depth( u ) ) {
+				units[ u ].children.push( units[ i ] );
+				units[ i ] = false;
+				break;
+			}
+		}
+	}
+	return _.filter( units, unit => unit );
 }
 
 

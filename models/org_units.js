@@ -148,6 +148,14 @@ const OrgUnit = bookshelf.model( 'OrgUnit', {
 				rgt: unit.get( 'rgt' ) + 1 + ( unit.get( 'rgt' ) - unit.get( 'lft' ) )
 			};
 		});
+	},
+
+	/**
+	 * Returns array of unit types.
+	 * @return {array}
+	 */
+	getTypes: function() {
+		return types;
 	}
 });
 

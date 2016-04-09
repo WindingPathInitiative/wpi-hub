@@ -21,6 +21,14 @@ module.exports = bookshelf.model( 'User', {
 		return attrs;
 	},
 
+	serialize: function( options ) {
+		let attrs = bookshelf.Model.prototype.serialize.apply( this, arguments );
+		if ( ! this.showPrivate ) {
+			attrs = _.omit( attrs, [ 'email', 'address' ] );
+		}
+		return attrs;
+	},
+
 	saving: function( model, attrs, options ) {
 		if ( ! model.has( 'email' ) ) {
 			model.set( 'email', model.get( 'emailAddress' ) );

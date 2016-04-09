@@ -18,7 +18,45 @@ router.get( /([a-zA-Z]{2}[\-\d]*)\/?$/,
 	token.validate(),
 	( req, res, next ) => {
 		let query = new OrgUnit({ code: req.params[0].toUpperCase() })
-		.fetch({ require: true, withRelated: [ 'users', 'offices' ] });
+		.fetch({
+			require: true,
+			withRelated: [
+				'users',
+				{
+					offices: query => {
+						query
+						.select([ 'offices.*', 'users.firstName', 'users.lastName', 'users.membershipNumber' ])
+						.leftJoin( 'users', 'offices.userID', 'users.id' );
+					}
+				}
+			]
+		})
+		// Hides org unit, because why?
+		.tap( unit => {
+			let users = unit.related( 'users' );
+			users.each( user => {
+				user.unset( 'orgUnit' );
+			});
+		})
+		// Sets user key for offices.
+		.tap( unit => {
+			let offices = unit.related( 'offices' );
+			offices.each( office => {
+				let user = {};
+				_.each([ 'membershipNumber', 'firstName', 'lastName', 'userID' ], field => {
+					if ( office.has( field ) ) {
+						user[ field ] = office.get( field );
+					}
+					office.unset( field );
+				});
+				if ( _.isEmpty( user ) ) {
+					user = null;
+				}
+				office
+				.set( 'user', user )
+				.unset( 'parentOrgID' );
+			});
+		});
 
 		getChain( query )
 		.then( unit => {
@@ -120,7 +158,7 @@ function sortChain( units ) {
 			}
 		}
 	}
-	return _.filter( units, unit => unit );
+	return _.compact( units );
 }
 
 

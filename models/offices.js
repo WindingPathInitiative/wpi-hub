@@ -21,7 +21,7 @@ const Office = bookshelf.model( 'Office', {
 	},
 
 	user: function() {
-		return this.hasOne( 'User', 'userID' );
+		return this.belongsTo( 'User', 'userID' );
 	}
 }, {});
 

@@ -4,10 +4,11 @@
  * User data routes.
  */
 
-const router = require( 'express' ).Router();
-const token  = require( '../middlewares/token' );
-const Users  = require( '../models/users' );
-const _      = require( 'lodash' );
+const router    = require( 'express' ).Router();
+const token     = require( '../middlewares/token' );
+const Users     = require( '../models/users' );
+const _         = require( 'lodash' );
+const UserError = require( '../helpers/errors' );
 
 /**
  * Gets the current user.
@@ -17,6 +18,7 @@ router.get( '/me',
 	( req, res ) => {
 		req.user.load( 'orgUnit' )
 		.then( user => {
+			user.showPrivate = true;
 			res.json( user.toJSON() );
 		});
 	}
@@ -33,19 +35,10 @@ router.get( '/:id([a-zA-Z]{2}\\d{10})',
 		new Users({ membershipNumber: mes })
 		.fetch({
 			require: true,
-			columns: [
-				'membershipNumber',
-				'firstName',
-				'lastName',
-				'nickname',
-				'membershipType',
-				'membershipExpiration',
-				'orgUnit'
-			],
 			withRelated: 'orgUnit'
 		})
-		.catch( () => {
-			next( new Error( 'User not found' ) );
+		.catch( err => {
+			next( new UserError( 'User not found', err ) );
 		})
 		.then( user => {
 			res.json( user.toJSON() );
@@ -66,10 +59,10 @@ router.get( '/:id([a-zA-Z]{2}\\d{10})/private',
 			require: true,
 			withRelated: 'orgUnit'
 		})
-		.catch( () => {
-			next( new Error( 'User not found' ) );
+		.catch( err => {
+			next( new UserError( 'User not found', err ) );
 		})
-		.then( user => {
+		.tap( user => {
 			if ( req.token.user === user.id ) {
 				return user;
 			} else {
@@ -77,10 +70,10 @@ router.get( '/:id([a-zA-Z]{2}\\d{10})/private',
 				return perm.hasOverUser( user, 'user_read_private', req.token.get( 'user' ) );
 			}
 		}).then( user => {
+			user.showPrivate = true;
 			res.json( user.toJSON() );
-		}).catch( e => {
-			console.log( e );
-			let err = new Error( 'Authentication failed' );
+		}).catch( err => {
+			err = new UserError( 'Authentication failed', err );
 			err.status = 401;
 			next( err );
 		});

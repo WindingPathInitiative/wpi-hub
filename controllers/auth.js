@@ -42,7 +42,7 @@ router.get( '/verify/:code',
 	( req, res ) => {
 		setupPassport( req );
 
-		let Users = require( '../models' ).Users;
+		let Users = require( '../models/users' );
 
 		Users.getByPortalId( req.user.remoteId )
 		.then( user => {
@@ -69,7 +69,6 @@ router.get( '/signout',
 	( req, res ) => {
 		req.token.destroy()
 		.then( model => {
-			console.log( model );
 			res.clearCookie( 'token' );
 			res.json({ success: 1 });
 		});

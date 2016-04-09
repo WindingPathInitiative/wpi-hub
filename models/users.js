@@ -8,8 +8,9 @@
  */
 const bookshelf = require( '../helpers/db' ).Bookshelf;
 const _         = require( 'lodash' );
+const Base      = require( './base' );
 
-module.exports = bookshelf.model( 'User', {
+module.exports = bookshelf.model( 'User', Base.extend({
 	tableName: 'users',
 
 	initialize: function( attrs, options ) {
@@ -36,12 +37,7 @@ module.exports = bookshelf.model( 'User', {
 		if ( ! model.has( 'portalID' ) && model.has( 'remoteId' ) ) {
 			model.set( 'portalID', model.get( 'remoteId' ) );
 		}
-		model
-			.unset( 'emailAddress' )
-			.unset( 'remoteId' )
-			.unset( 'affiliateId' )
-			.unset( 'affiliateName' )
-			.unset( 'fullName' );
+		model.unset([ 'emailAddress', 'remoteId', 'affiliateId', 'affiliateName', 'fullName' ]);
 	},
 
 	orgUnit: function() {
@@ -63,4 +59,4 @@ module.exports = bookshelf.model( 'User', {
 		}
 		return new this({ portalID: id }).fetch();
 	}
-});
+}) );

@@ -20,10 +20,7 @@ router.get( '/:id(\\d+)',
 			withRelated: [ 'parentOffice', 'orgUnit', 'user' ]
 		})
 		.then( office => {
-			office
-			.unset( 'userID' )
-			.unset( 'parentOrgID' )
-			.unset( 'parentOfficeID' );
+			office.unset([ 'userID', 'parentOrgID', 'parentOfficeID' ]);
 			res.json( office.toJSON() );
 		});
 	}

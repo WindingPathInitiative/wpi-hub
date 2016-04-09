@@ -100,7 +100,6 @@ router.get( '/internal/:id',
  * @return {Promise}
  */
 function getChain( unit ) {
-	console.log( unit );
 	return unit.then( unit => {
 		return [ unit, unit.getChain() ];
 	})

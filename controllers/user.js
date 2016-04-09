@@ -73,8 +73,7 @@ router.get( '/:id([a-zA-Z]{2}\\d{10})/private',
 			user.showPrivate = true;
 			res.json( user.toJSON() );
 		}).catch( err => {
-			err = new UserError( 'Authentication failed', err );
-			err.status = 401;
+			next( new UserError( 'Authentication failed', 401, err ) );
 			next( err );
 		});
 	}

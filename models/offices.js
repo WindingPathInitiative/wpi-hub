@@ -6,9 +6,9 @@
  * Stores information about an office and it's permissions.
  */
 const bookshelf = require( '../helpers/db' ).Bookshelf;
-const _         = require( 'lodash' );
+const Base      = require( './base' );
 
-const Office = bookshelf.model( 'Office', {
+const Office = bookshelf.model( 'Office', Base.extend({
 	tableName: 'offices',
 
 	parse: function( attrs ) {
@@ -27,6 +27,6 @@ const Office = bookshelf.model( 'Office', {
 	user: function() {
 		return this.belongsTo( 'User', 'userID' );
 	}
-}, {});
+}) );
 
 module.exports = Office;

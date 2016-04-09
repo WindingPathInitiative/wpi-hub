@@ -28,7 +28,7 @@ router.get( '/',
 			<h1>${ req.user.get( 'fullName' ) }!</h1>
 			<h2>${ req.user.get( 'membershipNumber' ) }</h2>
 			<ul>
-				<li><a href="/permissions">Permissions</a></li>
+				<li><a href="/offices/internal">My offices</a></li>
 				<li><a href="/users/me">My profile</a></li>
 				<li><a href="/list/users">List Users</a></li>
 				<li><a href="/switch">Switch user</a></li>
@@ -54,7 +54,7 @@ router.get( '/',
 );
 
 router.get( '/switch', ( req, res ) => {
-	let Users = require( '../models' ).Users;
+	let Users = require( '../models/users' );
 	Users.fetchAll()
 	.then( users => {
 		let html = '<h1>Switch to user:</h1><ul>';

@@ -1,6 +1,7 @@
 'use strict';
 
-const Token = require( '../models' ).Tokens;
+const Token     = require( '../models/tokens' );
+const UserError = require( '../helpers/errors' );
 
 
 /**
@@ -66,9 +67,7 @@ function query( req, next, required, fetch ) {
 	// Throw error if a token is required.
 	if ( ! ( 'token' in req.query ) ) {
 		if ( required ) {
-			let err = new Error( 'Token not provided' );
-			err.status = 401;
-			next( err );
+			next( new UserError( 'Token not provided', 401 ) );
 		} else {
 			next();
 		}
@@ -95,10 +94,8 @@ function query( req, next, required, fetch ) {
 			token.refresh();
 		}
 	})
-	.catch( () => {
-		let err = new Error( 'Invalid token' );
-		err.status = 401;
-		next( err );
+	.catch( err => {
+		next( new UserError( 'Invalid token', 401, err ) );
 	});
 
 }

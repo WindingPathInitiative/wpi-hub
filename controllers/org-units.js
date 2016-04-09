@@ -17,7 +17,10 @@ const UserError = require( '../helpers/errors' );
 router.get( /([a-zA-Z]{2}[\-\d]*)\/?$/,
 	token.validate(),
 	( req, res, next ) => {
-		queryOrgUnit({ code: req.params[0].toUpperCase() })
+		let query = new OrgUnit({ code: req.params[0].toUpperCase() })
+		.fetch({ require: true, withRelated: [ 'users', 'offices' ] });
+
+		getChain( query )
 		.then( unit => {
 			res.json( unit );
 		})
@@ -39,7 +42,10 @@ router.get( '/internal/:id',
 			next( new Error( 'Invalid org id' ) );
 			return;
 		}
-		queryOrgUnit({ id: id })
+		let query = new OrgUnit({ id: id })
+		.fetch({ require: true });
+
+		getChain( query )
 		.then( unit => {
 			res.json( unit );
 		})
@@ -51,15 +57,13 @@ router.get( '/internal/:id',
 
 
 /**
- * Queries the Org Unit table.
- * @param  {object} query The params to query.
- * @todo   Make chain heirarchical.
+ * Gets and returns JSON response.
+ * @param  {object} unit The unit model.
  * @return {Promise}
  */
-function queryOrgUnit( query ) {
-	return new OrgUnit( query )
-	.fetch({ require: true })
-	.then( unit => {
+function getChain( unit ) {
+	console.log( unit );
+	return unit.then( unit => {
 		return [ unit, unit.getChain() ];
 	})
 	.spread( ( unit, chain ) => {

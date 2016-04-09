@@ -26,6 +26,10 @@ const OrgUnit = bookshelf.model( 'OrgUnit', {
 		return this.hasMany( 'User', 'orgUnit' );
 	},
 
+	offices: function() {
+		return this.hasMany( 'Office', 'parentOrgID' );
+	},
+
 	/**
 	 * Gets the parents of model.
 	 * @param  {boolean} shallow Optional. True means just one level.

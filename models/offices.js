@@ -16,8 +16,12 @@ const Office = bookshelf.model( 'Office', {
 		return attrs;
 	},
 
+	parentOffice: function() {
+		return this.belongsTo( 'Office', 'parentOfficeID' );
+	},
+
 	orgUnit: function() {
-		return this.hasOne( 'OrgUnit', 'parentOrgID' );
+		return this.belongsTo( 'OrgUnit', 'parentOrgID' );
 	},
 
 	user: function() {

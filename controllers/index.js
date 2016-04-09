@@ -12,8 +12,8 @@ router.use( '/users', require( './user' ) );
 // Org Units.
 router.use( '/orgunits', require( './org-units' ) );
 
-// Permissions.
-router.use( '/permissions', require( './permissions' ) );
+// Offices.
+router.use( '/offices', require( './offices' ) );
 
 // Test code!
 let token = require( '../middlewares/token' );

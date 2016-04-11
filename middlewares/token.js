@@ -67,7 +67,7 @@ function query( req, next, required, fetch ) {
 	// Throw error if a token is required.
 	if ( ! ( 'token' in req.query ) ) {
 		if ( required ) {
-			next( new UserError( 'Token not provided', 401 ) );
+			next( new UserError( 'Token not provided', 403 ) );
 		} else {
 			next();
 		}
@@ -95,7 +95,7 @@ function query( req, next, required, fetch ) {
 		}
 	})
 	.catch( err => {
-		next( new UserError( 'Invalid token', 401, err ) );
+		next( new UserError( 'Invalid token', 403, err ) );
 	});
 
 }

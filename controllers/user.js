@@ -77,7 +77,7 @@ router.get( '/:id/private',
 			res.json( user.toJSON() );
 		})
 		.catch( err => {
-			next( new UserError( 'Authentication failed', 401, err ) );
+			next( new UserError( 'Authentication failed', 403, err ) );
 		});
 	}
 );
@@ -138,7 +138,7 @@ router.put( '/:id/assign/:domain(\\d+)',
 				// If the current domain is a domain,
 				// the user can't do this!
 				if ( 'Domain' === curOrg.get( 'type' ) ) {
-					throw new UserError( 'Cannot leave domain', 401 );
+					throw new UserError( 'Cannot leave domain', 403 );
 					return;
 				}
 
@@ -147,7 +147,7 @@ router.put( '/:id/assign/:domain(\\d+)',
 				.isChild( curOrg )
 				.then( result => {
 					if ( ! result ) {
-						throw new UserError( 'Domain not under current region', 401 );
+						throw new UserError( 'Domain not under current region', 403 );
 					}
 				});
 			}
@@ -169,7 +169,7 @@ router.put( '/:id/assign/:domain(\\d+)',
 			if ( err instanceof UserError ) {
 				next( err );
 			} else {
-				next( new UserError( 'Authentication failed', 401, err ) );
+				next( new UserError( 'Authentication failed', 403, err ) );
 			}
 		});
 	}

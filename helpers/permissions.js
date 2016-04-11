@@ -10,6 +10,7 @@ exports.has = ( permission, officer ) => {};
 exports.hasOverUser = ( user, permission, officer ) => {
 	return normalizeOfficer( officer )
 	.then( offices => {
+		// Filter out offices we have the desired permission.
 		return offices.filter( office => {
 			return office.has( 'roles' ) && -1 !== office.get( 'roles' ).indexOf( permission );
 		});
@@ -32,6 +33,11 @@ exports.hasOverUser = ( user, permission, officer ) => {
 				throw new Error( 'Not national officer' );
 			}
 		} else {
+
+			// Checks if user is attached to the office domain.
+			if ( -1 !== offices.map( o => o.get( 'parentOrgID' ) ).indexOf( user.get( 'orgUnit' ) ) ) {
+				return true;
+			}
 
 			// Checks if current org has the parents org.
 			return user.related( 'orgUnit' )

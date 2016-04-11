@@ -27,6 +27,7 @@ router.get( '/',
 			html = `
 			<h1>${ req.user.get( 'fullName' ) }!</h1>
 			<h2>${ req.user.get( 'membershipNumber' ) }</h2>
+			<p>Token: <code>${ req.token.id }</code></p>
 			<ul>
 				<li><a href="/offices/internal">My offices</a></li>
 				<li><a href="/users/me">My profile</a></li>

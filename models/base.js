@@ -20,7 +20,6 @@ const Base = bookshelf.Model.extend({
 			attrs = [ attrs ];
 		}
 		attrs = _.fromPairs( _.map( attrs, attr => [ attr, undefined ] ) );
-		console.log( attrs );
 		return this.set( attrs, _.extend( {}, options, { unset: true } ) );
 	}
 });

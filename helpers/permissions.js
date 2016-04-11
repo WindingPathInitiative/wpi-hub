@@ -5,10 +5,18 @@ const Users   = require( '../models/users' );
 const OrgUnit = require( '../models/org_units' );
 const _       = require( 'lodash' );
 
-exports.has = ( permission, officer ) => {};
 
-exports.hasOverUser = ( user, permission, officer ) => {
+/**
+ * Checks if officer has permission.
+ * @param  {string} permission Role to check.
+ * @param  {mixed}  officer     User object or ID.
+ * @return {Promise}
+ */
+function has( permission, officer ) {
 	return normalizeOfficer( officer )
+	.catch( err => {
+		throw new UserError( 'User has no offices', err );
+	})
 	.then( offices => {
 		// Filter out offices we have the desired permission.
 		return offices.filter( office => {
@@ -16,11 +24,24 @@ exports.hasOverUser = ( user, permission, officer ) => {
 		});
 	})
 	.then( offices => {
-
-		// No offices found.
 		if ( ! offices ) {
-			return false;
+			throw new Error( 'No offices with permission' );
 		}
+		return offices;
+	});
+}
+
+
+/**
+ * Checks if officer has permission over user.
+ * @param  {Model}  user       User model.
+ * @param  {string} permission Role to check.
+ * @param  {mixed}  officer    User object or ID.
+ * @return {Promise}
+ */
+function hasOverUser( user, permission, officer ) {
+	return has( permission, officer )
+	.then( offices => {
 
 		// If the user isn't attached to a domain,
 		// the officer needs to be National.
@@ -34,8 +55,10 @@ exports.hasOverUser = ( user, permission, officer ) => {
 			}
 		} else {
 
+			let officeOrgs = mapCollection( offices, 'parentOrgID' );
+
 			// Checks if user is attached to the office domain.
-			if ( -1 !== offices.map( o => o.get( 'parentOrgID' ) ).indexOf( user.get( 'orgUnit' ) ) ) {
+			if ( -1 !== officeOrgs.indexOf( user.get( 'orgUnit' ) ) ) {
 				return true;
 			}
 
@@ -45,10 +68,8 @@ exports.hasOverUser = ( user, permission, officer ) => {
 			.then( parents => {
 				parents = parents.toArray();
 				for ( let p = 0; p < parents.length; p++ ) {
-					for ( let o = 0; o < offices.length; o++ ) {
-						if ( parents[ p ].id === offices[ o ].get( 'parentOrgID' ) ) {
-							return true;
-						}
+					if ( -1 !== officeOrgs.indexOf( parents[ p ].id ) ) {
+						return true;
 					}
 				};
 				return false;
@@ -61,9 +82,12 @@ exports.hasOverUser = ( user, permission, officer ) => {
 		}
 		throw new Error( 'Authorization failed' );
 	});
-};
+}
 
-exports.hasOverUnit = ( unit, permission, officer ) => {};
+
+function hasOverUnit( unit, permission, officer ) {
+
+}
 
 function normalizeOfficer( officer ) {
 	if ( ! Number.isInteger( officer ) ) {
@@ -72,6 +96,20 @@ function normalizeOfficer( officer ) {
 	return new Offices().where( 'userID', officer ).fetchAll({ require: true });
 }
 
-function normalizeRole( role ) {
 
+/**
+ * Maps a collection to array of field values.
+ * @param  {Collection} coll  The collection.
+ * @param  {string}     field The field.
+ * @return {array}
+ */
+function mapCollection( coll, field ) {
+	return coll.map( c => c.get( field ) );
 }
+
+
+module.exports = {
+	has: has,
+	hasOverUnit: hasOverUnit,
+	hasOverUser: hasOverUser
+};

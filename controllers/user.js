@@ -105,37 +105,40 @@ router.put( '/:id/assign/:domain(\\d+)',
 		// Get the target org unit.
 		let orgQuery = new OrgUnit({ id: req.params.domain })
 		.fetch({
-			requre: true
+			require: true
 		})
 		.catch( err => {
 			next( new UserError( 'Domain not found', err ) );
+		})
+		.then( unit => {
+			if ( 'Domain' !== unit.get( 'type' ) ) {
+				throw new UserError( 'Assigning to non-domain' );
+			}
+			return unit;
 		});
 
 		Promise.join( userQuery, orgQuery, ( user, org ) => {
 
 			// Wasting everyone's time here.
 			if ( user.get( 'orgUnit' ) === org.id ) {
-				throw new UserError( 'User already member of org unit' );
+				throw new UserError( 'User already member of domain' );
 			}
 
-			user.org = org;
+			user.targetDomain = org;
 			return user;
 		})
 		.tap( user => {
 			let curOrg = user.related( 'orgUnit' );
 
-			// If it's the current user being moved,
-			// and they are moving to a domain.
-			if (
-				req.token.get( 'user' ) === user.id &&
-				'Domain' === user.org.get( 'type' )
-			) {
+			// If the user is trying to move themselves.
+			if ( req.token.get( 'user' ) === user.id ) {
+
 				// If the user is assigned to National or nothing, go right ahead.
 				if ( ! user.has( 'orgUnit' ) || 1 === curOrg.id ) {
 					return;
 				}
 
-				// If the current domain is a domain,
+				// If the current org unit is a domain,
 				// the user can't do this!
 				if ( 'Domain' === curOrg.get( 'type' ) ) {
 					throw new UserError( 'Cannot leave domain', 403 );
@@ -143,7 +146,7 @@ router.put( '/:id/assign/:domain(\\d+)',
 				}
 
 				// Otherwise, check if the domain is under the current org unit.
-				return user.org
+				return user.targetDomain
 				.isChild( curOrg )
 				.then( result => {
 					if ( ! result ) {
@@ -160,7 +163,7 @@ router.put( '/:id/assign/:domain(\\d+)',
 		.then( user => {
 			// Validation passed, move the user now.
 			user
-			.save({ orgUnit: user.org.id }, { patch: true })
+			.save({ orgUnit: user.targetDomain.id }, { patch: true })
 			.then( user => {
 				res.json({ success: true });
 			});

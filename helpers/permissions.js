@@ -43,20 +43,10 @@ function hasOverUser( user, permission, officer ) {
 	return has( permission, officer )
 	.then( offices => {
 
-		// If the user isn't attached to a domain,
-		// the officer needs to be National.
-		// This operates under the assumption National is 1.
-		if ( ! user.has( 'orgUnit' ) ) {
-			let isNational = _.reduce( offices, ( memo, office ) => {
-				return memo || 1 === office.get( 'parentOrgID' );
-			}, false );
-			if ( ! isNational ) {
-				throw new Error( 'Not national officer' );
-			}
-		} else {
+		let officeOrgs = mapCollection( offices, 'parentOrgID' );
 
-			let officeOrgs = mapCollection( offices, 'parentOrgID' );
-
+		// If the user has an org unit.
+		if ( user.has( 'orgUnit' ) ) {
 			// Checks if user is attached to the office domain.
 			if ( -1 !== officeOrgs.indexOf( user.get( 'orgUnit' ) ) ) {
 				return true;
@@ -72,25 +62,73 @@ function hasOverUser( user, permission, officer ) {
 						return true;
 					}
 				};
-				return false;
+				throw new Error( 'Officer not found in chain' );
 			});
 		}
-	})
-	.then( result => {
-		if ( result ) {
-			return user;
+		// If the user isn't attached to a domain,
+		// the officer needs to be National.
+		// This operates under the assumption National is 1.
+		else {
+			if ( -1 !== officeOrgs.indexOf( 1 ) ) {
+				return true;
+			} else {
+				throw new Error( 'Not national officer' );
+			}
 		}
-		throw new Error( 'Authorization failed' );
 	});
 }
 
 
+/**
+ * Checks if officer has permission over unit.
+ * @param  {Model}  unit       Org Unit model.
+ * @param  {string} permission Role to check.
+ * @param  {mixed}  officer    User object or ID.
+ * @return {Promise}
+ */
 function hasOverUnit( unit, permission, officer ) {
+	return has( permission, officer )
+	.then( offices => {
 
+		let officeOrgs = mapCollection( offices, 'parentOrgID' );
+
+		// If one of these is National, we're good.
+		if ( -1 !== officeOrgs.indexOf( 1 ) ) {
+			return true;
+		}
+
+		// Checks if unit is one of the office domains.
+		if ( -1 !== officeOrgs.indexOf( unit.id ) ) {
+			return true;
+		}
+
+		// Checks if current org has the parents org.
+		return unit
+		.getParents()
+		.then( parents => {
+			parents = parents.toArray();
+			for ( let p = 0; p < parents.length; p++ ) {
+				if ( -1 !== officeOrgs.indexOf( parents[ p ].id ) ) {
+					return true;
+				}
+			};
+			throw new Error( 'Officer not found in chain' );
+		});
+	});
 }
 
+
+/**
+ * Normalizes officer param and gets offices.
+ * @param  {mixed} officer Officer or offices input.
+ * @return {Promise}
+ */
 function normalizeOfficer( officer ) {
-	if ( ! Number.isInteger( officer ) ) {
+	// TODO: Come up with better test of Collection object.
+	if ( 'function' === typeof officer.filter ) {
+		const resolve = require( 'bluebird' ).resolve;
+		return resolve( officer );
+	} else if ( ! Number.isInteger( officer ) ) {
 		officer = officer.id;
 	}
 	return new Offices().where( 'userID', officer ).fetchAll({ require: true });
@@ -111,5 +149,6 @@ function mapCollection( coll, field ) {
 module.exports = {
 	has: has,
 	hasOverUnit: hasOverUnit,
-	hasOverUser: hasOverUser
+	hasOverUser: hasOverUser,
+	prefetch: normalizeOfficer
 };

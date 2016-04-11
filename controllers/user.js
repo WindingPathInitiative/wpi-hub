@@ -157,7 +157,13 @@ router.put( '/:id/assign/:domain(\\d+)',
 			// Otherwise, check permissions.
 			else {
 				const perm = require( '../helpers/permissions' );
-				return perm.hasOverUser( user, 'user_assign', req.token.get( 'user' ) );
+				return perm.prefetch( req.token.get( 'user' ) )
+				.then( offices => {
+					return Promise.any([
+						perm.hasOverUser( user, 'user_assign', offices ),
+						perm.hasOverUnit( user.targetDomain, 'user_assign', offices )
+					]);
+				});
 			}
 		})
 		.then( user => {

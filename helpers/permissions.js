@@ -1,9 +1,11 @@
 'use strict';
 
-const Offices = require( '../models/offices' );
-const Users   = require( '../models/users' );
-const OrgUnit = require( '../models/org_units' );
-const _       = require( 'lodash' );
+const Offices   = require( '../models/offices' );
+const Users     = require( '../models/users' );
+const OrgUnit   = require( '../models/org_units' );
+const UserError = require( '../helpers/errors' );
+const _         = require( 'lodash' );
+const Promise   = require( 'bluebird' );
 
 
 /**
@@ -81,13 +83,31 @@ function hasOverUser( user, permission, officer ) {
 
 /**
  * Checks if officer has permission over unit.
- * @param  {Model}  unit       Org Unit model.
+ * @param  {mixed}  unit       Org Unit model or ID.
  * @param  {string} permission Role to check.
  * @param  {mixed}  officer    User object or ID.
  * @return {Promise}
  */
 function hasOverUnit( unit, permission, officer ) {
 	return has( permission, officer )
+	.tap( () => {
+
+		// If no valid org unit is defined, default to National.
+		if ( ! unit ) {
+			unit = 1;
+		}
+
+		if ( Number.isInteger( unit ) ) {
+			return new OrgUnit({ id: unit })
+			.fetch({ require: true })
+			.catch( err => {
+				throw new UserError( 'Org unit not found.', 404, err );
+			})
+			.then( model => {
+				unit = model;
+			});
+		}
+	})
 	.then( offices => {
 
 		let officeOrgs = mapCollection( offices, 'parentOrgID' );
@@ -114,6 +134,56 @@ function hasOverUnit( unit, permission, officer ) {
 			};
 			throw new Error( 'Officer not found in chain' );
 		});
+	});
+}
+
+
+/**
+ * Checks if officer has permission over an officer.
+ * @param  {mixed}  office     Office model or ID.
+ * @param  {string} permission Role to check.
+ * @param  {mixed}  officer    User object or ID.
+ * @return {Promise}
+ */
+function hasOverOffice( office, permission, officer ) {
+	let officeQuery;
+
+	// If we have just an ID, let's fix that.
+	if ( Number.isInteger( office ) ) {
+		officeQuery = new Offices({ id: office })
+		.fetch({ require: true })
+		.catch( err => {
+			throw new UserError( 'Office not found.', 404, err );
+		})
+		.then( model => {
+			office = model;
+		});
+	} else {
+		officeQuery = Promise.resolve( office );
+	}
+
+	return officeQuery
+	.tap( () => {
+		if ( ! office.has( 'parentOfficeID' ) ) {
+			throw new Error( 'Office not in chain' );
+		}
+	})
+	.then( () => {
+		return has( permission, officer );
+	})
+	.then( offices => {
+
+		// Check if the office even has parents.
+		let officeParents = mapCollection( offices, 'parentID' );
+
+		// If one of the parents is the office, pass.
+		if ( -1 !== officeParents.indexOf( office.id ) ) {
+			return true;
+		}
+		// Otherwise, call this recursively.
+		else {
+			return hasOverOffice( office.get( 'parentOfficeID' ), permission, offices );
+		}
 	});
 }
 
@@ -150,5 +220,6 @@ module.exports = {
 	has: has,
 	hasOverUnit: hasOverUnit,
 	hasOverUser: hasOverUser,
+	hasOverOffice: hasOverOffice,
 	prefetch: normalizeOfficer
 };

@@ -9,11 +9,14 @@ const app        = express();
 require( './helpers/db' );
 
 // Middleware.
-app.use( require( 'morgan' )( 'dev' ) );
 app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded({ extended: false }) );
 app.use( require( 'cookie-parser' )() );
 app.use( require( 'passport' ).initialize() );
+
+if ( 'development' === app.get( 'env' ) ) {
+	app.use( require( 'morgan' )( 'dev' ) );
+}
 
 // Runs token maintenance.
 app.use( require( './middlewares/token' ).normalize );

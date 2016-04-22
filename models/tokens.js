@@ -39,7 +39,8 @@ module.exports = bookshelf.model( 'Token', {
 	},
 
 	refresh: function() {
-		return this.save({ expires: getExpire() }, { patch: true });
+		return this.save({ expires: getExpire() }, { patch: true })
+		.catch( () => {}); // Silently fail if we don't update.
 	},
 
 	notExpired: function() {

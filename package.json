@@ -31,6 +31,9 @@
     "grunt-eslint": "^18.0.0",
     "grunt-jscs": "^2.1.0",
     "load-grunt-tasks": "^3.2.0",
-    "pretty-error": "^2.0.0"
+    "mocha": "^2.4.5",
+    "pretty-error": "^2.0.0",
+    "should": "^8.3.1",
+    "supertest": "^1.2.0"
   }
 }

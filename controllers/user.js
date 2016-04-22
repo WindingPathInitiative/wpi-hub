@@ -39,11 +39,11 @@ router.get( '/:id',
 			require: true,
 			withRelated: 'orgUnit'
 		})
-		.catch( err => {
-			next( new UserError( 'User not found', err ) );
-		})
 		.then( user => {
 			res.json( user.toJSON() );
+		})
+		.catch( err => {
+			next( new UserError( 'User not found', 404, err ) );
 		});
 	}
 );
@@ -62,7 +62,7 @@ router.get( '/:id/private',
 			withRelated: 'orgUnit'
 		})
 		.catch( err => {
-			next( new UserError( 'User not found', err ) );
+			next( new UserError( 'User not found', 404, err ) );
 		})
 		.tap( user => {
 			if ( req.token.get( 'user' ) === user.id ) {

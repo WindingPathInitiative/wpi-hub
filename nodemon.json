@@ -4,6 +4,7 @@
 	"ignore": [
 		"migrations/",
 		"seeds/",
-		"Dockerfile"
+		"Dockerfile",
+		"test/"
 	]
 }

@@ -4,7 +4,7 @@ node_js:
 env:
   - NODE_ENV=test
 before_script:
-  - npm install -g knex
+  - npm install -g knex grunt-cli
   - for file in ./config/*.default.json; do cp "$file" "${file/.default.json/.json}"; done
   - cp ./config/db.travis.json ./config/db.json
   - mysql -e 'create database mes'

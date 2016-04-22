@@ -14,6 +14,7 @@ module.exports = grunt => {
 		'middlewares',
 		'migrations',
 		'seeds',
+		'test',
 		'.'
 	].map( i => i + '/*.js' );
 
@@ -48,4 +49,5 @@ module.exports = grunt => {
 	require( 'load-grunt-tasks' )( grunt );
 
 	grunt.registerTask( 'default', [ 'watch' ] );
+	grunt.registerTask( 'validate', [ 'eslint', 'jscs' ] );
 };

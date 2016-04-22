@@ -10,10 +10,15 @@ Current roadmap:
 authenticated user
 - [x] Fetch User Data endpoint without permissions for Open data only
 - [x] Fetch Org Unit Data endpoint
-- [ ] Fetch Office Data endpoint
+- [x] Fetch Office Data endpoint
 - [x] Fetch Org Tree internal endpoint
 - [x] Fetch Permissions internal endpoint
 - [x] Expand Fetch User Data endpoint to include private data where appropriate
+- [x] Assign User endpoint
+- [ ] Unit testing
 - [ ] Update User endpoint
-- [ ] Assign User endpoint
 - [ ] Update Org Unit data
+- [ ] Create office
+- [ ] Update office
+
+[JIRA (private)](https://mindseyesociety.atlassian.net/secure/RapidBoard.jspa?rapidView=1)

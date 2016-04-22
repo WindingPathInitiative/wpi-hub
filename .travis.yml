@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - "5"
+env:
+  - NODE_ENV=test
+before_script:
+  - npm install -g knex
+  - for file in ./config/*.default.json; do cp "$file" "${file/.default.json/.json}"; done
+  - cp ./config/db.travis.json ./config/db.json
+  - knex migrate:latest
+  - knex seed:run
+services:
+  - mysql

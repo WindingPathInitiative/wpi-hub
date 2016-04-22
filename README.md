@@ -4,6 +4,7 @@ This system is a REST API designed to handle member and org unit heirarchy and p
 Still under active development!
 
 [![Dependency Status](https://david-dm.org/MindsEyeSociety/mes-hub.svg)](https://david-dm.org/MindsEyeSociety/mes-hub)
+[![Build Status](https://travis-ci.org/MindsEyeSociety/mes-hub.svg?branch=master)](https://travis-ci.org/MindsEyeSociety/mes-hub)
 
 Current roadmap:
 - [x] Tokenize identity so that we can authenticate and identify the

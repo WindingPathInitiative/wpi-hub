@@ -50,7 +50,7 @@ exports.seed = ( knex, Promise ) => {
 				name: 'Admin',
 				type: 'Other',
 				parentOrgID: 1,
-				userID: 8,
+				userID: 1,
 				roles: JSON.stringify([ 'user_read_private', 'user_update', 'user_assign', 'org_update', 'org_create_region', 'org_create_domain', 'office_update', 'office_assign', 'office_create_assistants' ])
 			}
 		])

@@ -26,7 +26,7 @@ module.exports = grunt => {
 			},
 			js: {
 				files: appjs,
-				tasks: [ 'esline', 'jscs' ]
+				tasks: [ 'eslint', 'jscs' ]
 			}
 		},
 

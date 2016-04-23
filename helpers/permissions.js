@@ -17,7 +17,7 @@ const Promise   = require( 'bluebird' );
 function has( permission, officer ) {
 	return normalizeOfficer( officer )
 	.catch( err => {
-		throw new UserError( 'User has no offices', err );
+		throw new Error( 'User has no offices' );
 	})
 	.then( offices => {
 		// Filter out offices we have the desired permission.

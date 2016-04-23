@@ -59,7 +59,7 @@ module.exports = function() {
 		});
 	});
 
-	describe( 'GET user', function() {
+	describe( 'GET id', function() {
 		var token;
 		before( 'create token', function( done ) {
 			makeToken( 1 )
@@ -130,10 +130,10 @@ module.exports = function() {
 		});
 	});
 
-	describe( 'GET user private', function() {
+	describe( 'GET private', function() {
 		var token1, token2;
 		before( 'create token', function( done ) {
-			let promise1 = makeToken( 1 )
+			let promise1 = makeToken( 5 )
 			.then( data => {
 				token1 = data.id;
 			});
@@ -170,7 +170,7 @@ module.exports = function() {
 
 		it( 'works for self', function( done ) {
 			request
-			.get( '/users/1/private' )
+			.get( '/users/5/private' )
 			.query({ token: token1 })
 			.expect( 200, done );
 		});
@@ -216,6 +216,116 @@ module.exports = function() {
 				deleteToken( token2 ),
 				() => done()
 			);
+		});
+	});
+
+	describe( 'PUT assign', function() {
+		var userToken, ncToken, dcToken;
+		before( 'create tokens', function( done ) {
+			let promise1 = makeToken( 9 )
+			.then( data => {
+				userToken = data.id;
+			});
+
+			let promise2 = makeToken( 2 )
+			.then( data => {
+				ncToken = data.id;
+			});
+
+			let promise3 = makeToken( 3 )
+			.then( data => {
+				dcToken = data.id;
+			});
+
+			Promise.join( promise1, promise2, promise3, () => {
+				done();
+			});
+		});
+
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.put( '/users/9/assign/3' )
+			.expect( 403, done );
+		});
+
+		it( 'fails for invalid user id', function( done ) {
+			request
+			.put( '/users/999999999999999/assign/3' )
+			.query({ token: ncToken })
+			.expect( 404, done );
+		});
+
+		it( 'fails for invalid MES number', function( done ) {
+			request
+			.put( '/users/DA0000000000/assign/3' )
+			.query({ token: ncToken })
+			.expect( 404, done );
+		});
+
+		it( 'fails if assigning to non-domain', function( done ) {
+			request
+			.put( '/users/9/assign/2' )
+			.query({ token: ncToken })
+			.expect( 500, done );
+		});
+
+		it( 'fails if assigning to invalid domain', function( done ) {
+			request
+			.put( '/users/9/assign/999999' )
+			.query({ token: ncToken })
+			.expect( 404, done );
+		});
+
+		it( 'fails if assigning user without permission', function( done ) {
+			request
+			.put( '/users/1/assign/3' )
+			.query({ token: userToken })
+			.expect( 403, done );
+		});
+
+		it( 'works for user without domain assigning themselves', function( done ) {
+			request
+			.put( '/users/9/assign/3' )
+			.query({ token: userToken })
+			.expect( 200, done );
+		});
+
+		it( 'fails for user with domain assigning themselves', function( done ) {
+			request
+			.put( '/users/9/assign/7' )
+			.query({ token: userToken })
+			.expect( 403, done );
+		});
+
+		it( 'fails for user already in domain', function( done ) {
+			request
+			.put( '/users/9/assign/3' )
+			.query({ token: ncToken })
+			.expect( 500, done );
+		});
+
+		it( 'works for assigning outside user with permission over domain', function( done ) {
+			request
+			.put( '/users/2/assign/3' )
+			.query({ token: dcToken })
+			.expect( 200, done );
+		});
+
+		after( 'destroy tokens', function( done ) {
+			Promise.join(
+				deleteToken( userToken ),
+				deleteToken( ncToken ),
+				deleteToken( dcToken ),
+				() => done()
+			);
+		});
+
+		after( 'reset users', function( done ) {
+			const User = require( '../models/users' );
+			let p1 = new User({ id: 9 }).save({ orgUnit: null }, { patch: true });
+			let p2 = new User({ id: 2 }).save({ orgUnit: 6 }, { patch: true });
+
+			Promise.join( p1, p2, () => done() );
 		});
 	});
 };

@@ -62,7 +62,7 @@ router.get( '/:id/private',
 			withRelated: 'orgUnit'
 		})
 		.catch( err => {
-			next( new UserError( 'User not found', 404, err ) );
+			throw new UserError( 'User not found', 404, err );
 		})
 		.tap( user => {
 			if ( req.token.get( 'user' ) === user.id ) {
@@ -77,7 +77,11 @@ router.get( '/:id/private',
 			res.json( user.toJSON() );
 		})
 		.catch( err => {
-			next( new UserError( 'Authentication failed', 403, err ) );
+			if ( err instanceof UserError ) {
+				next( err );
+			} else {
+				next( new UserError( 'Authentication failed', 403, err ) );
+			}
 		});
 	}
 );
@@ -99,7 +103,7 @@ router.put( '/:id/assign/:domain(\\d+)',
 			withRelated: 'orgUnit'
 		})
 		.catch( err => {
-			next( new UserError( 'User not found', err ) );
+			throw new UserError( 'User not found', 404, err );
 		});
 
 		// Get the target org unit.
@@ -108,7 +112,7 @@ router.put( '/:id/assign/:domain(\\d+)',
 			require: true
 		})
 		.catch( err => {
-			next( new UserError( 'Domain not found', err ) );
+			throw new UserError( 'Domain not found', 404, err );
 		})
 		.then( unit => {
 			if ( 'Domain' !== unit.get( 'type' ) ) {

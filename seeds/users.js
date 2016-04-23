@@ -88,6 +88,7 @@ exports.seed = ( knex, Promise ) => {
 			orgUnit: 3
 		}),
 		knex( 'users' ).insert({
+			id: 9,
 			firstName: 'Test',
 			lastName: 'Domainless',
 			email: 'nodomain@test.com',

@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Test for Auth Controller
+ * Test for Org Unit Controller
  * @see controllers/auth.js
  */
 

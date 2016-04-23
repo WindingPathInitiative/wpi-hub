@@ -12,6 +12,7 @@ exports.seed = ( knex, Promise ) => {
 				id: 1,
 				name: 'National Coordinator',
 				type: 'Primary',
+				email: 'nc@mindseyesociety.org',
 				parentOrgID: 1,
 				userID: 2,
 				roles: JSON.stringify([ 'user_read_private', 'user_update', 'user_assign', 'org_update', 'office_update', 'office_assign', 'office_create_assistants', 'org_create_domain' ])

@@ -17,14 +17,21 @@ const UserError = require( '../helpers/errors' );
  */
 router.get( '/:id(\\d+)',
 	token.validate(),
-	( req, res ) => {
+	( req, res, next ) => {
 		new Office({ id: req.params.id })
 		.fetch({
-			withRelated: [ 'parentOffice', 'orgUnit', 'user' ]
+			withRelated: [ 'parentOffice', 'orgUnit', 'user' ],
+			require: true
+		})
+		.catch( err => {
+			throw new UserError( 'Office not found', 404, err );
 		})
 		.then( office => {
 			office.unset([ 'userID', 'parentOrgID', 'parentOfficeID' ]);
 			res.json( office.toJSON() );
+		})
+		.catch( err => {
+			next( err );
 		});
 	}
 );
@@ -35,12 +42,15 @@ router.get( '/:id(\\d+)',
 router.get( '/internal',
 	network.internal,
 	token.validate(),
-	( req, res ) => {
+	( req, res, next ) => {
 		new Office()
 		.where( 'userID', '=', req.token.get( 'user' ) )
 		.fetchAll()
 		.then( offices => {
 			res.json( offices.toJSON() );
+		})
+		.catch( err => {
+			next( err );
 		});
 	}
 );
@@ -60,7 +70,7 @@ router.put( '/:id(\\d+)/assign/:user(\\d+)',
 		officeQuery = new Office({ id: req.params.id })
 		.fetch({ require: true })
 		.catch( err => {
-			next( new UserError( 'Office not found', 404, err ) );
+			throw new UserError( 'Office not found', 404, err );
 		});
 
 		if ( userID ) {
@@ -69,7 +79,7 @@ router.put( '/:id(\\d+)/assign/:user(\\d+)',
 				require: true
 			})
 			.catch( err => {
-				next( new UserError( 'User not found', 404, err ) );
+				throw new UserError( 'User not found', 404, err );
 			});
 		} else {
 			userQuery = false;

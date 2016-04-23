@@ -14,7 +14,7 @@ const UserError = require( '../helpers/errors' );
 /**
  * Gets node information for user.
  */
-router.get( /([a-zA-Z]{2}[\-\d]*)\/?$/,
+router.get( /^\/([a-zA-Z]{2}[\-\d]*)\/?$/,
 	token.validate(),
 	( req, res, next ) => {
 		let query = new OrgUnit({ code: req.params[0].toUpperCase() })
@@ -63,7 +63,7 @@ router.get( /([a-zA-Z]{2}[\-\d]*)\/?$/,
 			res.json( unit );
 		})
 		.catch( err => {
-			next( new UserError( 'Org unit not found', err ) );
+			next( new UserError( 'Org unit not found', 404, err ) );
 		});
 	}
 );
@@ -88,7 +88,7 @@ router.get( '/internal/:id',
 			res.json( unit );
 		})
 		.catch( err => {
-			next( new UserError( 'Org unit not found', err ) );
+			next( new UserError( 'Org unit not found', 404, err ) );
 		});
 	}
 );

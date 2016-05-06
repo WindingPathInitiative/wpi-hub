@@ -58,15 +58,19 @@ module.exports = function() {
 
 		it( 'logs in if valid token is provided', function( done ) {
 			request
-			.get( '/dev/auth' )
-			.query({ redirect_uri: 'http://localhost:3000/auth/verify/test/' })
+			.get( '/auth/verify/test' )
+			.query({ code: 'test' })
 			.expect( 302 )
 			.end( ( err, res ) => {
 				if ( err ) {
 					return done( err );
 				}
 				res.headers.should
-				.have.property( 'location', 'http://localhost:3000/auth/verify/test/?code=test' );
+				.have.property( 'location' )
+				.startWith( 'http://localhost:3000/dev' )
+				.and.containEql( 'token' );
+				res.headers.should
+				.have.property( 'set-cookie' );
 				done();
 			});
 		});

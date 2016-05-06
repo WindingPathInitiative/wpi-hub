@@ -27,7 +27,7 @@ module.exports = function() {
 				}
 				res.body.should
 				.have.property( 'url' )
-				.match( /portal\.mindseyesociety\.org/ );
+				.match( /localhost:3000/ );
 				done();
 			});
 		});
@@ -50,7 +50,23 @@ module.exports = function() {
 				}
 				res.headers.should
 				.have.property( 'location' )
-				.match( /portal\.mindseyesociety\.org/ );
+				.startWith( 'http://localhost:3000/dev/auth' )
+				.and.containEql( 'client_id=client_id_here' );
+				done();
+			});
+		});
+
+		it( 'logs in if valid token is provided', function( done ) {
+			request
+			.get( '/dev/auth' )
+			.query({ redirect_uri: 'http://localhost:3000/auth/verify/test/' })
+			.expect( 302 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.headers.should
+				.have.property( 'location', 'http://localhost:3000/auth/verify/test/?code=test' );
 				done();
 			});
 		});

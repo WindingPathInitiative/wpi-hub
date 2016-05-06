@@ -46,7 +46,7 @@ router.get( '/switch', ( req, res ) => {
 	.then( users => {
 		let html = '<h1>Switch to user:</h1><ul>';
 		_.each( users.toJSON(), user => {
-			html += `<li><a href="/switch/${ user.id }">${ user.fullName }</a></li>`;
+			html += `<li><a href="/dev/switch/${ user.id }">${ user.fullName }</a></li>`;
 		});
 		html += '</ul>';
 		res.send( html );
@@ -59,7 +59,7 @@ router.get( '/switch/:id',
 		req.token
 		.save( 'user', req.params.id, { patch: true } )
 		.then( () => {
-			res.redirect( '/' );
+			res.redirect( '/dev' );
 		});
 	}
 );

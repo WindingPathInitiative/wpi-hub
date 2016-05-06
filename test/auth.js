@@ -34,6 +34,12 @@ module.exports = function() {
 	});
 
 	describe( 'GET verify', function() {
+		before( 'prime passport', function( done ) {
+			request
+			.get( '/auth/signin/test' )
+			.end( () => done() );
+		});
+
 		it( 'fails if invalid code is provided', function( done ) {
 			request
 			.get( '/auth/verify/invalid' )

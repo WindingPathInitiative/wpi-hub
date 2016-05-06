@@ -34,11 +34,6 @@ module.exports = function() {
 	});
 
 	describe( 'GET verify', function() {
-		before( 'prime passport', function( done ) {
-			request
-			.get( '/auth/signin/test' )
-			.end( () => done() );
-		});
 
 		it( 'fails if invalid code is provided', function( done ) {
 			request
@@ -46,7 +41,7 @@ module.exports = function() {
 			.expect( 500, done );
 		});
 
-		it( 'redirects if invalid token is provided', function( done ) {
+		it( 'redirects if no token is provided', function( done ) {
 			request
 			.get( '/auth/verify/test' )
 			.expect( 302 )
@@ -62,10 +57,10 @@ module.exports = function() {
 			});
 		});
 
-		it( 'logs in if valid token is provided', function( done ) {
-			request
-			.get( '/auth/verify/test' )
-			.query({ code: 'test' })
+		it( 'redirects to app with token set', function( done ) {
+			request.get( '/dev/auth' )
+			.query({ redirect_uri: 'http://localhost:3000/auth/verify/test' })
+			.redirects( 1 )
 			.expect( 302 )
 			.end( ( err, res ) => {
 				if ( err ) {
@@ -76,7 +71,8 @@ module.exports = function() {
 				.startWith( 'http://localhost:3000/dev' )
 				.and.containEql( 'token' );
 				res.headers.should
-				.have.property( 'set-cookie' );
+				.have.property( 'set-cookie' )
+				.match( /token=\w+-\w+-\w+-\w+-\w+/ );
 				done();
 			});
 		});

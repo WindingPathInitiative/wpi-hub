@@ -10,6 +10,8 @@ const network   = require( '../middlewares/network' );
 const Office    = require( '../models/offices' );
 const Users     = require( '../models/users' );
 const UserError = require( '../helpers/errors' );
+const _         = require( 'lodash' );
+const Promise   = require( 'bluebird' );
 
 
 /**
@@ -25,6 +27,21 @@ router.get( '/:id(\\d+)',
 		})
 		.catch( err => {
 			throw new UserError( 'Office not found', 404, err );
+		})
+		.tap( office => {
+			return Promise.join(
+				office.getParents(),
+				office.getChildren(),
+				( parents, children ) => {
+					parents = parents.toArray();
+					children = children.toArray();
+					let filter = o => office.id === o.id;
+					_.remove( parents, filter );
+					_.remove( children, filter );
+					office.set( 'parents', parents );
+					office.set( 'children', children );
+				}
+			);
 		})
 		.then( office => {
 			office.unset([ 'userID', 'parentOrgID', 'parentOfficeID' ]);
@@ -111,12 +128,8 @@ router.put( '/:id(\\d+)/assign/:user(\\d+)',
 				return;
 			}
 			// Check if we're a parent office.
-			else if ( 'Assistant' === office.get( 'type' ) ) {
-				return perm.hasOverOffice( office, 'office_assign', curUser );
-			}
-			// Otherwise, check the org unit chain.
 			else {
-				return perm.hasOverUnit( office.get( 'parentOrgID' ), 'office_assign', curUser );
+				return perm.hasOverOffice( office, 'office_assign', curUser );
 			}
 		})
 		.then( office => {

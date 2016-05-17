@@ -163,27 +163,20 @@ function hasOverOffice( office, permission, officer ) {
 	}
 
 	return officeQuery
-	.tap( () => {
-		if ( ! office.has( 'parentOfficeID' ) ) {
-			throw new Error( 'Office not in chain' );
-		}
-	})
-	.then( () => {
-		return has( permission, officer );
-	})
+	.then( () => has( permission, officer ) )
 	.then( offices => {
+		return office.getParents()
+		.then( parents => {
+			let officeIds = mapCollection( offices, 'id' );
 
-		// Check if the office even has parents.
-		let officeParents = mapCollection( offices, 'parentID' );
-
-		// If one of the parents is the office, pass.
-		if ( -1 !== officeParents.indexOf( office.id ) ) {
-			return true;
-		}
-		// Otherwise, call this recursively.
-		else {
-			return hasOverOffice( office.get( 'parentOfficeID' ), permission, offices );
-		}
+			parents = parents.toJSON();
+			for ( let i = 0; i < parents.length; i++ ) {
+				if ( -1 !== officeIds.indexOf( parents[ i ].id ) ) {
+					return true;
+				}
+			}
+			throw new Error( 'Officer not found in chain' );
+		});
 	});
 }
 

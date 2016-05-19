@@ -20,7 +20,7 @@ router.get( '/me',
 	( req, res ) => {
 		req.user.load( 'orgUnit' )
 		.then( user => {
-			user.showFull = true;
+			user.show();
 			user.showPrivate = true;
 			res.json( user.toJSON() );
 		});
@@ -41,7 +41,7 @@ router.get( '/:id',
 			withRelated: 'orgUnit'
 		})
 		.then( user => {
-			user.showFull = true;
+			user.show();
 			res.json( user.toJSON() );
 		})
 		.catch( err => {
@@ -75,7 +75,7 @@ router.get( '/:id/private',
 			}
 		})
 		.then( user => {
-			user.showFull = true;
+			user.show();
 			user.showPrivate = true;
 			res.json( user.toJSON() );
 		})

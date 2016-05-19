@@ -41,11 +41,11 @@ const Base = bookshelf.Model.extend({
 	},
 
 	/**
-	 * Shows private data.
+	 * Shows all data data.
 	 * @return {void}
 	 */
 	show: function() {
-		this.showPrivate = true;
+		this.showFull = true;
 	}
 });
 

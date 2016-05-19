@@ -6,21 +6,22 @@
  * Stores information about an org unit.
  */
 const bookshelf = require( '../helpers/db' ).Bookshelf;
+const Base      = require( './base' );
+
 const types     = [ 'Nation', 'Region', 'Domain', 'Venue' ];
 
 function getDepth( node ) {
 	return types.indexOf( node.get( 'type' ) );
 }
 
-const OrgUnit = bookshelf.model( 'OrgUnit', {
+const OrgUnit = bookshelf.model( 'OrgUnit', Base.extend({
 	tableName: 'org_units',
-
-	serialize: function( options ) {
-		let attrs = bookshelf.Model.prototype.serialize.apply( this, arguments );
-		delete attrs.lft;
-		delete attrs.rgt;
-		return attrs;
-	},
+	publicAttrs: [
+		'id',
+		'name',
+		'code',
+		'type'
+	],
 
 	users: function() {
 		return this.hasMany( 'User', 'orgUnit' );
@@ -28,6 +29,13 @@ const OrgUnit = bookshelf.model( 'OrgUnit', {
 
 	offices: function() {
 		return this.hasMany( 'Office', 'parentOrgID' );
+	},
+
+	serialize: function( options ) {
+		let attrs = Base.prototype.serialize.apply( this, arguments );
+		delete attrs.lft;
+		delete attrs.rgt;
+		return attrs;
 	},
 
 	/**
@@ -161,6 +169,6 @@ const OrgUnit = bookshelf.model( 'OrgUnit', {
 	getTypes: function() {
 		return types;
 	}
-});
+}) );
 
 module.exports = OrgUnit;

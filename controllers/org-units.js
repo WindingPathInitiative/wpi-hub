@@ -104,6 +104,7 @@ function getChain( unit ) {
 		return [ unit, unit.getChain() ];
 	})
 	.spread( ( unit, chain ) => {
+		unit.show();
 		let resp = {
 			unit: unit.toJSON(),
 			children: [],

@@ -14,6 +14,7 @@ module.exports = bookshelf.model( 'User', Base.extend({
 	tableName: 'users',
 
 	publicAttrs: [
+		'id',
 		'membershipNumber',
 		'firstName',
 		'lastName',

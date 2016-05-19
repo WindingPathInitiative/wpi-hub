@@ -13,20 +13,22 @@ const Base      = require( './base' );
 module.exports = bookshelf.model( 'User', Base.extend({
 	tableName: 'users',
 
+	publicAttrs: [
+		'membershipNumber',
+		'firstName',
+		'lastName',
+		'nickname',
+		'fullName',
+		'membershipType',
+		'membershipExpiration'
+	],
+
 	initialize: function( attrs, options ) {
 		this.on( 'saving', this.saving );
 	},
 
 	parse: function( attrs ) {
 		attrs.fullName = attrs.firstName + ' ' + attrs.lastName;
-		return attrs;
-	},
-
-	serialize: function( options ) {
-		let attrs = bookshelf.Model.prototype.serialize.apply( this, arguments );
-		if ( ! this.showPrivate ) {
-			attrs = _.omit( attrs, [ 'email', 'address' ] );
-		}
 		return attrs;
 	},
 
@@ -38,6 +40,14 @@ module.exports = bookshelf.model( 'User', Base.extend({
 			model.set( 'portalID', model.get( 'remoteId' ) );
 		}
 		model.unset([ 'emailAddress', 'remoteId', 'affiliateId', 'affiliateName', 'fullName' ]);
+	},
+
+	serialize: function( options ) {
+		let attrs = Base.prototype.serialize.apply( this, arguments );
+		if ( ! this.showPrivate ) {
+			attrs = _.omit( attrs, [ 'email', 'address' ] );
+		}
+		return attrs;
 	},
 
 	orgUnit: function() {

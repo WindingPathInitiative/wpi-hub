@@ -115,11 +115,14 @@ module.exports = function() {
 				res.body.should
 				.be.instanceOf( Object )
 				.and.have.properties([
-					'firstName', 'lastName',
-					'orgUnit', 'fullName'
+					'firstName',
+					'lastName',
+					'orgUnit',
+					'fullName'
 				])
 				.and.not.have.property( 'email' );
 				res.body.should.have.property( 'id' ).Number;
+				helpers.models.orgUnit( res.body.orgUnit );
 				done();
 			});
 		});
@@ -206,6 +209,7 @@ module.exports = function() {
 				])
 				.and.have.property( 'email' );
 				res.body.should.have.property( 'id' ).Number;
+				helpers.models.orgUnit( res.body.orgUnit );
 				done();
 			});
 		});

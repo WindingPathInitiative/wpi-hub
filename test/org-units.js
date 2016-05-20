@@ -5,7 +5,8 @@
  * @see controllers/auth.js
  */
 
-const request = require( './helpers' ).request;
+const helpers = require( './helpers' );
+const request = helpers.request;
 const should  = require( 'should' );
 
 module.exports = function() {
@@ -61,11 +62,18 @@ module.exports = function() {
 				let unit = res.body.unit;
 				unit.should.have.property( 'id' ).is.Number;
 				unit.should.have.property( 'name' ).is.String;
+
 				unit.should.have.property( 'users' ).is.Array;
+				unit.users.forEach( helpers.models.user );
+
 				unit.should.have.property( 'offices' ).is.Array;
+				unit.offices.forEach( helpers.models.office );
 
 				res.body.should.have.property( 'children' ).is.Array;
+				res.body.children.forEach( helpers.models.orgUnit );
+
 				res.body.should.have.property( 'parents' ).is.Array;
+				res.body.parents.forEach( helpers.models.orgUnit );
 
 				done();
 			});
@@ -106,7 +114,10 @@ module.exports = function() {
 				unit.should.not.have.property( 'offices' ).is.Array;
 
 				res.body.should.have.property( 'children' ).is.Array;
+				res.body.children.forEach( helpers.models.orgUnit );
+
 				res.body.should.have.property( 'parents' ).is.Array;
+				res.body.parents.forEach( helpers.models.orgUnit );
 
 				done();
 			});

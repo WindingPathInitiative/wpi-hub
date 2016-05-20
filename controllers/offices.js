@@ -44,7 +44,7 @@ router.get( '/:id(\\d+)',
 			);
 		})
 		.then( office => {
-			office.unset([ 'userID', 'parentOrgID', 'parentOfficeID' ]);
+			office.unset([ 'userID', 'parentOrgID', 'parentOfficeID', 'parentOfficePath' ]);
 			office.show();
 			res.json( office.toJSON() );
 		})
@@ -103,8 +103,6 @@ router.put( '/:id(\\d+)/assign/:user(\\d+)',
 		} else {
 			userQuery = false;
 		}
-
-		const Promise = require( 'bluebird' );
 
 		Promise.join( officeQuery, userQuery, ( office, user ) => {
 			return office;

@@ -58,15 +58,10 @@ module.exports = function() {
 				body.should.have.property( 'roles' ).is.Array;
 
 				body.should.have.property( 'orgUnit' ).is.Object;
-				let org = body.orgUnit;
-				org.should.have.property( 'id', 1 );
-				org.should.have.property( 'name', 'United States' );
-				org.should.have.property( 'code', 'US' );
+				helpers.models.orgUnit( body.orgUnit );
 
 				body.should.have.property( 'user' ).is.Object;
-				let user = body.user;
-				user.should.have.property( 'id', 2 );
-				user.should.have.property( 'membershipNumber', 'US2016010002' );
+				helpers.models.user( body.user );
 
 				done();
 			});

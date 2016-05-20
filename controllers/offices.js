@@ -45,6 +45,7 @@ router.get( '/:id(\\d+)',
 		})
 		.then( office => {
 			office.unset([ 'userID', 'parentOrgID', 'parentOfficeID' ]);
+			office.show();
 			res.json( office.toJSON() );
 		})
 		.catch( err => {
@@ -64,6 +65,7 @@ router.get( '/internal',
 		.where( 'userID', '=', req.token.get( 'user' ) )
 		.fetchAll()
 		.then( offices => {
+			offices.each( o => o.show() );
 			res.json( offices.toJSON() );
 		})
 		.catch( err => {

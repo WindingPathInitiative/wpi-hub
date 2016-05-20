@@ -10,6 +10,12 @@ const Base      = require( './base' );
 
 const Office = bookshelf.model( 'Office', Base.extend({
 	tableName: 'offices',
+	publicAttrs: [
+		'id',
+		'name',
+		'type',
+		'user'
+	],
 
 	parse: function( attrs ) {
 		attrs.roles = JSON.parse( attrs.roles );

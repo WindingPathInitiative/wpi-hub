@@ -52,6 +52,71 @@ router.get( '/:id',
 
 
 /**
+ * Updates a user.
+ */
+router.put( '/:id',
+	token.validate(),
+	parseID,
+	( req, res, next ) => {
+		if ( _.isEmpty( req.body ) ) {
+			next( new UserError( 'No data provided', 400 ) );
+			return;
+		}
+
+		new Users( req.query )
+		.fetch({
+			require: true,
+			withRelated: 'orgUnit'
+		})
+		.catch( err => {
+			throw new UserError( 'User not found', 404, err );
+		})
+		.tap( user => {
+			if ( req.token.get( 'user' ) === user.id ) {
+				return;
+			} else {
+				const perm = require( '../helpers/permissions' );
+				return perm.hasOverUser( user, 'user_update', req.token.get( 'user' ) );
+			}
+		})
+		.then( user => {
+			const validate = require( '../helpers/validation' );
+			let constraints = {
+				portalID: { numericality: { onlyInteger: true } },
+				firstName: { length: { minimum: 1 } },
+				lastName: { length: { minimum: 1 } },
+				nickname: { isString: true },
+				address: { isString: true },
+				email: { email: true },
+				membershipType: { inclusion: [ 'None', 'Trial', 'Full', 'Expelled' ] },
+				membershipExpiration: { date: true, format: /\d{4}-\d{2}-\d{2}/ }
+			};
+			return validate.async( req.body, constraints )
+			.catch( errs => {
+				let errors = _.map( errs, err => err.join( ', ' ) ).join( ', ' );
+				throw new UserError( 'Invalid data provided: ' + errors, 400 );
+			})
+			.then( attributes => {
+				return user.save( attributes );
+			});
+		})
+		.then( user => {
+			user.show();
+			user.showPrivate = true;
+			res.json( user.toJSON() );
+		})
+		.catch( err => {
+			if ( err instanceof UserError ) {
+				next( err );
+			} else {
+				next( new UserError( 'Authentication failed', 403, err ) );
+			}
+		});
+	}
+);
+
+
+/**
  * Gets private user data.
  */
 router.get( '/:id/private',

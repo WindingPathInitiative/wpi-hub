@@ -223,6 +223,100 @@ module.exports = function() {
 		});
 	});
 
+	describe( 'PUT id', function() {
+		var userToken, ncToken, dcToken, testData;
+
+		before( 'create tokens', function( done ) {
+			let promise1 = makeToken( 9 )
+			.then( data => {
+				userToken = data.id;
+			});
+
+			let promise2 = makeToken( 2 )
+			.then( data => {
+				ncToken = data.id;
+			});
+
+			let promise3 = makeToken( 3 )
+			.then( data => {
+				dcToken = data.id;
+			});
+
+			Promise.join( promise1, promise2, promise3, () => {
+				done();
+			});
+		});
+
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.put( '/users/9' )
+			.send({ firstName: 'Test' })
+			.expect( 403, done );
+		});
+
+		it( 'fails for invalid user id', function( done ) {
+			request
+			.put( '/users/999999999999999' )
+			.send({ firstName: 'Test' })
+			.query({ token: ncToken })
+			.expect( 404, done );
+		});
+
+		it( 'fails for invalid MES number', function( done ) {
+			request
+			.put( '/users/DA0000000000' )
+			.send({ firstName: 'Test' })
+			.query({ token: ncToken })
+			.expect( 404, done );
+		});
+
+		it( 'fails without data', function( done ) {
+			request
+			.put( '/users/1' )
+			.query({ token: ncToken })
+			.expect( 400, done );
+		});
+
+		it( 'fails if modifying user without permission', function( done ) {
+			request
+			.put( '/users/1' )
+			.query({ token: userToken })
+			.send({ firstName: 'Test' })
+			.expect( 403, done );
+		});
+
+		it( 'works for user modifying themselves', function( done ) {
+			request
+			.put( '/users/9' )
+			.query({ token: userToken })
+			.send({ firstName: 'Test' })
+			.expect( 200, done );
+		});
+
+		it( 'works for modifying with permission', function( done ) {
+			request
+			.put( '/users/7' )
+			.query({ token: dcToken })
+			.send({ membershipType: 'Full' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'membershipType', 'Full' );
+				done();
+			});
+		});
+
+		it( 'fails for invalid data', function( done ) {
+			request
+			.put( '/users/7' )
+			.query({ token: dcToken })
+			.send({ membershipType: 'Blah' })
+			.expect( 400, done );
+		});
+	});
+
 	describe( 'PUT assign', function() {
 		var userToken, ncToken, dcToken;
 		before( 'create tokens', function( done ) {

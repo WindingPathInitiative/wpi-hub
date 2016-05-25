@@ -426,4 +426,191 @@ module.exports = function() {
 			Promise.join( p1, p2, () => done() );
 		});
 	});
+
+	describe( 'GET search', function() {
+		var userToken, expiredToken;
+		before( 'create tokens', function( done ) {
+			let userPromise = makeToken( 1 )
+			.then( data => {
+				userToken = data.id;
+			});
+
+			let expiredPromise = makeToken( 6 )
+			.then( data => {
+				expiredToken = data.id;
+			});
+
+			Promise.join( userPromise, expiredPromise, () => {
+				done();
+			});
+		});
+
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.get( '/users/search' )
+			.expect( 403, done );
+		});
+
+		it( 'fails if expired token is provided', function( done ) {
+			request
+			.get( '/users/search' )
+			.query({ token: expiredToken })
+			.expect( 403, done );
+		});
+
+		it( 'fails if no params provided', function( done ) {
+			request
+			.get( '/users/search' )
+			.query({ token: userToken })
+			.expect( 400, done );
+		});
+
+		it( 'returns empty array with unused name', function( done ) {
+			request
+			.get( '/users/search' )
+			.query({ token: userToken })
+			.query({ name: 'foo' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.be.an.Array;
+				res.body.should.be.empty;
+				done();
+			});
+		});
+
+		it( 'returns list of users for used name', function( done ) {
+			request
+			.get( '/users/search' )
+			.query({ token: userToken })
+			.query({ name: 'test' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.be.an.Array;
+				res.body.should.be.not.empty;
+				res.body.forEach( helpers.models.user );
+				done();
+			});
+		});
+
+		it( 'returns empty array with unused email', function( done ) {
+			request
+			.get( '/users/search' )
+			.query({ token: userToken })
+			.query({ email: 'foo' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.be.an.Array;
+				res.body.should.be.empty;
+				done();
+			});
+		});
+
+		it( 'returns user for used email', function( done ) {
+			request
+			.get( '/users/search' )
+			.query({ token: userToken })
+			.query({ email: 'test@test.com' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.be.an.Array;
+				res.body.should.have.length( 1 );
+				res.body.forEach( helpers.models.user );
+				done();
+			});
+		});
+
+		it( 'returns empty array with unused MES number', function( done ) {
+			request
+			.get( '/users/search' )
+			.query({ token: userToken })
+			.query({ mes: 'foo' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.be.an.Array;
+				res.body.should.be.empty;
+				done();
+			});
+		});
+
+		it( 'returns user for used MES number', function( done ) {
+			request
+			.get( '/users/search' )
+			.query({ token: userToken })
+			.query({ mes: 'US2012030038' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.be.an.Array;
+				res.body.should.have.length( 1 );
+				res.body.forEach( helpers.models.user );
+				done();
+			});
+		});
+
+		it( 'fails when querying invalid domain', function( done ) {
+			request
+			.get( '/users/search' )
+			.query({ token: userToken })
+			.query({ orgUnit: 99 })
+			.expect( 404, done );
+		});
+
+		it( 'returns empty array for empty org unit', function( done ) {
+			request
+			.get( '/users/search' )
+			.query({ token: userToken })
+			.query({ orgUnit: 4 })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.be.an.Array;
+				res.body.should.be.empty;
+				done();
+			});
+		});
+
+		it( 'returns list of users for org unit', function( done ) {
+			request
+			.get( '/users/search' )
+			.query({ token: userToken })
+			.query({ orgUnit: 3 })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.be.an.Array;
+				res.body.should.not.be.empty;
+				res.body.forEach( helpers.models.user );
+				done();
+			});
+		});
+
+		after( 'destroy tokens', function( done ) {
+			Promise.join(
+				deleteToken( userToken ),
+				deleteToken( expiredToken ),
+				() => done()
+			);
+		});
+	});
 };

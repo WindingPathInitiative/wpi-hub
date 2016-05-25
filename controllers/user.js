@@ -29,6 +29,91 @@ router.get( '/me',
 
 
 /**
+ * Gets a list of users by search queries.
+ */
+router.get( '/search',
+	token.parse(),
+	( req, res, next ) => {
+		// Exit if the user is expired.
+		if ( req.user.get( 'membershipExpiration' ) < Date.now() ) {
+			next( new UserError( 'User is expired', 403 ) );
+		} else {
+			next();
+		}
+	},
+	( req, res, next ) => {
+		let params = _.omit( req.query, 'token' );
+		if ( _.isEmpty( params ) ) {
+			next( new UserError( 'No search params provided', 400 ) );
+			return;
+		}
+
+		let query = new Users();
+
+		if ( params.name ) {
+			let like = '%' + params.name + '%';
+			query.query( q => {
+				q.where( 'firstName', 'LIKE', like )
+				.orWhere( 'lastName', 'LIKE', like )
+				.orWhere( 'nickname', 'LIKE', like );
+			});
+		} else if ( params.email ) {
+			query.where( 'email', params.email );
+		} else if ( params.mes ) {
+			query.where( 'membershipNumber', params.mes );
+		} else if ( ! params.orgUnit ) {
+			next( new UserError( 'Invalid query', 400 ) );
+			return;
+		}
+
+		if ( undefined !== params.expired ) {
+			let type = normalizeBool( params.expired ) ? '<' : '>=';
+			query.where( 'membershipExpiration', type, Date.now() );
+		}
+
+		new Promise( res => res( query ) )
+		.tap( query => {
+			// Gets a list of IDs of desired org unit.
+			if ( params.orgUnit && parseInt( params.orgUnit ) ) {
+				let id = parseInt( params.orgUnit );
+				const OrgUnit = require( '../models/org_units' );
+
+				return new OrgUnit({ id: id })
+				.fetch({ require: true })
+				.catch( err => {
+					throw new UserError( 'Org unit not found', 404, err );
+				})
+				.then( unit => {
+					return unit
+					.whereChildren( unit )
+					.where( 'type', '<>', 'Venue' )
+					.fetchAll();
+				})
+				.then( units => {
+					let ids = units.map( u => u.id ).concat( id );
+					query.query( 'whereIn', 'orgUnit', ids );
+				});
+			}
+		})
+		.then( query => {
+			query
+			.fetchAll()
+			.then( users => {
+				res.json( users.toJSON() );
+			});
+		})
+		.catch( err => {
+			if ( err instanceof UserError ) {
+				next( err );
+			} else {
+				next( new UserError( 'Search failed', 500, err ) );
+			}
+		});
+	}
+);
+
+
+/**
  * Gets open user data.
  */
 router.get( '/:id',
@@ -273,6 +358,20 @@ function parseID( req, res, next ) {
 		next();
 	} else {
 		next( new UserError( 'Invalid ID provided', 400 ) );
+	}
+}
+
+
+/**
+ * Normalizes a boolean query value.
+ * @param {mixed} boolean Value to parse.
+ * @return {boolean}
+ */
+function normalizeBool( boolean ) {
+	if ( 'true' === boolean || '1' === boolean || true === boolean ) {
+		return true;
+	} else {
+		return false;
 	}
 }
 

@@ -7,7 +7,7 @@ const settings = {
 	connection: _.defaults( config.global, { charset: 'utf8' }, config.knex )
 };
 
-if ( 'development' !== process.env.NODE_ENV ) {
+if ( process.env.NODE_ENV && 'development' !== process.env.NODE_ENV ) {
 	settings.connection.debug = false;
 }
 

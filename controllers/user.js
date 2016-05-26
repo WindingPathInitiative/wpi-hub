@@ -178,8 +178,7 @@ router.put( '/:id',
 			};
 			return validate.async( req.body, constraints )
 			.catch( errs => {
-				let errors = _.map( errs, err => err.join( ', ' ) ).join( ', ' );
-				throw new UserError( 'Invalid data provided: ' + errors, 400 );
+				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
 			})
 			.then( attributes => {
 				return user.save( attributes );

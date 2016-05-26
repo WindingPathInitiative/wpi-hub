@@ -5,9 +5,12 @@
  * @see controllers/auth.js
  */
 
-const helpers = require( './helpers' );
-const request = helpers.request;
-const should  = require( 'should' );
+const should      = require( 'should' );
+const Promise     = require( 'bluebird' );
+const helpers     = require( './helpers' );
+const request     = helpers.request;
+const makeToken   = helpers.makeToken;
+const deleteToken = helpers.deleteToken;
 
 module.exports = function() {
 
@@ -15,7 +18,7 @@ module.exports = function() {
 
 		var token;
 		before( 'create token', function( done ) {
-			require( './helpers' ).makeToken( 1 )
+			makeToken( 1 )
 			.then( data => {
 				token = data.id;
 				done();
@@ -80,7 +83,7 @@ module.exports = function() {
 		});
 
 		after( 'destroy token', function( done ) {
-			require( './helpers' ).deleteToken( token )
+			deleteToken( token )
 			.then( () => done() );
 		});
 	});
@@ -121,6 +124,97 @@ module.exports = function() {
 
 				done();
 			});
+		});
+	});
+
+	describe( 'PUT code', function() {
+
+		var rcToken, userToken;
+
+		before( 'create tokens', function( done ) {
+			let userPromise = makeToken( 5 )
+			.then( data => {
+				userToken = data.id;
+			});
+
+			let rcPromise = makeToken( 3 )
+			.then( data => {
+				rcToken = data.id;
+			});
+
+			Promise.join(
+				userPromise,
+				rcPromise,
+				() => done()
+			);
+		});
+
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.put( '/orgunits/3' )
+			.send({ name: 'Test' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if invalid code is provided', function( done ) {
+			request
+			.put( '/orgunits/99' )
+			.send({ name: 'Test' })
+			.query({ token: rcToken })
+			.expect( 404, done );
+		});
+
+		it( 'fails without data', function( done ) {
+			request
+			.put( '/orgunits/3' )
+			.query({ token: rcToken })
+			.expect( 400, done );
+		});
+
+		it( 'fails if modifying org unit without permission', function( done ) {
+			request
+			.put( '/orgunits/3' )
+			.query({ token: userToken })
+			.send({ name: 'Test' })
+			.expect( 403, done );
+		});
+
+		it( 'fails for invalid data', function( done ) {
+			request
+			.put( '/orgunits/3' )
+			.query({ token: rcToken })
+			.send({ type: 'Blah' })
+			.expect( 400, done );
+		});
+
+		it( 'works for modifying with permission', function( done ) {
+			request
+			.put( '/orgunits/3' )
+			.query({ token: rcToken })
+			.send({ name: 'Test' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'name', 'Test' );
+				done();
+			});
+		});
+
+		after( 'destroy token', function( done ) {
+			Promise.join(
+				deleteToken( userToken ),
+				deleteToken( rcToken ),
+				() => done()
+			);
+		});
+
+		after( 'reset data', function( done ) {
+			let OrgUnit = require( '../models/org_units' );
+			new OrgUnit({ id: 3 })
+			.save( { name: 'Children of the Lost Eden' }, { patch: true } )
+			.then( () => done() );
 		});
 	});
 };

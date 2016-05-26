@@ -25,3 +25,10 @@ validate.extend( validate.validators.datetime, {
 });
 
 module.exports = validate;
+
+module.exports.format = function( errs ) {
+	if ( 'string' === typeof errs ) {
+		return errs;
+	}
+	return _.map( errs, err => err.join( ', ' ) ).join( ', ' );
+};

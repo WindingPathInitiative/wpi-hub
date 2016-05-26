@@ -70,6 +70,69 @@ router.get( /^\/([a-zA-Z]{2}[\-\d]*)\/?$/,
 
 
 /**
+ * Updates org unit
+ */
+router.put( '/:id',
+	token.validate(),
+	( req, res, next ) => {
+		if ( _.isEmpty( req.body ) ) {
+			next( new UserError( 'No data provided', 400 ) );
+			return;
+		}
+
+		let query = new OrgUnit();
+		let id    = req.params.id;
+		if ( NaN !== Number.parseInt( id ) ) {
+			query.where( 'id', Number.parseInt( id ) );
+		} else {
+			query.where( 'code', id );
+		}
+
+		query.fetch({
+			require: true
+		})
+		.catch( err => {
+			throw new UserError( 'Org unit not found', 404, err );
+		})
+		.tap( unit => {
+			const perm = require( '../helpers/permissions' );
+			return perm.hasOverUnit( unit, 'org_update', req.token.get( 'user' ) );
+		})
+		.then( unit => {
+			const validate = require( '../helpers/validation' );
+			let constraints = {
+				name: { length: { minimum: 1 } },
+				code: { length: { minimum: 1 } },
+				venueType: { isString: true },
+				location: { isString: true },
+				defDoc: { isString: true },
+				website: { url: true },
+				type: { inclusion: [ 'Venue', 'Domain', 'Region', 'Nation' ] }
+			};
+			return validate.async( req.body, constraints )
+			.catch( errs => {
+				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
+			})
+			.then( attributes => {
+				return unit.save( attributes );
+			});
+		})
+		.then( unit => {
+			unit.show();
+			res.json( unit.toJSON() );
+		})
+		.catch( err => {
+			if ( err instanceof UserError ) {
+				next( err );
+			} else {
+				next( new UserError( 'Authentication failed', 403, err ) );
+			}
+		});
+	}
+);
+
+
+/**
  * Gets node information based off of ID.
  */
 router.get( '/internal/:id',

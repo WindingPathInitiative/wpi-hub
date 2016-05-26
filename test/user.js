@@ -224,7 +224,7 @@ module.exports = function() {
 	});
 
 	describe( 'PUT id', function() {
-		var userToken, ncToken, dcToken, testData;
+		var userToken, ncToken, dcToken;
 
 		before( 'create tokens', function( done ) {
 			let promise1 = makeToken( 9 )
@@ -289,8 +289,15 @@ module.exports = function() {
 			request
 			.put( '/users/9' )
 			.query({ token: userToken })
-			.send({ firstName: 'Test' })
-			.expect( 200, done );
+			.send({ firstName: 'Test2' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'firstName', 'Test2' );
+				done();
+			});
 		});
 
 		it( 'works for modifying with permission', function( done ) {
@@ -314,6 +321,23 @@ module.exports = function() {
 			.query({ token: dcToken })
 			.send({ membershipType: 'Blah' })
 			.expect( 400, done );
+		});
+
+		after( 'destroy tokens', function( done ) {
+			Promise.join(
+				deleteToken( userToken ),
+				deleteToken( ncToken ),
+				deleteToken( dcToken ),
+				() => done()
+			);
+		});
+
+		after( 'reset users', function( done ) {
+			let User = require( '../models/users' );
+			let p1 = new User({ id: 9 }).save({ firstName: 'Test' }, { patch: true });
+			let p2 = new User({ id: 7 }).save({ membershipType: 'Trial' }, { patch: true });
+
+			Promise.join( p1, p2, () => done() );
 		});
 	});
 
@@ -419,7 +443,7 @@ module.exports = function() {
 		});
 
 		after( 'reset users', function( done ) {
-			const User = require( '../models/users' );
+			let User = require( '../models/users' );
 			let p1 = new User({ id: 9 }).save({ orgUnit: null }, { patch: true });
 			let p2 = new User({ id: 2 }).save({ orgUnit: 6 }, { patch: true });
 

@@ -70,14 +70,97 @@ router.get( /^\/([a-zA-Z]{2}[\-\d]*)\/?$/,
 
 
 /**
+ * Creates a new org unit
+ */
+router.post( '/',
+	token.validate(),
+	( req, res, next ) => {
+		let data  = req.body;
+
+		if ( _.isEmpty( data ) ) {
+			return next( new UserError( 'No data provided', 400 ) );
+		}
+
+		if ( ! data.parentID ) {
+			return next( new UserError( 'No parent provided', 400 ) );
+		}
+
+		let types = OrgUnit.getTypes();
+
+		if ( -1 === types.indexOf( data.type ) || 'Nation' === data.type ) {
+			return next( new UserError( 'Invalid org unit type', 400 ) );
+		}
+
+		new OrgUnit({ id: data.parentID })
+		.fetch({ require: true })
+		.catch( err => {
+			throw new UserError( 'Parent not found', 400 );
+		})
+		.tap( parent => {
+			const perm = require( '../helpers/permissions' );
+			let role = 'org_create_' + data.type.toLowerCase();
+			return perm.hasOverUnit( parent, role, req.token.get( 'user' ) );
+		})
+		.then( parent => {
+			// Make sure the new org unit is the correct type.
+			if ( types.indexOf( data.type ) - 1 !== types.indexOf( parent.get( 'type' ) ) ) {
+				throw new UserError( 'Org type doesn\'t match expected type', 400 );
+			}
+
+			return OrgUnit.getNewBounds( parent );
+		})
+		.then( bounds => {
+			const validate = require( '../helpers/validation' );
+			data = Object.assign( data, bounds );
+			let constraints = {
+				id: { numericality: { onlyInteger: true, strict: true } },
+				name: { length: { minimum: 1 }, presence: true },
+				code: { length: { minimum: 1 }, presence: true },
+				venueType: { length: { minimum: 1 } },
+				location: { isString: true },
+				defDoc: { isString: true },
+				website: { url: true },
+				type: { inclusion: [ 'Venue', 'Domain', 'Region' ], presence: true },
+				lft: { numericality: { onlyInteger: true }, presence: true },
+				rgt: { numericality: { onlyInteger: true }, presence: true }
+			};
+			if ( 'Venue' === data.type ) {
+				contraints.venueType.presence = true;
+			}
+			return validate.async( data, constraints )
+			.catch( errs => {
+				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
+			})
+			.then( attributes => {
+				return new OrgUnit().save( attributes, { method: 'insert' } );
+			})
+			.catch( err => {
+				throw new UserError( 'There was an error creating the org unit', 500, err );
+			});
+		})
+		.then( unit => {
+			unit.show();
+			res.json( unit );
+		})
+		.catch( err => {
+			if ( err instanceof UserError ) {
+				next( err );
+			} else {
+				next( new UserError( 'Authentication failed', 403, err ) );
+			}
+		});
+	}
+);
+
+
+/**
  * Updates org unit
  */
 router.put( '/:id',
 	token.validate(),
 	( req, res, next ) => {
 		if ( _.isEmpty( req.body ) ) {
-			next( new UserError( 'No data provided', 400 ) );
-			return;
+			return next( new UserError( 'No data provided', 400 ) );
 		}
 
 		let query = new OrgUnit();
@@ -107,7 +190,7 @@ router.put( '/:id',
 				location: { isString: true },
 				defDoc: { isString: true },
 				website: { url: true },
-				type: { inclusion: [ 'Venue', 'Domain', 'Region', 'Nation' ] }
+				type: { inclusion: [ 'Venue', 'Domain', 'Region' ] }
 			};
 			return validate.async( req.body, constraints )
 			.catch( errs => {
@@ -140,8 +223,7 @@ router.get( '/internal/:id',
 	( req, res, next ) => {
 		let id = parseInt( req.params.id );
 		if ( NaN === id ) {
-			next( new Error( 'Invalid org id' ) );
-			return;
+			return next( new Error( 'Invalid org id' ) );
 		}
 		let query = new OrgUnit({ id: id })
 		.fetch({ require: true });

@@ -217,4 +217,147 @@ module.exports = function() {
 			.then( () => done() );
 		});
 	});
+
+	describe( 'POST new', function() {
+
+		var adminToken, userToken, data;
+
+		data = {
+			id: 10,
+			name: 'Test Domain',
+			code: 'XX-000',
+			location: 'Narnia',
+			defDoc: 'Test domain, please ignore!',
+			website: 'http://www.example.com',
+			type: 'Domain',
+			parentID: 5
+		};
+
+		before( 'create tokens', function( done ) {
+			let userPromise = makeToken( 3 )
+			.then( data => {
+				userToken = data.id;
+			});
+
+			let adminPromise = makeToken( 1 )
+			.then( data => {
+				adminToken = data.id;
+			});
+
+			Promise.join(
+				userPromise,
+				adminPromise,
+				() => done()
+			);
+		});
+
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.post( '/orgunits' )
+			.send( data )
+			.expect( 403, done );
+		});
+
+		it( 'fails without data', function( done ) {
+			request
+			.post( '/orgunits' )
+			.query({ token: adminToken })
+			.expect( 400, done );
+		});
+
+		it( 'fails if creating org unit without permission', function( done ) {
+			request
+			.post( '/orgunits' )
+			.query({ token: userToken })
+			.send( data )
+			.expect( 403, done );
+		});
+
+		it( 'fails without parent', function( done ) {
+			let badData = Object.assign( {}, data );
+			badData.parentID = null;
+
+			request
+			.post( '/orgunits' )
+			.query({ token: adminToken })
+			.send( badData )
+			.expect( 400, done );
+		});
+
+		it( 'fails with nonexistent parent', function( done ) {
+			let badData = Object.assign( {}, data );
+			badData.parentID = 99;
+
+			request
+			.post( '/orgunits' )
+			.query({ token: adminToken })
+			.send( badData )
+			.expect( 400, done );
+		});
+
+		it( 'fails with incorrect type', function( done ) {
+			let badData = Object.assign( {}, data );
+			badData.type = 'Region';
+
+			request
+			.post( '/orgunits' )
+			.query({ token: adminToken })
+			.send( badData )
+			.expect( 400, done );
+		});
+
+		it( 'fails with invalid data', function( done ) {
+			let badData = Object.assign( {}, data );
+			badData.type = 'Wrong';
+			badData.website = 'fffffff';
+
+			request
+			.post( '/orgunits' )
+			.query({ token: adminToken })
+			.send( badData )
+			.expect( 400, done );
+		});
+
+		it( 'fails if ID already exists', function( done ) {
+			let badData = Object.assign( {}, data );
+			badData.id = 1;
+
+			request
+			.post( '/orgunits' )
+			.query({ token: adminToken })
+			.send( badData )
+			.expect( 500, done );
+		});
+
+		it( 'works for creating with permission', function( done ) {
+			request
+			.post( '/orgunits' )
+			.query({ token: adminToken })
+			.send( data )
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				delete data.parentID;
+				res.body.should.have.properties( data );
+				done();
+			});
+		});
+
+		after( 'destroy token', function( done ) {
+			Promise.join(
+				deleteToken( userToken ),
+				deleteToken( adminToken ),
+				() => done()
+			);
+		});
+
+		after( 'delete org unit', function( done ) {
+			let OrgUnit = require( '../models/org_units' );
+			new OrgUnit({ id: data.id })
+			.destroy()
+			.then( () => done() );
+		});
+	});
 };

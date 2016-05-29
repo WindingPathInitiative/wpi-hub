@@ -360,4 +360,148 @@ module.exports = function() {
 			.then( () => done() );
 		});
 	});
+
+	describe( 'DELETE id', function() {
+		var adminToken, userToken;
+
+		before( 'create tokens', function( done ) {
+			let userPromise = makeToken( 3 )
+			.then( data => {
+				userToken = data.id;
+			});
+
+			let adminPromise = makeToken( 1 )
+			.then( data => {
+				adminToken = data.id;
+			});
+
+			Promise.join(
+				userPromise,
+				adminPromise,
+				() => done()
+			);
+		});
+
+		before( 'create units', function( done ) {
+			let OrgUnit = require( '../models/org_units' );
+			let User    = require( '../models/users' );
+			let Office  = require( '../models/offices' );
+
+			let domain = new OrgUnit({
+				id: 10,
+				name: 'Test Domain',
+				code: 'XX-000',
+				location: 'Narnia',
+				defDoc: 'Test domain, please ignore!',
+				website: 'http://www.example.com',
+				type: 'Domain',
+				lft: 201,
+				rgt: 300
+			})
+			.save( {}, { method: 'insert' } );
+
+			let user = new User({
+				id: 9,
+				orgUnit: 10
+			})
+			.save();
+
+			let office = new Office({
+				id: 10,
+				name: 'Test Officer',
+				type: 'Primary',
+				parentOfficePath: '10',
+				parentOrgID: 10
+			})
+			.save( {}, { method: 'insert' } );
+
+			Promise.join(
+				domain,
+				user,
+				office,
+				() => done()
+			);
+		});
+
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.delete( '/orgunits/10' )
+			.expect( 403, done );
+		});
+
+		it( 'fails if no permission', function( done ) {
+			request
+			.delete( '/orgunits/10' )
+			.query({ token: userToken })
+			.expect( 403, done );
+		});
+
+		it( 'fails if target is root', function( done ) {
+			request
+			.delete( '/orgunits/1' )
+			.query({ token: adminToken })
+			.expect( 500, done );
+		});
+
+		it( 'fails if target has children', function( done ) {
+			request
+			.delete( '/orgunits/2' )
+			.query({ token: adminToken })
+			.expect( 500, done );
+		});
+
+		it( 'works for deleting with no children', function( done ) {
+			request
+			.delete( '/orgunits/10' )
+			.query({ token: adminToken })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				let User    = require( '../models/users' );
+				let Office  = require( '../models/offices' );
+
+				let user = new User({ id: 9 })
+				.fetch()
+				.then( user => {
+					user.get( 'orgUnit' ).should.equal( 2, 'User is now on parent' );
+				});
+
+				let office = new Office({ id: 10 })
+				.fetch()
+				.then( office => {
+					( null === office ).should.be.true( 'Office does not exist' );
+				});
+
+				Promise.join(
+					user,
+					office,
+					() => done()
+				);
+			});
+		});
+
+		after( 'destroy token', function( done ) {
+			Promise.join(
+				deleteToken( userToken ),
+				deleteToken( adminToken ),
+				() => done()
+			);
+		});
+
+		after( 'delete org unit', function( done ) {
+			let OrgUnit = require( '../models/org_units' );
+			let User    = require( '../models/users' );
+			let Office  = require( '../models/offices' );
+
+			let domain = new OrgUnit({ id: 10 }).destroy();
+			let user   = new User({ id: 9, orgUnit: null }).save();
+			let office = new Office({ id: 10 }).destroy();
+
+			Promise.join(
+				domain,
+				user,
+				office,
+				() => done()
+			);
+		});
+	});
 };

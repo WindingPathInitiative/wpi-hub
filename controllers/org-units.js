@@ -216,6 +216,90 @@ router.put( '/:id',
 
 
 /**
+ * Deletes an org unit.
+ */
+router.delete( '/:id',
+	token.validate(),
+	( req, res, next ) => {
+
+		let query = new OrgUnit();
+		let id    = Number.parseInt( req.params.id );
+		if ( NaN !== id ) {
+			if ( 1 === id ) {
+				return next( new UserError( 'Cannot delete root org', 500 ) );
+			}
+			query.where( 'id', id );
+		} else {
+			query.where( 'code', id );
+		}
+
+		query.fetch({
+			require: true
+		})
+		.catch( err => {
+			throw new UserError( 'Org unit not found', 404, err );
+		})
+		.tap( unit => {
+			const perm = require( '../helpers/permissions' );
+			let role = 'org_create_' + unit.get( 'type' ).toLowerCase();
+			return perm.hasOverUnit( unit, role, req.token.get( 'user' ) );
+		})
+		.tap( unit => {
+			return unit.getChildren()
+			.then( children => {
+				if ( children.length ) {
+					throw new UserError( 'Cannot delete org with children', 500 );
+				}
+			});
+		})
+		.tap( unit => {
+			let Promise = require( 'bluebird' );
+			let Offices = require( '../models/offices' );
+			let Users   = require( '../models/users' );
+
+			let office = new Offices()
+			.where({ parentOrgID: unit.id })
+			.destroy();
+
+			let users  = unit.getParents( true )
+			.then( parents => {
+				let parent = parents.first();
+				if ( ! parent.id ) {
+					throw new UserError( 'No parent found', 500 );
+				}
+
+				return new Users()
+				.where({ orgUnit: unit.id })
+				.save( { orgUnit: parent.id }, { patch: true } );
+			});
+
+			return Promise.join(
+				office,
+				users,
+				() => unit
+			);
+		})
+		.then( unit => {
+			return unit.destroy()
+			.catch( err => {
+				throw new UserError( 'Could not delete org', 500, err );
+			});
+		})
+		.then( () => {
+			res.json({ success: true });
+		})
+		.catch( err => {
+			if ( err instanceof UserError ) {
+				next( err );
+			} else {
+				next( new UserError( 'Authentication failed', 403, err ) );
+			}
+		});
+	}
+);
+
+
+/**
  * Gets node information based off of ID.
  */
 router.get( '/internal/:id',

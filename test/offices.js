@@ -100,22 +100,109 @@ module.exports = function() {
 	});
 
 	describe( 'PUT assign', function() {
-		it( 'fails if no token is provided' );
 
-		it( 'fails for invalid user id' );
+		let Office = require( '../models/offices' );
 
-		it( 'fails for invalid office id' );
+		afterEach( 'reset officers', function( done ) {
+			let main = new Office({ id: 1 }).save( { userID: 2 }, { patch: true } );
+			let child = new Office({ id: 5 }).save( { userID: 8 }, { patch: true } );
 
-		it( 'fails for assigning without permission' );
+			Promise.join( main, child, () => done() );
+		});
 
-		it( 'fails for vacating without permission' );
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.put( '/offices/5/assign/5' )
+			.expect( 403, done );
+		});
 
-		it( 'works for user vacating themselves' );
+		it( 'fails for invalid user id', function( done ) {
+			request
+			.put( '/offices/5/assign/99' )
+			.query({ token: 'nc' })
+			.expect( 404, done );
+		});
 
-		it( 'works for officer vacating subordinate' );
+		it( 'fails for invalid office id', function( done ) {
+			request
+			.put( '/offices/99/assign/5' )
+			.query({ token: 'nc' })
+			.expect( 404, done );
+		});
 
-		it( 'works for officer assigning subordinate' );
+		it( 'fails for assigning without permission', function( done ) {
+			request
+			.put( '/offices/5/assign/5' )
+			.query({ token: 'user' })
+			.expect( 403, done );
+		});
 
-		it( 'fails for assigning same officer' );
+		it( 'fails for vacating without permission', function( done ) {
+			request
+			.put( '/offices/5/assign/0' )
+			.query({ token: 'user' })
+			.expect( 403, done );
+		});
+
+		it( 'works for user vacating themselves', function( done ) {
+			request
+			.put( '/offices/1/assign/0' )
+			.query({ token: 'nc' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				new Office({ id: 1 })
+				.fetch()
+				.then( office => {
+					office.get( 'userID' ).should.be.null;
+					done();
+				});
+			});
+		});
+
+		it( 'works for officer vacating subordinate', function( done ) {
+			request
+			.put( '/offices/5/assign/0' )
+			.query({ token: 'nc' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				new Office({ id: 5 })
+				.fetch()
+				.then( office => {
+					office.get( 'userID' ).should.be.null;
+					done();
+				});
+			});
+		});
+
+		it( 'works for officer assigning subordinate', function( done ) {
+			request
+			.put( '/offices/5/assign/5' )
+			.query({ token: 'nc' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				new Office({ id: 5 })
+				.fetch()
+				.then( office => {
+					office.get( 'userID' ).should.equal( 5 );
+					done();
+				});
+			});
+		});
+
+		it( 'fails for assigning same officer', function( done ) {
+			request
+			.put( '/offices/5/assign/8' )
+			.query({ token: 'nc' })
+			.expect( 500, done );
+		});
 	});
 };

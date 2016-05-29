@@ -5,27 +5,15 @@
  * @see controllers/user.js
  */
 
-const should      = require( 'should' );
-const Promise     = require( 'bluebird' );
+const should  = require( 'should' );
+const Promise = require( 'bluebird' );
 
-// Because there's no destructuring yet. :(
-const helpers     = require( './helpers' );
-const request     = helpers.request;
-const makeToken   = helpers.makeToken;
-const deleteToken = helpers.deleteToken;
+const helpers = require( './helpers' );
+const request = helpers.request;
 
 module.exports = function() {
 
 	describe( 'GET me', function() {
-
-		var token;
-		before( 'create token', function( done ) {
-			makeToken( 1 )
-			.then( data => {
-				token = data.id;
-				done();
-			});
-		});
 
 		it( 'fails if no token is provided', function( done ) {
 			request
@@ -36,7 +24,7 @@ module.exports = function() {
 		it( 'provides data if token is provided', function( done ) {
 			request
 			.get( '/users/me' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 200 )
 			.end( ( err, res ) => {
 				if ( err ) {
@@ -52,22 +40,9 @@ module.exports = function() {
 				done();
 			});
 		});
-
-		after( 'destroy token', function( done ) {
-			deleteToken( token )
-			.then( () => done() );
-		});
 	});
 
 	describe( 'GET id', function() {
-		var token;
-		before( 'create token', function( done ) {
-			makeToken( 1 )
-			.then( data => {
-				token = data.id;
-				done();
-			});
-		});
 
 		it( 'fails if no token is provided', function( done ) {
 			request
@@ -78,35 +53,35 @@ module.exports = function() {
 		it( 'works for valid user id', function( done ) {
 			request
 			.get( '/users/1' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 200, done );
 		});
 
 		it( 'fails for invalid user id', function( done ) {
 			request
 			.get( '/users/999999999999999' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 404, done );
 		});
 
 		it( 'works for valid MES number', function( done ) {
 			request
 			.get( '/users/US2016010001' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 200, done );
 		});
 
 		it( 'fails for invalid MES number', function( done ) {
 			request
 			.get( '/users/DA0000000000' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 404, done );
 		});
 
 		it( 'provides data if token is provided', function( done ) {
 			request
 			.get( '/users/1' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 200 )
 			.end( ( err, res ) => {
 				if ( err ) {
@@ -126,30 +101,9 @@ module.exports = function() {
 				done();
 			});
 		});
-
-		after( 'destroy token', function( done ) {
-			deleteToken( token )
-			.then( () => done() );
-		});
 	});
 
 	describe( 'GET private', function() {
-		var token1, token2;
-		before( 'create token', function( done ) {
-			let promise1 = makeToken( 5 )
-			.then( data => {
-				token1 = data.id;
-			});
-
-			let promise2 = makeToken( 2 )
-			.then( data => {
-				token2 = data.id;
-			});
-
-			Promise.join( promise1, promise2, () => {
-				done();
-			});
-		});
 
 		it( 'fails if no token is provided', function( done ) {
 			request
@@ -160,42 +114,42 @@ module.exports = function() {
 		it( 'fails for invalid user id', function( done ) {
 			request
 			.get( '/users/999999999999999/private' )
-			.query({ token: token2 })
+			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
 		it( 'fails for invalid MES number', function( done ) {
 			request
 			.get( '/users/DA0000000000/private' )
-			.query({ token: token2 })
+			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
 		it( 'works for self', function( done ) {
 			request
 			.get( '/users/5/private' )
-			.query({ token: token1 })
+			.query({ token: 'user' })
 			.expect( 200, done );
 		});
 
 		it( 'fails with no permission', function( done ) {
 			request
 			.get( '/users/2/private' )
-			.query({ token: token1 })
+			.query({ token: 'user' })
 			.expect( 403, done );
 		});
 
 		it( 'works for correct permission', function( done ) {
 			request
 			.get( '/users/1/private' )
-			.query({ token: token2 })
+			.query({ token: 'nc' })
 			.expect( 200, done );
 		});
 
 		it( 'provides data if token is provided', function( done ) {
 			request
 			.get( '/users/1/private' )
-			.query({ token: token2 })
+			.query({ token: 'nc' })
 			.expect( 200 )
 			.end( ( err, res ) => {
 				if ( err ) {
@@ -213,39 +167,9 @@ module.exports = function() {
 				done();
 			});
 		});
-
-		after( 'destroy token', function( done ) {
-			Promise.join(
-				deleteToken( token1 ),
-				deleteToken( token2 ),
-				() => done()
-			);
-		});
 	});
 
 	describe( 'PUT id', function() {
-		var userToken, ncToken, dcToken;
-
-		before( 'create tokens', function( done ) {
-			let promise1 = makeToken( 9 )
-			.then( data => {
-				userToken = data.id;
-			});
-
-			let promise2 = makeToken( 2 )
-			.then( data => {
-				ncToken = data.id;
-			});
-
-			let promise3 = makeToken( 3 )
-			.then( data => {
-				dcToken = data.id;
-			});
-
-			Promise.join( promise1, promise2, promise3, () => {
-				done();
-			});
-		});
 
 		it( 'fails if no token is provided', function( done ) {
 			request
@@ -258,7 +182,7 @@ module.exports = function() {
 			request
 			.put( '/users/999999999999999' )
 			.send({ firstName: 'Test' })
-			.query({ token: ncToken })
+			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
@@ -266,29 +190,29 @@ module.exports = function() {
 			request
 			.put( '/users/DA0000000000' )
 			.send({ firstName: 'Test' })
-			.query({ token: ncToken })
+			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
 		it( 'fails without data', function( done ) {
 			request
 			.put( '/users/1' )
-			.query({ token: ncToken })
+			.query({ token: 'nc' })
 			.expect( 400, done );
 		});
 
 		it( 'fails if modifying user without permission', function( done ) {
 			request
 			.put( '/users/1' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.send({ firstName: 'Test' })
 			.expect( 403, done );
 		});
 
 		it( 'works for user modifying themselves', function( done ) {
 			request
-			.put( '/users/9' )
-			.query({ token: userToken })
+			.put( '/users/5' )
+			.query({ token: 'user' })
 			.send({ firstName: 'Test2' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -303,7 +227,7 @@ module.exports = function() {
 		it( 'works for modifying with permission', function( done ) {
 			request
 			.put( '/users/7' )
-			.query({ token: dcToken })
+			.query({ token: 'nc' })
 			.send({ membershipType: 'Full' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -318,23 +242,14 @@ module.exports = function() {
 		it( 'fails for invalid data', function( done ) {
 			request
 			.put( '/users/7' )
-			.query({ token: dcToken })
+			.query({ token: 'nc' })
 			.send({ membershipType: 'Blah' })
 			.expect( 400, done );
 		});
 
-		after( 'destroy tokens', function( done ) {
-			Promise.join(
-				deleteToken( userToken ),
-				deleteToken( ncToken ),
-				deleteToken( dcToken ),
-				() => done()
-			);
-		});
-
 		after( 'reset users', function( done ) {
 			let User = require( '../models/users' );
-			let p1 = new User({ id: 9 }).save({ firstName: 'Test' }, { patch: true });
+			let p1 = new User({ id: 5 }).save({ firstName: 'Test' }, { patch: true });
 			let p2 = new User({ id: 7 }).save({ membershipType: 'Trial' }, { patch: true });
 
 			Promise.join( p1, p2, () => done() );
@@ -342,26 +257,14 @@ module.exports = function() {
 	});
 
 	describe( 'PUT assign', function() {
-		var userToken, ncToken, dcToken;
+
 		before( 'create tokens', function( done ) {
-			let promise1 = makeToken( 9 )
-			.then( data => {
-				userToken = data.id;
-			});
-
-			let promise2 = makeToken( 2 )
-			.then( data => {
-				ncToken = data.id;
-			});
-
-			let promise3 = makeToken( 3 )
-			.then( data => {
-				dcToken = data.id;
-			});
-
-			Promise.join( promise1, promise2, promise3, () => {
-				done();
-			});
+			let makeToken = require( './helpers' ).makeToken;
+			Promise.join(
+				makeToken( 9, 'domainless' ),
+				makeToken( 8, 'dc' ),
+				() => done()
+			);
 		});
 
 		it( 'fails if no token is provided', function( done ) {
@@ -373,71 +276,71 @@ module.exports = function() {
 		it( 'fails for invalid user id', function( done ) {
 			request
 			.put( '/users/999999999999999/assign/3' )
-			.query({ token: ncToken })
+			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
 		it( 'fails for invalid MES number', function( done ) {
 			request
 			.put( '/users/DA0000000000/assign/3' )
-			.query({ token: ncToken })
+			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
 		it( 'fails if assigning to non-domain', function( done ) {
 			request
 			.put( '/users/9/assign/2' )
-			.query({ token: ncToken })
+			.query({ token: 'nc' })
 			.expect( 500, done );
 		});
 
 		it( 'fails if assigning to invalid domain', function( done ) {
 			request
 			.put( '/users/9/assign/999999' )
-			.query({ token: ncToken })
+			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
 		it( 'fails if assigning user without permission', function( done ) {
 			request
 			.put( '/users/1/assign/3' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.expect( 403, done );
 		});
 
 		it( 'works for user without domain assigning themselves', function( done ) {
 			request
 			.put( '/users/9/assign/3' )
-			.query({ token: userToken })
+			.query({ token: 'domainless' })
 			.expect( 200, done );
 		});
 
 		it( 'fails for user with domain assigning themselves', function( done ) {
 			request
-			.put( '/users/9/assign/7' )
-			.query({ token: userToken })
+			.put( '/users/5/assign/7' )
+			.query({ token: 'user' })
 			.expect( 403, done );
 		});
 
 		it( 'fails for user already in domain', function( done ) {
 			request
-			.put( '/users/9/assign/3' )
-			.query({ token: ncToken })
+			.put( '/users/5/assign/3' )
+			.query({ token: 'nc' })
 			.expect( 500, done );
 		});
 
 		it( 'works for assigning outside user with permission over domain', function( done ) {
 			request
 			.put( '/users/2/assign/3' )
-			.query({ token: dcToken })
+			.query({ token: 'dc' })
 			.expect( 200, done );
 		});
 
 		after( 'destroy tokens', function( done ) {
+			let deleteToken = helpers.deleteToken;
 			Promise.join(
-				deleteToken( userToken ),
-				deleteToken( ncToken ),
-				deleteToken( dcToken ),
+				deleteToken( 'domainless' ),
+				deleteToken( 'dc' ),
 				() => done()
 			);
 		});
@@ -452,21 +355,9 @@ module.exports = function() {
 	});
 
 	describe( 'GET search', function() {
-		var userToken, expiredToken;
-		before( 'create tokens', function( done ) {
-			let userPromise = makeToken( 1 )
-			.then( data => {
-				userToken = data.id;
-			});
-
-			let expiredPromise = makeToken( 6 )
-			.then( data => {
-				expiredToken = data.id;
-			});
-
-			Promise.join( userPromise, expiredPromise, () => {
-				done();
-			});
+		before( 'create token', function( done ) {
+			let makeToken = require( './helpers' ).makeToken;
+			makeToken( 6, 'expired' ).then( () => done() );
 		});
 
 		it( 'fails if no token is provided', function( done ) {
@@ -478,21 +369,21 @@ module.exports = function() {
 		it( 'fails if expired token is provided', function( done ) {
 			request
 			.get( '/users/search' )
-			.query({ token: expiredToken })
+			.query({ token: 'expired' })
 			.expect( 403, done );
 		});
 
 		it( 'fails if no params provided', function( done ) {
 			request
 			.get( '/users/search' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.expect( 400, done );
 		});
 
 		it( 'returns empty array with unused name', function( done ) {
 			request
 			.get( '/users/search' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.query({ name: 'foo' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -508,7 +399,7 @@ module.exports = function() {
 		it( 'returns list of users for used name', function( done ) {
 			request
 			.get( '/users/search' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.query({ name: 'test' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -525,7 +416,7 @@ module.exports = function() {
 		it( 'returns empty array with unused email', function( done ) {
 			request
 			.get( '/users/search' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.query({ email: 'foo' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -541,7 +432,7 @@ module.exports = function() {
 		it( 'returns user for used email', function( done ) {
 			request
 			.get( '/users/search' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.query({ email: 'test@test.com' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -558,7 +449,7 @@ module.exports = function() {
 		it( 'returns empty array with unused MES number', function( done ) {
 			request
 			.get( '/users/search' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.query({ mes: 'foo' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -574,7 +465,7 @@ module.exports = function() {
 		it( 'returns user for used MES number', function( done ) {
 			request
 			.get( '/users/search' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.query({ mes: 'US2012030038' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -591,7 +482,7 @@ module.exports = function() {
 		it( 'fails when querying invalid domain', function( done ) {
 			request
 			.get( '/users/search' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.query({ orgUnit: 99 })
 			.expect( 404, done );
 		});
@@ -599,7 +490,7 @@ module.exports = function() {
 		it( 'returns empty array for empty org unit', function( done ) {
 			request
 			.get( '/users/search' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.query({ orgUnit: 4 })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -615,7 +506,7 @@ module.exports = function() {
 		it( 'returns list of users for org unit', function( done ) {
 			request
 			.get( '/users/search' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.query({ orgUnit: 3 })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -629,12 +520,9 @@ module.exports = function() {
 			});
 		});
 
-		after( 'destroy tokens', function( done ) {
-			Promise.join(
-				deleteToken( userToken ),
-				deleteToken( expiredToken ),
-				() => done()
-			);
+		after( 'destroy token', function( done ) {
+			let deleteToken = require( './helpers' ).deleteToken;
+			deleteToken( 'expired' ).then( () => done() );
 		});
 	});
 };

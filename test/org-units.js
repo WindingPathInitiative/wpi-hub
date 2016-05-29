@@ -16,15 +16,6 @@ module.exports = function() {
 
 	describe( 'GET code', function() {
 
-		var token;
-		before( 'create token', function( done ) {
-			makeToken( 1 )
-			.then( data => {
-				token = data.id;
-				done();
-			});
-		});
-
 		it( 'fails if no token is provided', function( done ) {
 			request
 			.get( '/orgunits/ny-004' )
@@ -34,28 +25,28 @@ module.exports = function() {
 		it( 'fails if invalid code is provided', function( done ) {
 			request
 			.get( '/orgunits/fd-434221' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 404, done );
 		});
 
 		it( 'fails if an id is provided', function( done ) {
 			request
 			.get( '/orgunits/1' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 404, done );
 		});
 
 		it( 'works if valid code is provided', function( done ) {
 			request
 			.get( '/orgunits/ne' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 200, done );
 		});
 
 		it( 'provides the correct data', function( done ) {
 			request
 			.get( '/orgunits/ny-004' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 200 )
 			.end( ( err, res ) => {
 				if ( err ) {
@@ -80,11 +71,6 @@ module.exports = function() {
 
 				done();
 			});
-		});
-
-		after( 'destroy token', function( done ) {
-			deleteToken( token )
-			.then( () => done() );
 		});
 	});
 
@@ -129,26 +115,6 @@ module.exports = function() {
 
 	describe( 'PUT code', function() {
 
-		var rcToken, userToken;
-
-		before( 'create tokens', function( done ) {
-			let userPromise = makeToken( 5 )
-			.then( data => {
-				userToken = data.id;
-			});
-
-			let rcPromise = makeToken( 3 )
-			.then( data => {
-				rcToken = data.id;
-			});
-
-			Promise.join(
-				userPromise,
-				rcPromise,
-				() => done()
-			);
-		});
-
 		it( 'fails if no token is provided', function( done ) {
 			request
 			.put( '/orgunits/3' )
@@ -160,21 +126,21 @@ module.exports = function() {
 			request
 			.put( '/orgunits/99' )
 			.send({ name: 'Test' })
-			.query({ token: rcToken })
+			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
 		it( 'fails without data', function( done ) {
 			request
 			.put( '/orgunits/3' )
-			.query({ token: rcToken })
+			.query({ token: 'nc' })
 			.expect( 400, done );
 		});
 
 		it( 'fails if modifying org unit without permission', function( done ) {
 			request
 			.put( '/orgunits/3' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.send({ name: 'Test' })
 			.expect( 403, done );
 		});
@@ -182,7 +148,7 @@ module.exports = function() {
 		it( 'fails for invalid data', function( done ) {
 			request
 			.put( '/orgunits/3' )
-			.query({ token: rcToken })
+			.query({ token: 'nc' })
 			.send({ type: 'Blah' })
 			.expect( 400, done );
 		});
@@ -190,7 +156,7 @@ module.exports = function() {
 		it( 'works for modifying with permission', function( done ) {
 			request
 			.put( '/orgunits/3' )
-			.query({ token: rcToken })
+			.query({ token: 'nc' })
 			.send({ name: 'Test' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -200,14 +166,6 @@ module.exports = function() {
 				res.body.should.have.property( 'name', 'Test' );
 				done();
 			});
-		});
-
-		after( 'destroy token', function( done ) {
-			Promise.join(
-				deleteToken( userToken ),
-				deleteToken( rcToken ),
-				() => done()
-			);
 		});
 
 		after( 'reset data', function( done ) {
@@ -220,9 +178,7 @@ module.exports = function() {
 
 	describe( 'POST new', function() {
 
-		var adminToken, userToken, data;
-
-		data = {
+		var data = {
 			id: 10,
 			name: 'Test Domain',
 			code: 'XX-000',
@@ -232,24 +188,6 @@ module.exports = function() {
 			type: 'Domain',
 			parentID: 5
 		};
-
-		before( 'create tokens', function( done ) {
-			let userPromise = makeToken( 3 )
-			.then( data => {
-				userToken = data.id;
-			});
-
-			let adminPromise = makeToken( 1 )
-			.then( data => {
-				adminToken = data.id;
-			});
-
-			Promise.join(
-				userPromise,
-				adminPromise,
-				() => done()
-			);
-		});
 
 		it( 'fails if no token is provided', function( done ) {
 			request
@@ -261,14 +199,14 @@ module.exports = function() {
 		it( 'fails without data', function( done ) {
 			request
 			.post( '/orgunits' )
-			.query({ token: adminToken })
+			.query({ token: 'admin' })
 			.expect( 400, done );
 		});
 
 		it( 'fails if creating org unit without permission', function( done ) {
 			request
 			.post( '/orgunits' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.send( data )
 			.expect( 403, done );
 		});
@@ -279,7 +217,7 @@ module.exports = function() {
 
 			request
 			.post( '/orgunits' )
-			.query({ token: adminToken })
+			.query({ token: 'admin' })
 			.send( badData )
 			.expect( 400, done );
 		});
@@ -290,7 +228,7 @@ module.exports = function() {
 
 			request
 			.post( '/orgunits' )
-			.query({ token: adminToken })
+			.query({ token: 'admin' })
 			.send( badData )
 			.expect( 400, done );
 		});
@@ -301,7 +239,7 @@ module.exports = function() {
 
 			request
 			.post( '/orgunits' )
-			.query({ token: adminToken })
+			.query({ token: 'admin' })
 			.send( badData )
 			.expect( 400, done );
 		});
@@ -313,7 +251,7 @@ module.exports = function() {
 
 			request
 			.post( '/orgunits' )
-			.query({ token: adminToken })
+			.query({ token: 'admin' })
 			.send( badData )
 			.expect( 400, done );
 		});
@@ -324,7 +262,7 @@ module.exports = function() {
 
 			request
 			.post( '/orgunits' )
-			.query({ token: adminToken })
+			.query({ token: 'admin' })
 			.send( badData )
 			.expect( 500, done );
 		});
@@ -332,7 +270,7 @@ module.exports = function() {
 		it( 'works for creating with permission', function( done ) {
 			request
 			.post( '/orgunits' )
-			.query({ token: adminToken })
+			.query({ token: 'admin' })
 			.send( data )
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -345,14 +283,6 @@ module.exports = function() {
 			});
 		});
 
-		after( 'destroy token', function( done ) {
-			Promise.join(
-				deleteToken( userToken ),
-				deleteToken( adminToken ),
-				() => done()
-			);
-		});
-
 		after( 'delete org unit', function( done ) {
 			let OrgUnit = require( '../models/org_units' );
 			new OrgUnit({ id: data.id })
@@ -362,25 +292,6 @@ module.exports = function() {
 	});
 
 	describe( 'DELETE id', function() {
-		var adminToken, userToken;
-
-		before( 'create tokens', function( done ) {
-			let userPromise = makeToken( 3 )
-			.then( data => {
-				userToken = data.id;
-			});
-
-			let adminPromise = makeToken( 1 )
-			.then( data => {
-				adminToken = data.id;
-			});
-
-			Promise.join(
-				userPromise,
-				adminPromise,
-				() => done()
-			);
-		});
 
 		before( 'create units', function( done ) {
 			let OrgUnit = require( '../models/org_units' );
@@ -432,28 +343,28 @@ module.exports = function() {
 		it( 'fails if no permission', function( done ) {
 			request
 			.delete( '/orgunits/10' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.expect( 403, done );
 		});
 
 		it( 'fails if target is root', function( done ) {
 			request
 			.delete( '/orgunits/1' )
-			.query({ token: adminToken })
+			.query({ token: 'admin' })
 			.expect( 500, done );
 		});
 
 		it( 'fails if target has children', function( done ) {
 			request
 			.delete( '/orgunits/2' )
-			.query({ token: adminToken })
+			.query({ token: 'admin' })
 			.expect( 500, done );
 		});
 
 		it( 'works for deleting with no children', function( done ) {
 			request
 			.delete( '/orgunits/10' )
-			.query({ token: adminToken })
+			.query({ token: 'admin' })
 			.expect( 200 )
 			.end( ( err, res ) => {
 				let User    = require( '../models/users' );
@@ -477,14 +388,6 @@ module.exports = function() {
 					() => done()
 				);
 			});
-		});
-
-		after( 'destroy token', function( done ) {
-			Promise.join(
-				deleteToken( userToken ),
-				deleteToken( adminToken ),
-				() => done()
-			);
 		});
 
 		after( 'delete org unit', function( done ) {

@@ -118,7 +118,7 @@ module.exports = function() {
 				}
 				const Token = require( '../models/tokens' );
 				new Token({ token: token }).fetch().then( model => {
-					( null === model ).should.be.ok;
+					( null === model ).should.be.true;
 					done();
 				});
 			});

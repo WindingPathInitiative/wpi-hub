@@ -12,10 +12,25 @@ app.set( 'port', '3000' );
 let server = http.createServer( app );
 server.listen( '3000' );
 
-function makeToken( user ) {
-	return new Token({ user: user }).save();
+/**
+ * Makes a token.
+ * @param {integer} user  User ID.
+ * @param {string}  token Optional. Token string.
+ * @return {Promise}
+ */
+function makeToken( user, token ) {
+	let data = { user: user };
+	if ( token ) {
+		data.token = token;
+	}
+	return new Token( data ).save( {}, { method: 'insert' } );
 }
 
+/**
+ * Deletes a token.
+ * @param {string} token The token ID.
+ * @return {Promise}
+ */
 function deleteToken( token ) {
 	return new Token({ token: token }).destroy();
 }

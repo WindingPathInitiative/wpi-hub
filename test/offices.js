@@ -5,26 +5,15 @@
  * @see controllers/auth.js
  */
 
-const should      = require( 'should' );
-const Promise     = require( 'bluebird' );
+const should  = require( 'should' );
+const Promise = require( 'bluebird' );
 
-const helpers     = require( './helpers' );
-const request     = helpers.request;
-const makeToken   = helpers.makeToken;
-const deleteToken = helpers.deleteToken;
+const helpers = require( './helpers' );
+const request = helpers.request;
 
 module.exports = function() {
 
 	describe( 'GET id', function() {
-
-		var token;
-		before( 'create token', function( done ) {
-			makeToken( 1 )
-			.then( data => {
-				token = data.id;
-				done();
-			});
-		});
 
 		it( 'fails if no token is provided', function( done ) {
 			request
@@ -35,14 +24,14 @@ module.exports = function() {
 		it( 'fails if invalid id is provided', function( done ) {
 			request
 			.get( '/offices/1111111' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 404, done );
 		});
 
 		it( 'provides the correct data', function( done ) {
 			request
 			.get( '/offices/1' )
-			.query({ token: token })
+			.query({ token: 'user' })
 			.expect( 200 )
 			.end( ( err, res ) => {
 				if ( err ) {
@@ -66,31 +55,9 @@ module.exports = function() {
 				done();
 			});
 		});
-
-		after( 'destroy token', function( done ) {
-			deleteToken( token )
-			.then( () => done() );
-		});
 	});
 
 	describe( 'GET internal', function() {
-
-		var userToken, ncToken;
-		before( 'create tokens', function( done ) {
-			let promise1 = makeToken( 9 )
-			.then( data => {
-				userToken = data.id;
-			});
-
-			let promise2 = makeToken( 2 )
-			.then( data => {
-				ncToken = data.id;
-			});
-
-			Promise.join( promise1, promise2, () => {
-				done();
-			});
-		});
 
 		it( 'fails if no token is provided', function( done ) {
 			request
@@ -101,14 +68,14 @@ module.exports = function() {
 		it( 'provides no data for user without office', function( done ) {
 			request
 			.get( '/offices/internal' )
-			.query({ token: userToken })
+			.query({ token: 'user' })
 			.expect( 200, [], done );
 		});
 
 		it( 'provides data for user with office', function( done ) {
 			request
 			.get( '/offices/internal' )
-			.query({ token: ncToken })
+			.query({ token: 'nc' })
 			.expect( 200 )
 			.end( ( err, res ) => {
 				if ( err ) {
@@ -130,17 +97,25 @@ module.exports = function() {
 				done();
 			});
 		});
-
-		after( 'destroy tokens', function( done ) {
-			Promise.join(
-				deleteToken( userToken ),
-				deleteToken( ncToken ),
-				() => done()
-			);
-		});
 	});
 
 	describe( 'PUT assign', function() {
-		// TODO: Make integration tests once code works out.
+		it( 'fails if no token is provided' );
+
+		it( 'fails for invalid user id' );
+
+		it( 'fails for invalid office id' );
+
+		it( 'fails for assigning without permission' );
+
+		it( 'fails for vacating without permission' );
+
+		it( 'works for user vacating themselves' );
+
+		it( 'works for officer vacating subordinate' );
+
+		it( 'works for officer assigning subordinate' );
+
+		it( 'fails for assigning same officer' );
 	});
 };

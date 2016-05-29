@@ -10,11 +10,18 @@ const Promise   = require( 'bluebird' );
 
 /**
  * Checks if officer has permission.
- * @param  {string} permission Role to check.
+ * @param  {mixed}  permission Role to check.
  * @param  {mixed}  officer     User object or ID.
  * @return {Promise}
  */
 function has( permission, officer ) {
+
+	if ( ! _.isArray( permission ) ) {
+		permission = [ permission ];
+	}
+
+	permission.push( 'admin' ); // Admins always pass roles checks;
+
 	return normalizeOfficer( officer )
 	.catch( err => {
 		throw new Error( 'User has no offices' );
@@ -22,7 +29,8 @@ function has( permission, officer ) {
 	.then( offices => {
 		// Filter out offices we have the desired permission.
 		return offices.filter( office => {
-			return office.has( 'roles' ) && -1 !== office.get( 'roles' ).indexOf( permission );
+			return office.has( 'roles' ) &&
+			_.intersection( office.get( 'roles' ), permission );
 		});
 	})
 	.then( offices => {
@@ -37,7 +45,7 @@ function has( permission, officer ) {
 /**
  * Checks if officer has permission over user.
  * @param  {Model}  user       User model.
- * @param  {string} permission Role to check.
+ * @param  {mixed}  permission Role to check.
  * @param  {mixed}  officer    User object or ID.
  * @return {Promise}
  */
@@ -84,7 +92,7 @@ function hasOverUser( user, permission, officer ) {
 /**
  * Checks if officer has permission over unit.
  * @param  {mixed}  unit       Org Unit model or ID.
- * @param  {string} permission Role to check.
+ * @param  {mixed}  permission Role to check.
  * @param  {mixed}  officer    User object or ID.
  * @return {Promise}
  */
@@ -141,7 +149,7 @@ function hasOverUnit( unit, permission, officer ) {
 /**
  * Checks if officer has permission over an officer.
  * @param  {mixed}  office     Office model or ID.
- * @param  {string} permission Role to check.
+ * @param  {mixed}  permission Role to check.
  * @param  {mixed}  officer    User object or ID.
  * @return {Promise}
  */

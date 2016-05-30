@@ -74,6 +74,25 @@ function query( req, next, required, fetch ) {
 		return;
 	}
 
+	// Development mode bypass.
+	if ( 'production' !== req.get( 'env' ) && 'DEV' === req.query.token ) {
+		req.token = {
+			get: () => 1,
+			destroy: () => null,
+			id: 'DEV'
+		};
+		if ( fetch ) {
+			let User = require( '../models/users' );
+			return new User({ id: 1 })
+			.fetch()
+			.then( user => {
+				req.user = user;
+				next();
+			});
+		}
+		return next();
+	}
+
 	let fetchParams = { require: required };
 	if ( fetch ) {
 		fetchParams.withRelated = 'user';

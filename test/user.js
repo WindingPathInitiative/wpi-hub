@@ -370,6 +370,7 @@ module.exports = function() {
 			request
 			.get( '/users/search' )
 			.query({ token: 'expired' })
+			.query({ name: 'test' })
 			.expect( 403, done );
 		});
 
@@ -380,103 +381,12 @@ module.exports = function() {
 			.expect( 400, done );
 		});
 
-		it( 'returns empty array with unused name', function( done ) {
+		it( 'fails if required params not provided', function( done ) {
 			request
 			.get( '/users/search' )
 			.query({ token: 'user' })
-			.query({ name: 'foo' })
-			.expect( 200 )
-			.end( ( err, res ) => {
-				if ( err ) {
-					return done( err );
-				}
-				res.body.should.be.an.Array;
-				res.body.should.be.empty;
-				done();
-			});
-		});
-
-		it( 'returns list of users for used name', function( done ) {
-			request
-			.get( '/users/search' )
-			.query({ token: 'user' })
-			.query({ name: 'test' })
-			.expect( 200 )
-			.end( ( err, res ) => {
-				if ( err ) {
-					return done( err );
-				}
-				res.body.should.be.an.Array;
-				res.body.should.be.not.empty;
-				res.body.forEach( helpers.models.user );
-				done();
-			});
-		});
-
-		it( 'returns empty array with unused email', function( done ) {
-			request
-			.get( '/users/search' )
-			.query({ token: 'user' })
-			.query({ email: 'foo' })
-			.expect( 200 )
-			.end( ( err, res ) => {
-				if ( err ) {
-					return done( err );
-				}
-				res.body.should.be.an.Array;
-				res.body.should.be.empty;
-				done();
-			});
-		});
-
-		it( 'returns user for used email', function( done ) {
-			request
-			.get( '/users/search' )
-			.query({ token: 'user' })
-			.query({ email: 'test@test.com' })
-			.expect( 200 )
-			.end( ( err, res ) => {
-				if ( err ) {
-					return done( err );
-				}
-				res.body.should.be.an.Array;
-				res.body.should.have.length( 1 );
-				res.body.forEach( helpers.models.user );
-				done();
-			});
-		});
-
-		it( 'returns empty array with unused MES number', function( done ) {
-			request
-			.get( '/users/search' )
-			.query({ token: 'user' })
-			.query({ mes: 'foo' })
-			.expect( 200 )
-			.end( ( err, res ) => {
-				if ( err ) {
-					return done( err );
-				}
-				res.body.should.be.an.Array;
-				res.body.should.be.empty;
-				done();
-			});
-		});
-
-		it( 'returns user for used MES number', function( done ) {
-			request
-			.get( '/users/search' )
-			.query({ token: 'user' })
-			.query({ mes: 'US2012030038' })
-			.expect( 200 )
-			.end( ( err, res ) => {
-				if ( err ) {
-					return done( err );
-				}
-				res.body.should.be.an.Array;
-				res.body.should.have.length( 1 );
-				res.body.forEach( helpers.models.user );
-				done();
-			});
+			.query({ expired: false })
+			.expect( 400, done );
 		});
 
 		it( 'fails when querying invalid domain', function( done ) {
@@ -487,36 +397,46 @@ module.exports = function() {
 			.expect( 404, done );
 		});
 
-		it( 'returns empty array for empty org unit', function( done ) {
-			request
-			.get( '/users/search' )
-			.query({ token: 'user' })
-			.query({ orgUnit: 4 })
-			.expect( 200 )
-			.end( ( err, res ) => {
-				if ( err ) {
-					return done( err );
-				}
-				res.body.should.be.an.Array;
-				res.body.should.be.empty;
-				done();
-			});
-		});
+		// Instead of manually writing these, we're just making a big array.
+		let tests = [
+			{ query: { name: 'unused' }, empty: true },
+			{ query: { name: 'test' } },
+			{ query: { email: 'unused' }, empty: true },
+			{ query: { email: 'test@test.com' } },
+			{ query: { mes: 'test' }, empty: true },
+			{ query: { mes: 'US2012030038' } },
+			{ query: { orgUnit: 4 }, empty: true },
+			{ query: { orgUnit: 3 } },
+			{ query: { name: 'expired', expired: false }, empty: true },
+			{ query: { name: 'expired', expired: true } },
+			{ query: { name: 'user', expired: false } },
+			{ query: { name: 'user', expired: true }, empty: true }
+		];
 
-		it( 'returns list of users for org unit', function( done ) {
-			request
-			.get( '/users/search' )
-			.query({ token: 'user' })
-			.query({ orgUnit: 3 })
-			.expect( 200 )
-			.end( ( err, res ) => {
-				if ( err ) {
-					return done( err );
-				}
-				res.body.should.be.an.Array;
-				res.body.should.not.be.empty;
-				res.body.forEach( helpers.models.user );
-				done();
+		tests.forEach( test => {
+			let s1 = test.empty ? 'empty array with unused' : 'list of users for used';
+			let s2 = Object.keys( test.query ).join( ' and ' );
+			let title = `returns ${ s1 } ${ s2 }`;
+
+			it( title, function( done ) {
+				request
+				.get( '/users/search' )
+				.query({ token: 'user' })
+				.query( test.query )
+				.expect( 200 )
+				.end( ( err, res ) => {
+					if ( err ) {
+						return done( err );
+					}
+					res.body.should.be.an.Array;
+					if ( test.empty ) {
+						res.body.should.be.empty();
+					} else {
+						res.body.should.be.not.empty();
+						res.body.forEach( helpers.models.user );
+					}
+					done();
+				});
 			});
 		});
 

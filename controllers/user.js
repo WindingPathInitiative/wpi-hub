@@ -10,6 +10,7 @@ const Users     = require( '../models/users' );
 const _         = require( 'lodash' );
 const UserError = require( '../helpers/errors' );
 const Promise   = require( 'bluebird' );
+const Moment    = require( 'moment' );
 
 
 /**
@@ -35,7 +36,7 @@ router.get( '/search',
 	token.parse(),
 	( req, res, next ) => {
 		// Exit if the user is expired.
-		if ( req.user.get( 'membershipExpiration' ) < Date.now() ) {
+		if ( req.user.get( 'membershipExpiration' ).getTime() < Date.now() ) {
 			next( new UserError( 'User is expired', 403 ) );
 		} else {
 			next();
@@ -44,15 +45,14 @@ router.get( '/search',
 	( req, res, next ) => {
 		let params = _.omit( req.query, 'token' );
 		if ( _.isEmpty( params ) ) {
-			next( new UserError( 'No search params provided', 400 ) );
-			return;
+			return next( new UserError( 'No search params provided', 400 ) );
 		}
 
 		let query = new Users();
 
 		if ( params.name ) {
 			let like = '%' + params.name + '%';
-			query.query( q => {
+			query.where( q => {
 				q.where( 'firstName', 'LIKE', like )
 				.orWhere( 'lastName', 'LIKE', like )
 				.orWhere( 'nickname', 'LIKE', like );
@@ -62,19 +62,18 @@ router.get( '/search',
 		} else if ( params.mes ) {
 			query.where( 'membershipNumber', params.mes );
 		} else if ( ! params.orgUnit ) {
-			next( new UserError( 'Invalid query', 400 ) );
-			return;
+			return next( new UserError( 'Invalid query', 400 ) );
 		}
 
 		if ( undefined !== params.expired ) {
 			let type = normalizeBool( params.expired ) ? '<' : '>=';
-			query.where( 'membershipExpiration', type, Date.now() );
+			query.where( 'membershipExpiration', type, Moment.utc().format( 'YYYY-MM-DD' ) );
 		}
 
 		new Promise( res => res( query ) )
 		.tap( query => {
 			// Gets a list of IDs of desired org unit.
-			if ( params.orgUnit && parseInt( params.orgUnit ) ) {
+			if ( parseInt( params.orgUnit ) ) {
 				let id = parseInt( params.orgUnit );
 				const OrgUnit = require( '../models/org_units' );
 

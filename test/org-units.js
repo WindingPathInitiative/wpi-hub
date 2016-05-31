@@ -466,9 +466,9 @@ module.exports = function() {
 						}
 						res.body.should.be.an.Array;
 						if ( test.empty ) {
-							res.body.should.be.empty;
+							res.body.should.be.empty();
 						} else {
-							res.body.should.be.not.empty;
+							res.body.should.be.not.empty();
 							res.body.forEach( helpers.models.orgUnit );
 						}
 						done();

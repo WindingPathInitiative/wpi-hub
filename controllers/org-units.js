@@ -68,6 +68,68 @@ router.get( /^\/([a-zA-Z]{2}[\-\d]*)\/?$/,
 	}
 );
 
+/**
+ * Searches units.
+ */
+router.get( '/search',
+	token.validate(),
+	( req, res, next ) => {
+		let params = _.omit( req.query, 'token' );
+
+		if ( _.isEmpty( params ) ) {
+			return next( new UserError( 'No search params provided', 400 ) );
+		}
+
+		params = _.mapValues( params, v => v.toLowerCase() );
+		let types = OrgUnit.getTypes().map( m => m.toLowerCase() );
+
+		// Must be a valid type.
+		if ( params.type && -1 === types.indexOf( params.type ) ) {
+			return next( new UserError( 'Invalid type specified', 400 ) );
+		}
+
+		// Must be a venue when specifying venue type.
+		if ( params.venue && undefined === params.type ) {
+			params.type = 'venue';
+		} else if ( params.venue && 'venue' !== params.type ) {
+			return next( new UserError( 'Invalid type with "venue" option', 400 ) );
+		}
+
+		// Venues never have codes.
+		if ( params.code && ( params.venue || 'venue' === params.type ) ) {
+			return next( new UserError( 'Venue type does not have codes', 400 ) );
+		}
+
+		let query = new OrgUnit();
+
+		if ( params.name ) {
+			query.where( 'name', 'LIKE', '%' + params.name + '%' );
+		}
+		if ( params.code ) {
+			query.where( 'code', 'LIKE', '%' + params.code + '%' );
+		}
+		if ( params.type ) {
+			query.where( 'type', '=', params.type );
+		}
+		if ( params.venue ) {
+			query.where( 'venueType', '=', params.venue );
+		}
+
+		query
+		.fetchAll()
+		.then( units => {
+			res.json( units.toJSON() );
+		})
+		.catch( err => {
+			if ( err instanceof UserError ) {
+				next( err );
+			} else {
+				next( new UserError( 'Search failed', 500, err ) );
+			}
+		});
+	}
+);
+
 
 /**
  * Creates a new org unit

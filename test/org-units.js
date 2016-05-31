@@ -5,12 +5,10 @@
  * @see controllers/auth.js
  */
 
-const should      = require( 'should' );
-const Promise     = require( 'bluebird' );
-const helpers     = require( './helpers' );
-const request     = helpers.request;
-const makeToken   = helpers.makeToken;
-const deleteToken = helpers.deleteToken;
+const should  = require( 'should' );
+const Promise = require( 'bluebird' );
+const helpers = require( './helpers' );
+const request = helpers.request;
 
 module.exports = function() {
 
@@ -405,6 +403,78 @@ module.exports = function() {
 				office,
 				() => done()
 			);
+		});
+	});
+
+	describe( 'GET search', function() {
+
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.get( '/orgunits/search' )
+			.query({ name: 'children' })
+			.expect( 403, done );
+		});
+
+		// Instead of manually writing these, we're just making a big array.
+		let tests = [
+			{ query: {}, error: 400, text: 'no params provided' },
+			{ query: { name: 'NE', type: 'test' }, error: 400, text: 'invalid org type provided' },
+			{ query: { code: 'XX', venue: 'CL' }, error: 400, text: 'code is used with a venue' },
+			{ query: { code: 'XX', type: 'venue' }, error: 400, text: 'code is used with venue type' },
+			{ query: { venue: 'CL', type: 'region' }, error: 400, text: 'venue used with wrong org type' },
+			{ query: { name: 'unused' }, empty: true },
+			{ query: { name: 'children' } },
+			{ query: { code: 'XX' }, empty: true },
+			{ query: { code: 'NY' } },
+			{ query: { code: 'NY', name: 'unused' }, empty: true },
+			{ query: { code: 'NY', name: 'children' } },
+			{ query: { code: 'NE', type: 'domain' }, empty: true },
+			{ query: { code: 'NE', type: 'region' } },
+			{ query: { name: 'Apple', venue: 'AC' }, empty: true },
+			{ query: { name: 'Apple', venue: 'CL' } }
+		];
+
+		tests.forEach( test => {
+			let title = '';
+			if ( test.text ) {
+				title = test.text;
+			} else {
+				let s1 = test.empty ? 'empty array with unused' : 'list of org units for used';
+				let s2 = Object.keys( test.query ).join( ' and ' );
+				title = `${ s1 } ${ s2 }`;
+			}
+
+			if ( test.error ) {
+				title = 'fails if ' + title;
+			} else {
+				title = 'returns ' + title;
+			}
+
+			it( title, function( done ) {
+				let req = request
+				.get( '/orgunits/search' )
+				.query({ token: 'user' })
+				.query( test.query );
+
+				if ( test.error ) {
+					req.expect( test.error, done );
+				} else {
+					req.expect( 200 )
+					.end( ( err, res ) => {
+						if ( err ) {
+							return done( err );
+						}
+						res.body.should.be.an.Array;
+						if ( test.empty ) {
+							res.body.should.be.empty;
+						} else {
+							res.body.should.be.not.empty;
+							res.body.forEach( helpers.models.orgUnit );
+						}
+						done();
+					});
+				}
+			});
 		});
 	});
 };

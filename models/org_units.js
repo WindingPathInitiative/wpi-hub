@@ -20,7 +20,8 @@ const OrgUnit = bookshelf.model( 'OrgUnit', Base.extend({
 		'id',
 		'name',
 		'code',
-		'type'
+		'type',
+		'venueType'
 	],
 
 	users: function() {
@@ -35,6 +36,9 @@ const OrgUnit = bookshelf.model( 'OrgUnit', Base.extend({
 		let attrs = Base.prototype.serialize.apply( this, arguments );
 		delete attrs.lft;
 		delete attrs.rgt;
+		if ( null === attrs.venueType ) {
+			delete attrs.venueType;
+		}
 		return attrs;
 	},
 

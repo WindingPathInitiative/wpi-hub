@@ -21,6 +21,8 @@ describe( 'org units', require( './org-units' ) );
 
 describe( 'offices', require( './offices' ) );
 
+describe( 'permissions', require( './permissions' ) );
+
 after( 'destroy tokens', function( done ) {
 	let deleteToken = require( './helpers' ).deleteToken;
 

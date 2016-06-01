@@ -10,17 +10,17 @@ const Promise   = require( 'bluebird' );
 
 /**
  * Checks if officer has permission.
- * @param  {mixed}  permission Role to check.
+ * @param  {mixed}  permissions Role to check.
  * @param  {mixed}  officer     User object or ID.
  * @return {Promise}
  */
-function has( permission, officer ) {
+function has( permissions, officer ) {
 
-	if ( ! _.isArray( permission ) ) {
-		permission = [ permission ];
+	if ( ! _.isArray( permissions ) ) {
+		permissions = [ permissions ];
 	}
 
-	permission.push( 'admin' ); // Admins always pass roles checks;
+	permissions.push( 'admin' ); // Admins always pass roles checks;
 
 	return normalizeOfficer( officer )
 	.catch( err => {
@@ -30,11 +30,11 @@ function has( permission, officer ) {
 		// Filter out offices we have the desired permission.
 		return offices.filter( office => {
 			return office.has( 'roles' ) &&
-			_.intersection( office.get( 'roles' ), permission );
+			_.intersection( office.get( 'roles' ), permissions ).length;
 		});
 	})
 	.then( offices => {
-		if ( ! offices ) {
+		if ( ! offices.length ) {
 			throw new Error( 'No offices with permission' );
 		}
 		return offices;
@@ -51,6 +51,25 @@ function has( permission, officer ) {
  */
 function hasOverUser( user, permission, officer ) {
 	return has( permission, officer )
+	.tap( () => {
+		// Normalizes the user.
+		if ( Number.isInteger( user ) ) {
+			return new Users({ id: user })
+			.fetch({ require: true, withRelated: 'orgUnit' })
+			.catch( err => {
+				throw new UserError( 'User not found.', 404, err );
+			})
+			.then( model => {
+				user = model;
+			});
+		}
+	})
+	.tap( () => {
+		// Loads the org unit data if not already loaded.
+		if ( user.has( 'orgUnit' ) && _.isEmpty( user.relations ) ) {
+			return user.load( 'orgUnit' );
+		}
+	})
 	.then( offices => {
 
 		let officeOrgs = mapCollection( offices, 'parentOrgID' );
@@ -173,18 +192,18 @@ function hasOverOffice( office, permission, officer ) {
 	return officeQuery
 	.then( () => has( permission, officer ) )
 	.then( offices => {
-		return office.getParents()
-		.then( parents => {
-			let officeIds = mapCollection( offices, 'id' );
+		let officeIds = mapCollection( offices, 'id' );
+		let parents   = office
+		.get( 'parentOfficePath' )
+		.split( '.' )
+		.map( m => parseInt( m ) );
 
-			parents = parents.toJSON();
-			for ( let i = 0; i < parents.length; i++ ) {
-				if ( -1 !== officeIds.indexOf( parents[ i ].id ) ) {
-					return true;
-				}
+		for ( let i = 0; i < parents.length; i++ ) {
+			if ( -1 !== officeIds.indexOf( parents[ i ] ) ) {
+				return true;
 			}
-			throw new Error( 'Officer not found in chain' );
-		});
+		}
+		throw new Error( 'Officer not found in chain' );
 	});
 }
 
@@ -197,8 +216,7 @@ function hasOverOffice( office, permission, officer ) {
 function normalizeOfficer( officer ) {
 	// TODO: Come up with better test of Collection object.
 	if ( 'function' === typeof officer.filter ) {
-		const resolve = require( 'bluebird' ).resolve;
-		return resolve( officer );
+		return Promise.resolve( officer );
 	} else if ( ! Number.isInteger( officer ) ) {
 		officer = officer.id;
 	}

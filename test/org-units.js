@@ -304,8 +304,7 @@ module.exports = function() {
 				defDoc: 'Test domain, please ignore!',
 				website: 'http://www.example.com',
 				type: 'Domain',
-				lft: 201,
-				rgt: 300
+				parentPath: '1.2.10'
 			})
 			.save( {}, { method: 'insert' } );
 
@@ -319,7 +318,7 @@ module.exports = function() {
 				id: 10,
 				name: 'Test Officer',
 				type: 'Primary',
-				parentOfficePath: '10',
+				parentPath: '10',
 				parentOrgID: 10
 			})
 			.save( {}, { method: 'insert' } );

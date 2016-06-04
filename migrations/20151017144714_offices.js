@@ -9,7 +9,7 @@ exports.up = ( knex, Promise ) => {
 		table.string( 'email' );
 		table.enum( 'type', officeTypes ).notNullable();
 		table.integer( 'parentOfficeID' ).index();
-		table.string( 'parentOfficePath' ).notNullable().index();
+		table.string( 'parentPath' ).notNullable().index();
 		table.integer( 'parentOrgID' ).notNullable().index();
 		table.integer( 'userID' ).index();
 		table.json( 'roles' );

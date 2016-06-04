@@ -44,7 +44,7 @@ router.get( '/:id(\\d+)',
 			);
 		})
 		.then( office => {
-			office.unset([ 'userID', 'parentOrgID', 'parentOfficeID', 'parentOfficePath' ]);
+			office.unset([ 'userID', 'parentOrgID', 'parentOfficeID', 'parentPath' ]);
 			office.show();
 			res.json( office.toJSON() );
 		})

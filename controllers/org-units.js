@@ -169,11 +169,11 @@ router.post( '/',
 				throw new UserError( 'Org type doesn\'t match expected type', 400 );
 			}
 
-			return OrgUnit.getNewBounds( parent );
+			return parent.get( 'parentPath' );
 		})
-		.then( bounds => {
+		.then( path => {
 			const validate = require( '../helpers/validation' );
-			data = Object.assign( data, bounds );
+			data.parentPath = path + '.';
 			let constraints = {
 				id: { numericality: { onlyInteger: true, strict: true } },
 				name: { length: { minimum: 1 }, presence: true },
@@ -183,8 +183,7 @@ router.post( '/',
 				defDoc: { isString: true },
 				website: { url: true },
 				type: { inclusion: [ 'Venue', 'Domain', 'Region' ], presence: true },
-				lft: { numericality: { onlyInteger: true }, presence: true },
-				rgt: { numericality: { onlyInteger: true }, presence: true }
+				parentPath: { length: { minimum: 1 }, presence: true }
 			};
 			if ( 'Venue' === data.type ) {
 				contraints.venueType.presence = true;
@@ -194,7 +193,16 @@ router.post( '/',
 				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
 			})
 			.then( attributes => {
-				return new OrgUnit().save( attributes, { method: 'insert' } );
+				let Bookshelf = require( '../helpers/db' ).Bookshelf;
+				return Bookshelf.transaction( t => {
+					return new OrgUnit()
+					.save( attributes, { method: 'insert', transacting: t } )
+					.then( unit => {
+						return unit
+						.set( 'parentPath', attributes.parentPath + unit.id )
+						.save( null, { transacting: t } );
+					});
+				});
 			})
 			.catch( err => {
 				throw new UserError( 'There was an error creating the org unit', 500, err );
@@ -315,36 +323,40 @@ router.delete( '/:id',
 			});
 		})
 		.tap( unit => {
-			let Promise = require( 'bluebird' );
-			let Offices = require( '../models/offices' );
-			let Users   = require( '../models/users' );
+			let Promise   = require( 'bluebird' );
+			let Offices   = require( '../models/offices' );
+			let Users     = require( '../models/users' );
+			let Bookshelf = require( '../helpers/db' ).Bookshelf;
 
-			let office = new Offices()
-			.where({ parentOrgID: unit.id })
-			.destroy();
+			return Bookshelf.transaction( t => {
+				let office = new Offices()
+				.where({ parentOrgID: unit.id })
+				.destroy({ transacting: t });
 
-			let users  = unit.getParents( true )
-			.then( parents => {
-				let parent = parents.first();
-				if ( ! parent.id ) {
-					throw new UserError( 'No parent found', 500 );
-				}
+				let users  = Promise.resolve( unit.parents() )
+				.then( parents => {
+					let parent = parents.pop();
+					if ( ! parent ) {
+						throw new UserError( 'No parent found', 500 );
+					}
 
-				return new Users()
-				.where({ orgUnit: unit.id })
-				.save( { orgUnit: parent.id }, { patch: true } );
-			});
+					return new Users()
+					.where({ orgUnit: unit.id })
+					.save( { orgUnit: parent }, { patch: true, transacting: t } );
+				});
 
-			return Promise.join(
-				office,
-				users,
-				() => unit
-			);
-		})
-		.then( unit => {
-			return unit.destroy()
-			.catch( err => {
-				throw new UserError( 'Could not delete org', 500, err );
+				let unitDel = unit
+				.destroy({ transacting: t })
+				.catch( err => {
+					throw new UserError( 'Could not delete org', 500, err );
+				});
+
+				return Promise.join(
+					office,
+					users,
+					unitDel,
+					() => null
+				);
 			});
 		})
 		.then( () => {

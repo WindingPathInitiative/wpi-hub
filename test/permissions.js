@@ -40,7 +40,7 @@ const perm = 'user_read_private'; // Generic permission to test.
 module.exports = function() {
 	var admin, nc, rc, dc;
 
-	before( 'prefetch users', function() {
+	before( 'prefetch users', function( done ) {
 		Promise.all([
 			permissions.prefetch( 1 ),
 			permissions.prefetch( 2 ),
@@ -52,6 +52,7 @@ module.exports = function() {
 			nc    = res[1];
 			rc    = res[2];
 			dc    = res[3];
+			done();
 		});
 	});
 

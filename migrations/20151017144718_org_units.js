@@ -12,8 +12,7 @@ exports.up = ( knex, Promise ) => {
 		table.string( 'website' );
 		table.enum( 'type', unitTypes ).notNullable().index();
 		table.text( 'defDoc' );
-		table.integer( 'lft' ).unsigned().unique().notNullable().index();
-		table.integer( 'rgt' ).unsigned().unique().notNullable().index();
+		table.string( 'parentPath' ).notNullable().index();
 	});
 };
 

@@ -82,17 +82,12 @@ function hasOverUser( user, permission, officer ) {
 			}
 
 			// Checks if current org has the parents org.
-			return user.related( 'orgUnit' )
-			.getParents()
-			.then( parents => {
-				parents = parents.toArray();
-				for ( let p = 0; p < parents.length; p++ ) {
-					if ( -1 !== officeOrgs.indexOf( parents[ p ].id ) ) {
-						return true;
-					}
-				};
+			let unit = user.related( 'orgUnit' );
+			if ( ! _.intersection( unit.parents(), officeOrgs ).length ) {
 				throw new Error( 'Officer not found in chain' );
-			});
+			} else {
+				return true;
+			}
 		}
 		// If the user isn't attached to a domain,
 		// the officer needs to be National.
@@ -150,17 +145,11 @@ function hasOverUnit( unit, permission, officer ) {
 		}
 
 		// Checks if current org has the parents org.
-		return unit
-		.getParents()
-		.then( parents => {
-			parents = parents.toArray();
-			for ( let p = 0; p < parents.length; p++ ) {
-				if ( -1 !== officeOrgs.indexOf( parents[ p ].id ) ) {
-					return true;
-				}
-			};
+		if ( ! _.intersection( unit.parents(), officeOrgs ).length ) {
 			throw new Error( 'Officer not found in chain' );
-		});
+		} else {
+			return true;
+		}
 	});
 }
 
@@ -194,7 +183,7 @@ function hasOverOffice( office, permission, officer ) {
 	.then( offices => {
 		let officeIds = mapCollection( offices, 'id' );
 		let parents   = office
-		.get( 'parentOfficePath' )
+		.get( 'parentPath' )
 		.split( '.' )
 		.map( m => parseInt( m ) );
 

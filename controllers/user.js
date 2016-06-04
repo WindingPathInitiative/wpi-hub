@@ -83,10 +83,7 @@ router.get( '/search',
 					throw new UserError( 'Org unit not found', 404, err );
 				})
 				.then( unit => {
-					return unit
-					.whereChildren( unit )
-					.where( 'type', '<>', 'Venue' )
-					.fetchAll();
+					return unit.getChildren();
 				})
 				.then( units => {
 					let ids = units.map( u => u.id ).concat( id );

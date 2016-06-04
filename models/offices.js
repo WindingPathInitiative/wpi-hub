@@ -35,16 +35,16 @@ const Office = bookshelf.model( 'Office', Base.extend({
 	},
 
 	getParents: function() {
-		let parents = this.get( 'parentOfficePath' ).split( '.' );
+		let parents = this.get( 'parentPath' ).split( '.' );
 		return new Office()
 		.where( 'id', 'in', parents )
 		.fetchAll();
 	},
 
 	getChildren: function() {
-		let prefix = this.get( 'parentOfficePath' ) + '%';
+		let prefix = this.get( 'parentPath' ) + '%';
 		return new Office()
-		.query( 'whereRaw', 'parentOfficePath LIKE ?', prefix )
+		.query( 'whereRaw', 'parentPath LIKE ?', prefix )
 		.fetchAll();
 	}
 }) );

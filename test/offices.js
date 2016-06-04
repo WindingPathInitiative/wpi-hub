@@ -15,6 +15,14 @@ const Office = require( '../models/offices' );
 
 module.exports = function() {
 
+	before( 'creates tokens', function( done ) {
+		Promise.join(
+			helpers.makeToken( 3, 'rc' ),
+			helpers.makeToken( 10, 'arc' ),
+			() => done()
+		);
+	});
+
 	describe( 'GET id', function() {
 
 		it( 'fails if no token is provided', function( done ) {
@@ -386,18 +394,18 @@ module.exports = function() {
 	describe( 'PUT assistant self', function() {
 		let data = {
 			name: 'Test Assistant Assistant',
-			email: 'aadc@test.com',
+			email: 'aarc@test.com',
 			roles: [ 'user_read_private', 'user_update' ]
 		};
 
-		before( 'create assistant', function( done ) {
+		before( 'creates assistant', function( done ) {
 			new Office({
-				id: 10,
+				id: 11,
 				name: 'Test Assistant',
 				userID: 5,
-				parentOfficeID: 1,
-				parentOrgID: 1,
-				parentPath: '1.10',
+				parentOfficeID: 2,
+				parentOrgID: 2,
+				parentPath: '1.2.11',
 				roles: [ 'user_read_private', 'user_update' ]
 			})
 			.save( null, { method: 'insert' } )
@@ -406,37 +414,32 @@ module.exports = function() {
 
 		it( 'fails without permission', function( done ) {
 			request
-			.post( '/offices/10/assistant' )
+			.post( '/offices/11/assistant' )
 			.query({ token: 'user' })
 			.send( data )
 			.expect( 403, done );
 		});
 
 		it( 'works for permission', function( done ) {
-			new Office({ id: 10 })
-			.set( 'roles', [ 'user_read_private', 'user_update', 'office_create_own_assistants' ] )
-			.save()
-			.then( office => {
-				request
-				.post( '/offices/10/assistant' )
-				.query({ token: 'user' })
-				.send( data )
-				.expect( 200 )
-				.end( ( err, res ) => {
-					if ( err ) {
-						return done( err );
-					}
-					helpers.models.office( res.body, true );
-					res.body.should.have.properties( data );
-					res.body.should.have.property( 'parentOfficeID', 1 );
-					res.body.should.have.property( 'parentPath' ).and.startWith( '1.10.' );
-					done();
-				});
+			request
+			.post( '/offices/7/assistant' )
+			.query({ token: 'arc' })
+			.send( data )
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				helpers.models.office( res.body, true );
+				res.body.should.have.properties( data );
+				res.body.should.have.property( 'parentOfficeID', 2 );
+				res.body.should.have.property( 'parentPath' ).and.startWith( '1.2.7.' );
+				done();
 			});
 		});
 
 		after( 'delete assistant', function( done ) {
-			new Office({ id: 10 })
+			new Office({ id: 11 })
 			.destroy()
 			.then( () => done() );
 		});
@@ -448,5 +451,117 @@ module.exports = function() {
 			.destroy()
 			.then( () => done() );
 		});
+	});
+
+	describe( 'DELETE assistant', function() {
+
+		before( 'create second assistant', function( done ) {
+			let office = new Office({
+				id: 11,
+				name: 'Test Assistant',
+				userID: 8,
+				parentOfficeID: 5,
+				parentOrgID: 3,
+				parentPath: '1.2.5.11',
+				roles: [ 'office_create_assistants' ]
+			})
+			.save( null, { method: 'insert' } );
+
+			Promise.join(
+				office,
+				helpers.makeToken( 8, 'adc' ),
+				() => done()
+			);
+		});
+
+		beforeEach( 'create assistant', function( done ) {
+			new Office({ id: 10 })
+			.fetch({ require: true })
+			.then( () => done() )
+			.catch( () => {
+				new Office({
+					id: 10,
+					name: 'Test Assistant',
+					userID: 5,
+					parentOfficeID: 5,
+					parentOrgID: 3,
+					parentPath: '1.2.5.10',
+					roles: [ 'user_read_private', 'user_update' ],
+					type: 'Assistant'
+				})
+				.save( null, { method: 'insert' } )
+				.then( () => done() );
+			});
+		});
+
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.delete( '/offices/10/assistant' )
+			.expect( 403, done );
+		});
+
+		it( 'fails if invalid ID is provided', function( done ) {
+			request
+			.delete( '/offices/99/assistant' )
+			.query({ token: 'rc' })
+			.expect( 404, done );
+		});
+
+		it( 'fails if office is not an assistant', function( done ) {
+			request
+			.delete( '/offices/5/assistant' )
+			.query({ token: 'rc' })
+			.expect( 400, done );
+		});
+
+		it( 'fails without permission', function( done ) {
+			request
+			.delete( '/offices/10/assistant' )
+			.query({ token: 'user' })
+			.expect( 403, done );
+		});
+
+		it( 'works for primary in chain', function( done ) {
+			request
+			.delete( '/offices/10/assistant' )
+			.query({ token: 'nc' })
+			.expect( 200, done );
+		});
+
+		it( 'works for assistant to primary', function( done ) {
+			request
+			.delete( '/offices/10/assistant' )
+			.query({ token: 'arc' })
+			.expect( 200, done );
+		});
+
+		it( 'works for assistant in chain', function( done ) {
+			request
+			.delete( '/offices/10/assistant' )
+			.query({ token: 'arc' })
+			.expect( 200, done );
+		});
+
+		after( 'deletes assistant', function( done ) {
+			new Office({ id: 10 })
+			.destroy()
+			.then( () => done() );
+		});
+
+		after( 'deletes second assistant', function( done ) {
+			Promise.join(
+				new Office({ id: 11 }).destroy(),
+				helpers.deleteToken( 'adc' ),
+				() => done()
+			);
+		});
+	});
+
+	after( 'deletes token', function( done ) {
+		Promise.join(
+			helpers.deleteToken( 'rc' ),
+			helpers.deleteToken( 'arc' ),
+			() => done()
+		);
 	});
 };

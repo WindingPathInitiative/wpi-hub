@@ -124,4 +124,12 @@ module.exports = function() {
 			});
 		});
 	});
+
+	after( 'deletes tokens', function( done ) {
+		const Token = require( '../models/tokens' );
+		new Token()
+		.where( 'user', 8 )
+		.destroy()
+		.then( () => done() );
+	});
 };

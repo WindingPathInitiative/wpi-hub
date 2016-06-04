@@ -62,6 +62,16 @@ exports.seed = ( knex, Promise ) => {
 				parentPath: '6',
 				userID: 1,
 				roles: JSON.stringify([ 'admin' ])
+			},
+			{
+				id: 7,
+				name: 'aRC Membership',
+				type: 'Assistant',
+				parentOrgID: 2,
+				parentPath: '1.2.7',
+				parentOfficeID: 2,
+				userID: 10,
+				roles: JSON.stringify([ 'user_read_private', 'user_update', 'user_assign', 'office_create_own_assistants', 'office_create_assistants' ])
 			}
 		])
 	);

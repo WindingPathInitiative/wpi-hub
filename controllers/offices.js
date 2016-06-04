@@ -283,4 +283,43 @@ router.post( '/:id(\\d+)/assistant',
 	}
 );
 
+
+router.delete( '/:id(\\d+)/assistant',
+	token.validate(),
+	( req, res, next ) => {
+		new Office({ id: req.params.id })
+		.fetch({ require: true })
+		.catch( err => {
+			throw new UserError( 'Parent office not found', 404, err );
+		})
+		// We're an assistant, right?
+		.tap( office => {
+			if ( 'Assistant' !== office.get( 'type' ) ) {
+				throw new UserError( 'Office is not an assistant', 400 );
+			}
+		})
+		// Check for permissions.
+		.tap( office => {
+			return perm.hasOverOffice(
+				office,
+				[ 'office_create_assistants', 'office_create_own_assistants' ],
+				req.token.get( 'user' )
+			);
+		})
+		.then( office => {
+			return office.destroy();
+		})
+		.then( () => {
+			res.json({ success: true });
+		})
+		.catch( err => {
+			if ( err instanceof UserError ) {
+				next( err );
+			} else {
+				next( new UserError( 'Authentication failed', 403, err ) );
+			}
+		});
+	}
+);
+
 module.exports = router;

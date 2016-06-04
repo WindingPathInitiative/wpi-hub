@@ -315,7 +315,7 @@ module.exports = function() {
 			.save();
 
 			let office = new Office({
-				id: 10,
+				id: 11,
 				name: 'Test Officer',
 				type: 'Primary',
 				parentPath: '10',
@@ -373,7 +373,7 @@ module.exports = function() {
 					user.get( 'orgUnit' ).should.equal( 2, 'User is now on parent' );
 				});
 
-				let office = new Office({ id: 10 })
+				let office = new Office({ id: 11 })
 				.fetch()
 				.then( office => {
 					( null === office ).should.be.true( 'Office does not exist' );
@@ -394,7 +394,7 @@ module.exports = function() {
 
 			let domain = new OrgUnit({ id: 10 }).destroy();
 			let user   = new User({ id: 9, orgUnit: null }).save();
-			let office = new Office({ id: 10 }).destroy();
+			let office = new Office({ id: 11 }).destroy();
 
 			Promise.join(
 				domain,

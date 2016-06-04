@@ -240,6 +240,22 @@ module.exports = function() {
 			});
 		});
 
+		it( 'works if the office is an assistant to a parent of the target', function( done ) {
+			permissions.hasOverOffice( 5, perm, 10 )
+			.then( res => {
+				res.should.be.ok();
+				done();
+			});
+		});
+
+		it( 'throws if office is an assistant not parent of target office', function( done ) {
+			permissions.hasOverOffice( 3, perm, 10 )
+			.catch( err => {
+				errorTest( err );
+				done();
+			});
+		});
+
 		it( 'throws if office is not a parent of the target office', function( done ) {
 			permissions.hasOverOffice( 3, perm, nc )
 			.catch( err => {

@@ -187,6 +187,12 @@ function hasOverOffice( office, permission, officer ) {
 		.split( '.' )
 		.map( m => parseInt( m ) );
 
+		let parentOfficeIDs = offices
+		.filter( o => 'Assistant' === o.get( 'type' ) )
+		.map( o => parseInt( o.get( 'parentOfficeID' ) ) );
+
+		officeIds = _.uniq( officeIds.concat( parentOfficeIDs ) );
+
 		for ( let i = 0; i < parents.length; i++ ) {
 			if ( -1 !== officeIds.indexOf( parents[ i ] ) ) {
 				return true;

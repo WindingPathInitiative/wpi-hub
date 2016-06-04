@@ -9,6 +9,7 @@ const token     = require( '../middlewares/token' );
 const network   = require( '../middlewares/network' );
 const _         = require( 'lodash' );
 const UserError = require( '../helpers/errors' );
+const perm      = require( '../helpers/permissions' );
 
 
 /**
@@ -159,7 +160,6 @@ router.post( '/',
 			throw new UserError( 'Parent not found', 400 );
 		})
 		.tap( parent => {
-			const perm = require( '../helpers/permissions' );
 			let role = 'org_create_' + data.type.toLowerCase();
 			return perm.hasOverUnit( parent, role, req.token.get( 'user' ) );
 		})
@@ -248,7 +248,6 @@ router.put( '/:id',
 			throw new UserError( 'Org unit not found', 404, err );
 		})
 		.tap( unit => {
-			const perm = require( '../helpers/permissions' );
 			return perm.hasOverUnit( unit, 'org_update', req.token.get( 'user' ) );
 		})
 		.then( unit => {
@@ -310,7 +309,6 @@ router.delete( '/:id',
 			throw new UserError( 'Org unit not found', 404, err );
 		})
 		.tap( unit => {
-			const perm = require( '../helpers/permissions' );
 			let role = 'org_create_' + unit.get( 'type' ).toLowerCase();
 			return perm.hasOverUnit( unit, role, req.token.get( 'user' ) );
 		})

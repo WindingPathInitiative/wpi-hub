@@ -205,4 +205,79 @@ module.exports = function() {
 			.expect( 500, done );
 		});
 	});
+
+	describe( 'PUT update', function() {
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.put( '/offices/5' )
+			.send({ name: 'Test' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if invalid ID is provided', function( done ) {
+			request
+			.put( '/offices/99' )
+			.send({ name: 'Test' })
+			.query({ token: 'nc' })
+			.expect( 404, done );
+		});
+
+		it( 'fails without data', function( done ) {
+			request
+			.put( '/offices/3' )
+			.query({ token: 'nc' })
+			.expect( 400, done );
+		});
+
+		it( 'fails if modifying org unit without permission', function( done ) {
+			request
+			.put( '/offices/5' )
+			.query({ token: 'user' })
+			.send({ name: 'Test' })
+			.expect( 403, done );
+		});
+
+		it( 'fails for invalid data', function( done ) {
+			request
+			.put( '/offices/5' )
+			.query({ token: 'nc' })
+			.send({ email: 'invalid' })
+			.expect( 400, done );
+		});
+
+		it( 'works for modifying with permission', function( done ) {
+			request
+			.put( '/offices/5' )
+			.query({ token: 'nc' })
+			.send({
+				name: 'Test',
+				email: 'test@test.com',
+				roles: [ 'user_update' ]
+			})
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				helpers.models.office( res.body, true );
+				res.body.should.have.properties({
+					name: 'Test',
+					email: 'test@test.com',
+					roles: [ 'user_update' ]
+				});
+				done();
+			});
+		});
+
+		after( 'reset data', function( done ) {
+			let Office = require( '../models/offices' );
+			new Office({ id: 5 })
+			.save({
+				name: 'DC',
+				email: null,
+				roles: [ 'user_read_private', 'user_update', 'user_assign', 'org_update', 'office_update', 'office_assign', 'office_create_assistants' ]
+			}, { patch: true })
+			.then( () => done() );
+		});
+	});
 };

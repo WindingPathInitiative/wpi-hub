@@ -22,6 +22,13 @@ const Office = bookshelf.model( 'Office', Base.extend({
 		return attrs;
 	},
 
+	format: function( attrs ) {
+		if ( undefined !== attrs.roles ) {
+			attrs.roles = JSON.stringify( attrs.roles );
+		}
+		return attrs;
+	},
+
 	parentOffice: function() {
 		return this.belongsTo( 'Office', 'parentOfficeID' );
 	},

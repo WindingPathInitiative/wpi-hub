@@ -35,10 +35,20 @@ function deleteToken( token ) {
 	return new Token({ token: token }).destroy();
 }
 
+/**
+ * Internal generator for validating models.
+ * @param {array} pub Public info.
+ * @param {array} pri Private info.
+ * @return {void}
+ */
 function _dataValidationFactory( pub, pri ) {
 	return ( model, full ) => {
 		model.should.have.properties( pub );
-		model.should.not.have.properties( pri );
+		if ( true === full ) {
+			model.should.have.properties( pri );
+		} else {
+			model.should.not.have.properties( pri );
+		}
 	};
 }
 
@@ -49,7 +59,7 @@ module.exports = {
 
 	models: {
 		office: _dataValidationFactory(
-			[ 'id', 'name', 'type', 'user' ],
+			[ 'id', 'name', 'type' ],
 			[ 'email', 'roles' ]
 		),
 		orgUnit: _dataValidationFactory(

@@ -7,15 +7,20 @@ const _        = require( 'lodash' );
 
 validate.Promise = Promise;
 
-validate.validators.isString = val => {
-	return new Promise( ( res, rej ) => {
-		if ( undefined === val || _.isString( val ) ) {
-			res();
-		} else {
-			res( 'is not a string' );
-		}
-	});
-};
+let types = [ 'String', 'Array', 'Boolean', 'Object', 'Number' ];
+
+types.forEach( type => {
+	let name = 'is' + type;
+	validate.validators[ name ] = val => {
+		return new Promise( res => {
+			if ( undefined === val || _[ name ]( val ) ) {
+				res();
+			} else {
+				res( 'not expected type' );
+			}
+		});
+	};
+});
 
 let formatter = opts => opts.dateOnly ? 'YYYY-MM-DD' : 'YYYY-MM-DD hh:mm:ss';
 

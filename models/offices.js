@@ -18,7 +18,9 @@ const Office = bookshelf.model( 'Office', Base.extend({
 	],
 
 	parse: function( attrs ) {
-		attrs.roles = JSON.parse( attrs.roles );
+		if ( undefined !== attrs.roles ) {
+			attrs.roles = JSON.parse( attrs.roles );
+		}
 		return attrs;
 	},
 

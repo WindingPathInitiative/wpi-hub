@@ -11,6 +11,8 @@ const Promise = require( 'bluebird' );
 const helpers = require( './helpers' );
 const request = helpers.request;
 
+const Office = require( '../models/offices' );
+
 module.exports = function() {
 
 	describe( 'GET id', function() {
@@ -100,8 +102,6 @@ module.exports = function() {
 	});
 
 	describe( 'PUT assign', function() {
-
-		let Office = require( '../models/offices' );
 
 		afterEach( 'reset officers', function( done ) {
 			let main = new Office({ id: 1 }).save( { userID: 2 }, { patch: true } );
@@ -229,7 +229,7 @@ module.exports = function() {
 			.expect( 400, done );
 		});
 
-		it( 'fails if modifying org unit without permission', function( done ) {
+		it( 'fails if modifying office without permission', function( done ) {
 			request
 			.put( '/offices/5' )
 			.query({ token: 'user' })
@@ -270,13 +270,182 @@ module.exports = function() {
 		});
 
 		after( 'reset data', function( done ) {
-			let Office = require( '../models/offices' );
 			new Office({ id: 5 })
 			.save({
 				name: 'DC',
 				email: null,
 				roles: [ 'user_read_private', 'user_update', 'user_assign', 'org_update', 'office_update', 'office_assign', 'office_create_assistants' ]
 			}, { patch: true })
+			.then( () => done() );
+		});
+	});
+
+	describe( 'POST assistant', function() {
+
+		let data = {
+			name: 'Test Assistant',
+			email: 'adc@test.com',
+			roles: [ 'user_read_private', 'user_update' ]
+		};
+
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.post( '/offices/5/assistant' )
+			.send( data )
+			.expect( 403, done );
+		});
+
+		it( 'fails if invalid ID is provided', function( done ) {
+			request
+			.post( '/offices/99/assistant' )
+			.send( data )
+			.query({ token: 'nc' })
+			.expect( 404, done );
+		});
+
+		it( 'fails without data', function( done ) {
+			request
+			.post( '/offices/5/assistant' )
+			.query({ token: 'nc' })
+			.expect( 400, done );
+		});
+
+		it( 'fails if creating assistant without permission', function( done ) {
+			request
+			.post( '/offices/5/assistant' )
+			.query({ token: 'user' })
+			.send( data )
+			.expect( 403, done );
+		});
+
+		it( 'fails for invalid data', function( done ) {
+			let badData = Object.assign( {}, data );
+			badData.name = null;
+			request
+			.post( '/offices/5/assistant' )
+			.query({ token: 'nc' })
+			.send( badData )
+			.expect( 400, done );
+		});
+
+		it( 'fails if assigning permissions parent does not have', function( done ) {
+			let badData = Object.assign( {}, data );
+			badData.roles = data.roles.concat( 'invalid_perm' );
+			request
+			.post( '/offices/5/assistant' )
+			.query({ token: 'nc' })
+			.send( badData )
+			.expect( 400, done );
+		});
+
+		it( 'works for creating with permission', function( done ) {
+			request
+			.post( '/offices/5/assistant' )
+			.query({ token: 'nc' })
+			.send( data )
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				helpers.models.office( res.body, true );
+				res.body.should.have.properties( data );
+				res.body.should.have.property( 'parentOfficeID', 5 );
+				res.body.should.have.property( 'parentPath' ).and.startWith( '1.2.5.' );
+				done();
+			});
+		});
+
+		it( 'works for primary creating own assistant', function( done ) {
+			request
+			.post( '/offices/1/assistant' )
+			.query({ token: 'nc' })
+			.send( data )
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				helpers.models.office( res.body, true );
+				res.body.should.have.properties( data );
+				res.body.should.have.property( 'parentOfficeID', 1 );
+				res.body.should.have.property( 'parentPath' ).and.startWith( '1.' );
+				done();
+			});
+		});
+
+		after( 'delete assistants', function( done ) {
+			data.roles = JSON.stringify( data.roles );
+			new Office()
+			.where( data )
+			.destroy()
+			.then( () => done() );
+		});
+	});
+
+	describe( 'PUT assistant self', function() {
+		let data = {
+			name: 'Test Assistant Assistant',
+			email: 'aadc@test.com',
+			roles: [ 'user_read_private', 'user_update' ]
+		};
+
+		before( 'create assistant', function( done ) {
+			new Office({
+				id: 10,
+				name: 'Test Assistant',
+				userID: 5,
+				parentOfficeID: 1,
+				parentOrgID: 1,
+				parentPath: '1.10',
+				roles: [ 'user_read_private', 'user_update' ]
+			})
+			.save( null, { method: 'insert' } )
+			.then( () => done() );
+		});
+
+		it( 'fails without permission', function( done ) {
+			request
+			.post( '/offices/10/assistant' )
+			.query({ token: 'user' })
+			.send( data )
+			.expect( 403, done );
+		});
+
+		it( 'works for permission', function( done ) {
+			new Office({ id: 10 })
+			.set( 'roles', [ 'user_read_private', 'user_update', 'office_create_own_assistants' ] )
+			.save()
+			.then( office => {
+				request
+				.post( '/offices/10/assistant' )
+				.query({ token: 'user' })
+				.send( data )
+				.expect( 200 )
+				.end( ( err, res ) => {
+					if ( err ) {
+						return done( err );
+					}
+					helpers.models.office( res.body, true );
+					res.body.should.have.properties( data );
+					res.body.should.have.property( 'parentOfficeID', 1 );
+					res.body.should.have.property( 'parentPath' ).and.startWith( '1.10.' );
+					done();
+				});
+			});
+		});
+
+		after( 'delete assistant', function( done ) {
+			new Office({ id: 10 })
+			.destroy()
+			.then( () => done() );
+		});
+
+		after( 'delete created assistant', function( done ) {
+			data.roles = JSON.stringify( data.roles );
+			new Office()
+			.where( data )
+			.destroy()
 			.then( () => done() );
 		});
 	});

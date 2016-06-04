@@ -150,6 +150,10 @@ router.put( '/:id(\\d+)/assign/:user(\\d+)',
 	}
 );
 
+
+/**
+ * Updates an office.
+ */
 router.put( '/:id(\\d+)',
 	token.validate(),
 	( req, res, next ) => {
@@ -180,6 +184,89 @@ router.put( '/:id(\\d+)',
 			})
 			.then( attributes => {
 				return office.save( attributes );
+			});
+		})
+		.then( office => {
+			office.show();
+			res.json( office.toJSON() );
+		})
+		.catch( err => {
+			if ( err instanceof UserError ) {
+				next( err );
+			} else {
+				next( new UserError( 'Authentication failed', 403, err ) );
+			}
+		});
+	}
+);
+
+
+/**
+ * Creates an assistant office.
+ */
+router.post( '/:id(\\d+)/assistant',
+	token.validate(),
+	( req, res, next ) => {
+		if ( _.isEmpty( req.body ) ) {
+			return next( new UserError( 'No data provided', 400 ) );
+		}
+
+		new Office({ id: req.params.id })
+		.fetch({ require: true })
+		.catch( err => {
+			throw new UserError( 'Parent office not found', 404, err );
+		})
+		// Check for permissions.
+		.tap( office => {
+			return perm.prefetch( req.token.get( 'user' ) )
+			.then( offices => {
+				// If we're creating our own assistant, check that.
+				let self = offices.filter( o => o.id === parseInt( req.params.id ) );
+				if ( self.length ) {
+					return perm.has( 'office_create_own_assistants', offices );
+				}
+				// Otherwise, make sure we're over the office.
+				return perm.hasOverOffice(
+					office,
+					'office_create_assistants',
+					offices
+				);
+			});
+		})
+		.then( office => {
+			const validate = require( '../helpers/validation' );
+			let constraints = {
+				name: { length: { minimum: 1 }, presence: true },
+				email: { email: true },
+				roles: { isArray: true }
+			};
+			return validate.async( req.body, constraints )
+			.tap( attributes => {
+				if ( _.difference( attributes.roles, office.get( 'roles' ) ).length ) {
+					throw new Error( 'role not in parent office' );
+				}
+			})
+			.catch( errs => {
+				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
+			})
+			.then( attributes => {
+				attributes.type = 'Assistant';
+				attributes.parentOfficeID = office.get( 'parentOfficeID' ) || office.id;
+				attributes.parentPath = office.get( 'parentPath' ) + '.';
+				attributes.parentOrgID = office.get( 'parentOrgID' );
+				return attributes;
+			});
+		})
+		.then( attributes => {
+			const Bookshelf = require( '../helpers/db' ).Bookshelf;
+			return Bookshelf.transaction( t => {
+				return new Office( attributes )
+				.save( null, { transacting: t } )
+				.then( office => {
+					return office
+					.set( 'parentPath', office.get( 'parentPath' ) + office.id )
+					.save( null, { transacting: t } );
+				});
 			});
 		})
 		.then( office => {

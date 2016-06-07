@@ -192,18 +192,7 @@ router.post( '/',
 			.catch( errs => {
 				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
 			})
-			.then( attributes => {
-				let Bookshelf = require( '../helpers/db' ).Bookshelf;
-				return Bookshelf.transaction( t => {
-					return new OrgUnit()
-					.save( attributes, { method: 'insert', transacting: t } )
-					.then( unit => {
-						return unit
-						.set( 'parentPath', attributes.parentPath + unit.id )
-						.save( null, { transacting: t } );
-					});
-				});
-			})
+			.then( attributes => new OrgUnit( attributes ).insertWithPath() )
 			.catch( err => {
 				throw new UserError( 'There was an error creating the org unit', 500, err );
 			});

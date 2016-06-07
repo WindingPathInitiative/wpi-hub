@@ -14,6 +14,34 @@ const Base = bookshelf.Model.extend({
 	publicAttrs: [],
 
 	/**
+	 * Inserts a new row and immediately updates it with a path.
+	 * @param {function} transaction Callback for transacting.
+	 * @return {Promise}
+	 */
+	insertWithPath: function( transaction ) {
+		// Throw if no parent path exists.
+		if ( ! this.get( 'parentPath' ) ) {
+			throw new Error( 'No parent path set' );
+		}
+
+		// If we don't have a transaction already, wrap it in one.
+		if ( ! transaction ) {
+			return bookshelf.transaction( t => {
+				return this.insertWithPath( t );
+			});
+		}
+
+		// Save the new model and then update the path.
+		return this
+		.save( null, { method: 'insert', transacting: transaction } )
+		.then( model => {
+			return model
+			.set( 'parentPath', model.get( 'parentPath' ) + model.id )
+			.save( null, { transacting: transaction } );
+		});
+	},
+
+	/**
 	 * Extends unset to handle arrays.
 	 * @param  {mixed}  attrs   Array or string.
 	 * @param  {Object} options Options.

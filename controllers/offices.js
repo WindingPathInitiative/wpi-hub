@@ -257,18 +257,7 @@ router.post( '/:id(\\d+)/assistant',
 				return attributes;
 			});
 		})
-		.then( attributes => {
-			const Bookshelf = require( '../helpers/db' ).Bookshelf;
-			return Bookshelf.transaction( t => {
-				return new Office( attributes )
-				.save( null, { transacting: t } )
-				.then( office => {
-					return office
-					.set( 'parentPath', office.get( 'parentPath' ) + office.id )
-					.save( null, { transacting: t } );
-				});
-			});
-		})
+		.then( attributes => new Office( attributes ).insertWithPath() )
 		.then( office => {
 			office.show();
 			res.json( office.toJSON() );

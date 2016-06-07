@@ -233,7 +233,7 @@ module.exports = function() {
 		});
 
 		it( 'works if the office is a parent of the target office', function( done ) {
-			permissions.hasOverOffice( 5, perm, rc )
+			permissions.hasOverOffice( 7, perm, rc )
 			.then( res => {
 				res.should.be.ok();
 				done();
@@ -241,7 +241,7 @@ module.exports = function() {
 		});
 
 		it( 'works if the office is an assistant to a parent of the target', function( done ) {
-			permissions.hasOverOffice( 5, perm, 10 )
+			permissions.hasOverOffice( 7, perm, 10 )
 			.then( res => {
 				res.should.be.ok();
 				done();
@@ -249,7 +249,7 @@ module.exports = function() {
 		});
 
 		it( 'throws if office is an assistant not parent of target office', function( done ) {
-			permissions.hasOverOffice( 3, perm, 10 )
+			permissions.hasOverOffice( 5, perm, 10 )
 			.catch( err => {
 				errorTest( err );
 				done();
@@ -257,7 +257,7 @@ module.exports = function() {
 		});
 
 		it( 'throws if office is not a parent of the target office', function( done ) {
-			permissions.hasOverOffice( 3, perm, nc )
+			permissions.hasOverOffice( 5, perm, nc )
 			.catch( err => {
 				errorTest( err );
 				done();

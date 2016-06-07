@@ -184,7 +184,7 @@ module.exports = function() {
 			defDoc: 'Test domain, please ignore!',
 			website: 'http://www.example.com',
 			type: 'Domain',
-			parentID: 5
+			parentID: 2
 		};
 
 		it( 'fails if no token is provided', function( done ) {
@@ -277,15 +277,20 @@ module.exports = function() {
 				}
 				delete data.parentID;
 				res.body.should.have.properties( data );
+				res.body.should.have.property( 'offices' ).and.be.an.Array();
+				res.body.offices.forEach( helpers.models.office );
 				done();
 			});
 		});
 
 		after( 'delete org unit', function( done ) {
 			let OrgUnit = require( '../models/org_units' );
-			new OrgUnit({ id: data.id })
-			.destroy()
-			.then( () => done() );
+			let Office = require( '../models/offices' );
+			Promise.join(
+				new OrgUnit({ id: data.id }).destroy(),
+				new Office().where( 'parentOrgID', data.id ).destroy(),
+				() => done()
+			);
 		});
 	});
 

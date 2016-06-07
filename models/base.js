@@ -20,7 +20,7 @@ const Base = bookshelf.Model.extend({
 	 */
 	insertWithPath: function( transaction ) {
 		// Throw if no parent path exists.
-		if ( ! this.get( 'parentPath' ) ) {
+		if ( ! this.has( 'parentPath' ) ) {
 			throw new Error( 'No parent path set' );
 		}
 
@@ -31,13 +31,18 @@ const Base = bookshelf.Model.extend({
 			});
 		}
 
+		// Appends the delimiter to the parent path.
+		if ( ! _.endsWith( '.', this.get( 'parentPath' ) ) ) {
+			this.set( 'parentPath', this.get( 'parentPath' ) + '.' );
+		}
+
 		// Save the new model and then update the path.
 		return this
 		.save( null, { method: 'insert', transacting: transaction } )
 		.then( model => {
+			let path = model.get( 'parentPath' ) + model.id;
 			return model
-			.set( 'parentPath', model.get( 'parentPath' ) + model.id )
-			.save( null, { transacting: transaction } );
+			.save( { parentPath: path }, { transacting: transaction, patch: true } );
 		});
 	},
 

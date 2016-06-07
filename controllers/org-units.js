@@ -173,7 +173,7 @@ router.post( '/',
 		})
 		.then( path => {
 			const validate = require( '../helpers/validation' );
-			data.parentPath = path + '.';
+			data.parentPath = path;
 			let constraints = {
 				id: { numericality: { onlyInteger: true, strict: true } },
 				name: { length: { minimum: 1 }, presence: true },
@@ -191,8 +191,23 @@ router.post( '/',
 			return validate.async( data, constraints )
 			.catch( errs => {
 				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
+			});
+		})
+		.then( attributes => {
+			let Bookshelf = require( '../helpers/db' ).Bookshelf;
+			let Office = require( '../models/offices' );
+			let Promise = require( 'bluebird' );
+			return Bookshelf.transaction( t => {
+				return new OrgUnit( attributes )
+				.insertWithPath( t )
+				.tap( unit => {
+					return Promise.join(
+						Office.makeOfficeForUnit( unit, 'coordinator', t ),
+						Office.makeOfficeForUnit( unit, 'storyteller', t ),
+						() => unit.load( 'offices', { transacting: t } )
+					);
+				});
 			})
-			.then( attributes => new OrgUnit( attributes ).insertWithPath() )
 			.catch( err => {
 				throw new UserError( 'There was an error creating the org unit', 500, err );
 			});

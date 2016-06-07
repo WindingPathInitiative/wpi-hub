@@ -112,42 +112,43 @@ module.exports = function() {
 	describe( 'PUT assign', function() {
 
 		afterEach( 'reset officers', function( done ) {
-			let main = new Office({ id: 1 }).save( { userID: 2 }, { patch: true } );
-			let child = new Office({ id: 5 }).save( { userID: 8 }, { patch: true } );
-
-			Promise.join( main, child, () => done() );
+			Promise.join(
+				new Office({ id: 1 }).save( { userID: 2 }, { patch: true } ),
+				new Office({ id: 7 }).save( { userID: 8 }, { patch: true } ),
+				() => done()
+			);
 		});
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.put( '/offices/5/assign/5' )
+			.put( '/offices/7/assign/7' )
 			.expect( 403, done );
 		});
 
 		it( 'fails for invalid user id', function( done ) {
 			request
-			.put( '/offices/5/assign/99' )
+			.put( '/offices/7/assign/99' )
 			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
 		it( 'fails for invalid office id', function( done ) {
 			request
-			.put( '/offices/99/assign/5' )
+			.put( '/offices/99/assign/7' )
 			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
 		it( 'fails for assigning without permission', function( done ) {
 			request
-			.put( '/offices/5/assign/5' )
+			.put( '/offices/7/assign/7' )
 			.query({ token: 'user' })
 			.expect( 403, done );
 		});
 
 		it( 'fails for vacating without permission', function( done ) {
 			request
-			.put( '/offices/5/assign/0' )
+			.put( '/offices/7/assign/0' )
 			.query({ token: 'user' })
 			.expect( 403, done );
 		});
@@ -172,14 +173,14 @@ module.exports = function() {
 
 		it( 'works for officer vacating subordinate', function( done ) {
 			request
-			.put( '/offices/5/assign/0' )
+			.put( '/offices/7/assign/0' )
 			.query({ token: 'nc' })
 			.expect( 200 )
 			.end( ( err, res ) => {
 				if ( err ) {
 					return done( err );
 				}
-				new Office({ id: 5 })
+				new Office({ id: 7 })
 				.fetch()
 				.then( office => {
 					office.get( 'userID' ).should.be.null;
@@ -190,14 +191,14 @@ module.exports = function() {
 
 		it( 'works for officer assigning subordinate', function( done ) {
 			request
-			.put( '/offices/5/assign/5' )
+			.put( '/offices/7/assign/5' )
 			.query({ token: 'nc' })
 			.expect( 200 )
 			.end( ( err, res ) => {
 				if ( err ) {
 					return done( err );
 				}
-				new Office({ id: 5 })
+				new Office({ id: 7 })
 				.fetch()
 				.then( office => {
 					office.get( 'userID' ).should.equal( 5 );
@@ -208,7 +209,7 @@ module.exports = function() {
 
 		it( 'fails for assigning same officer', function( done ) {
 			request
-			.put( '/offices/5/assign/8' )
+			.put( '/offices/7/assign/8' )
 			.query({ token: 'nc' })
 			.expect( 500, done );
 		});
@@ -217,7 +218,7 @@ module.exports = function() {
 	describe( 'PUT update', function() {
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.put( '/offices/5' )
+			.put( '/offices/7' )
 			.send({ name: 'Test' })
 			.expect( 403, done );
 		});
@@ -239,7 +240,7 @@ module.exports = function() {
 
 		it( 'fails if modifying office without permission', function( done ) {
 			request
-			.put( '/offices/5' )
+			.put( '/offices/7' )
 			.query({ token: 'user' })
 			.send({ name: 'Test' })
 			.expect( 403, done );
@@ -247,7 +248,7 @@ module.exports = function() {
 
 		it( 'fails for invalid data', function( done ) {
 			request
-			.put( '/offices/5' )
+			.put( '/offices/7' )
 			.query({ token: 'nc' })
 			.send({ email: 'invalid' })
 			.expect( 400, done );
@@ -255,7 +256,7 @@ module.exports = function() {
 
 		it( 'works for modifying with permission', function( done ) {
 			request
-			.put( '/offices/5' )
+			.put( '/offices/7' )
 			.query({ token: 'nc' })
 			.send({
 				name: 'Test',
@@ -278,7 +279,7 @@ module.exports = function() {
 		});
 
 		after( 'reset data', function( done ) {
-			new Office({ id: 5 })
+			new Office({ id: 7 })
 			.save({
 				name: 'DC',
 				email: null,
@@ -298,7 +299,7 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.post( '/offices/5/assistant' )
+			.post( '/offices/7/assistant' )
 			.send( data )
 			.expect( 403, done );
 		});
@@ -313,14 +314,14 @@ module.exports = function() {
 
 		it( 'fails without data', function( done ) {
 			request
-			.post( '/offices/5/assistant' )
+			.post( '/offices/7/assistant' )
 			.query({ token: 'nc' })
 			.expect( 400, done );
 		});
 
 		it( 'fails if creating assistant without permission', function( done ) {
 			request
-			.post( '/offices/5/assistant' )
+			.post( '/offices/7/assistant' )
 			.query({ token: 'user' })
 			.send( data )
 			.expect( 403, done );
@@ -330,7 +331,7 @@ module.exports = function() {
 			let badData = Object.assign( {}, data );
 			badData.name = null;
 			request
-			.post( '/offices/5/assistant' )
+			.post( '/offices/7/assistant' )
 			.query({ token: 'nc' })
 			.send( badData )
 			.expect( 400, done );
@@ -340,7 +341,7 @@ module.exports = function() {
 			let badData = Object.assign( {}, data );
 			badData.roles = data.roles.concat( 'invalid_perm' );
 			request
-			.post( '/offices/5/assistant' )
+			.post( '/offices/7/assistant' )
 			.query({ token: 'nc' })
 			.send( badData )
 			.expect( 400, done );
@@ -348,7 +349,7 @@ module.exports = function() {
 
 		it( 'works for creating with permission', function( done ) {
 			request
-			.post( '/offices/5/assistant' )
+			.post( '/offices/7/assistant' )
 			.query({ token: 'nc' })
 			.send( data )
 			.expect( 200 )
@@ -358,8 +359,8 @@ module.exports = function() {
 				}
 				helpers.models.office( res.body, true );
 				res.body.should.have.properties( data );
-				res.body.should.have.property( 'parentOfficeID', 5 );
-				res.body.should.have.property( 'parentPath' ).and.startWith( '1.2.5.' );
+				res.body.should.have.property( 'parentOfficeID', 7 );
+				res.body.should.have.property( 'parentPath' ).and.startWith( '1.3.7.' );
 				done();
 			});
 		});
@@ -422,7 +423,7 @@ module.exports = function() {
 
 		it( 'works for permission', function( done ) {
 			request
-			.post( '/offices/7/assistant' )
+			.post( '/offices/9/assistant' )
 			.query({ token: 'arc' })
 			.send( data )
 			.expect( 200 )
@@ -432,8 +433,8 @@ module.exports = function() {
 				}
 				helpers.models.office( res.body, true );
 				res.body.should.have.properties( data );
-				res.body.should.have.property( 'parentOfficeID', 2 );
-				res.body.should.have.property( 'parentPath' ).and.startWith( '1.2.7.' );
+				res.body.should.have.property( 'parentOfficeID', 3 );
+				res.body.should.have.property( 'parentPath' ).and.startWith( '1.3.9.' );
 				done();
 			});
 		});
@@ -460,9 +461,9 @@ module.exports = function() {
 				id: 11,
 				name: 'Test Assistant',
 				userID: 8,
-				parentOfficeID: 5,
+				parentOfficeID: 7,
 				parentOrgID: 3,
-				parentPath: '1.2.5.11',
+				parentPath: '1.3.7.11',
 				roles: [ 'office_create_assistants' ]
 			})
 			.save( null, { method: 'insert' } );
@@ -483,9 +484,9 @@ module.exports = function() {
 					id: 10,
 					name: 'Test Assistant',
 					userID: 5,
-					parentOfficeID: 5,
+					parentOfficeID: 7,
 					parentOrgID: 3,
-					parentPath: '1.2.5.10',
+					parentPath: '1.3.7.10',
 					roles: [ 'user_read_private', 'user_update' ],
 					type: 'Assistant'
 				})
@@ -509,7 +510,7 @@ module.exports = function() {
 
 		it( 'fails if office is not an assistant', function( done ) {
 			request
-			.delete( '/offices/5/assistant' )
+			.delete( '/offices/7/assistant' )
 			.query({ token: 'rc' })
 			.expect( 400, done );
 		});

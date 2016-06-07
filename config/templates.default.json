@@ -1,6 +1,42 @@
 {
-	"national_coordinator": [ "user_read_private", "user_update", "user_assign", "org_update", "office_update", "office_assign", "office_create_assistants", "org_create_domain" ],
-	"regional_coordinator": [ "user_read_private", "user_update", "user_assign", "org_update", "office_update", "office_assign", "office_create_assistants" ],
-	"domain_coordinator": [ "user_read_private", "user_update", "user_assign", "org_update", "office_update", "office_assign", "office_create_assistants" ],
-	"admin": [ "user_read_private", "user_update", "user_assign", "org_update", "org_create_region", "org_create_domain", "office_update", "office_assign", "office_create_assistants" ],
+	"rootOffices": {
+		"coordinator": 1,
+		"storyteller": 2,
+	},
+	"Nation": {
+		"coordinator": {
+			"name": "National Coordinator",
+			"roles": [ "user_read_private", "user_update", "user_assign", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants", "org_create_domain" ]
+		},
+		"storyteller": {
+			"name": "National Storyteller",
+			"roles": [ "user_read_private", "office_assign", "office_create_assistants", "office_create_own_assistants", "office_update" ]
+		}
+	},
+	"Region": {
+		"coordinator": {
+			"name": "Regional Coordinator",
+			"roles": [ "user_read_private", "user_update", "user_assign", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants" ]
+		},
+		"storyteller": {
+			"name": "Regional Storyteller",
+			"roles": [ "user_read_private", "office_assign", "office_create_own_assistants",  "office_create_assistants", "office_update" ]
+		}
+	},
+	"Domain": {
+		"coordinator": {
+			"name": "Domain Coordinator",
+			"roles": [ "user_read_private", "user_update", "user_assign", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants" ]
+		},
+		"storyteller": {
+			"name": "Domain Storyteller",
+			"roles": [ "user_read_private", "office_assign", "office_create_own_assistants",  "office_create_assistants", "office_update" ]
+		}
+	},
+	"Venue": {
+		"storyteller": {
+			"name": "Venue Storyteller",
+			"roles": [ "user_read_private", "org_update", "office_create_own_assistants",  "office_update" ]
+		}
+	}
 }

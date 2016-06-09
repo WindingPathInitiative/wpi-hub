@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "5"
 env:
-  - NODE_ENV=development
+  - NODE_ENV=testing
 before_script:
   - npm install -g knex grunt-cli
   - for file in ./config/*.default.json; do cp "$file" "${file/.default.json/.json}"; done

@@ -174,7 +174,7 @@ module.exports = function() {
 		});
 	});
 
-	describe( 'POST new', function() {
+	describe.only( 'POST new', function() {
 
 		var data = {
 			id: 10,

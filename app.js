@@ -23,6 +23,9 @@ if ( 'development' === app.get( 'env' ) ) {
 // Runs token maintenance.
 app.use( require( './middlewares/token' ).normalize );
 
+// Sets up CORS.
+app.use( require( './middlewares/cors' ) );
+
 // Load routes.
 app.use( require( './controllers' ) );
 

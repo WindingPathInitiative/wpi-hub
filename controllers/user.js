@@ -294,7 +294,6 @@ router.put( '/:id/assign/:domain(\\d+)',
 				// the user can't do this!
 				if ( 'Domain' === curOrg.get( 'type' ) ) {
 					throw new UserError( 'Cannot leave domain', 403 );
-					return;
 				}
 
 				// Otherwise, check if the domain is under the current org unit.

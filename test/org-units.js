@@ -50,21 +50,23 @@ module.exports = function() {
 				if ( err ) {
 					return done( err );
 				}
-				res.body.should.have.property( 'unit' ).is.Object;
+				res.body.should.have.property( 'unit' ).is.Object();
 				let unit = res.body.unit;
-				unit.should.have.property( 'id' ).is.Number;
-				unit.should.have.property( 'name' ).is.String;
+				unit.should.have.property( 'id' ).is.Number();
+				unit.should.have.property( 'name' ).is.String();
 
-				unit.should.have.property( 'users' ).is.Array;
+				unit.should.have.property( 'users' ).is.Array();
 				unit.users.forEach( helpers.models.user );
 
-				unit.should.have.property( 'offices' ).is.Array;
+				unit.should.have.property( 'offices' ).is.Array();
 				unit.offices.forEach( helpers.models.office );
 
-				res.body.should.have.property( 'children' ).is.Array;
+				res.body.should.have.property( 'children' ).is.Array();
+				res.body.children.should.have.length( 1 );
 				res.body.children.forEach( helpers.models.orgUnit );
 
-				res.body.should.have.property( 'parents' ).is.Array;
+				res.body.should.have.property( 'parents' ).is.Array();
+				res.body.parents.should.have.length( 2 );
 				res.body.parents.forEach( helpers.models.orgUnit );
 
 				done();
@@ -93,17 +95,17 @@ module.exports = function() {
 				if ( err ) {
 					return done( err );
 				}
-				res.body.should.have.property( 'unit' ).is.Object;
+				res.body.should.have.property( 'unit' ).is.Object();
 				let unit = res.body.unit;
-				unit.should.have.property( 'id' ).is.Number;
-				unit.should.have.property( 'name' ).is.String;
-				unit.should.not.have.property( 'users' ).is.Array;
-				unit.should.not.have.property( 'offices' ).is.Array;
+				unit.should.have.property( 'id' ).is.Number();
+				unit.should.have.property( 'name' ).is.String();
+				unit.should.not.have.property( 'users' );
+				unit.should.not.have.property( 'offices' );
 
-				res.body.should.have.property( 'children' ).is.Array;
+				res.body.should.have.property( 'children' ).is.Array();
 				res.body.children.forEach( helpers.models.orgUnit );
 
-				res.body.should.have.property( 'parents' ).is.Array;
+				res.body.should.have.property( 'parents' ).is.Array();
 				res.body.parents.forEach( helpers.models.orgUnit );
 
 				done();
@@ -468,7 +470,7 @@ module.exports = function() {
 						if ( err ) {
 							return done( err );
 						}
-						res.body.should.be.an.Array;
+						res.body.should.be.an.Array();
 						if ( test.empty ) {
 							res.body.should.be.empty();
 						} else {

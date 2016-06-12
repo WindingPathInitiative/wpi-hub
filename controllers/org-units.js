@@ -186,7 +186,7 @@ router.post( '/',
 				parentPath: { length: { minimum: 1 }, presence: true }
 			};
 			if ( 'Venue' === data.type ) {
-				contraints.venueType.presence = true;
+				constraints.venueType.presence = true;
 			}
 			return validate.async( data, constraints )
 			.catch( errs => {
@@ -239,7 +239,7 @@ router.put( '/:id',
 
 		let query = new OrgUnit();
 		let id    = req.params.id;
-		if ( NaN !== Number.parseInt( id ) ) {
+		if ( ! isNaN( Number.parseInt( id ) ) ) {
 			query.where( 'id', Number.parseInt( id ) );
 		} else {
 			query.where( 'code', id );
@@ -297,7 +297,7 @@ router.delete( '/:id',
 
 		let query = new OrgUnit();
 		let id    = Number.parseInt( req.params.id );
-		if ( NaN !== id ) {
+		if ( ! isNaN( id ) ) {
 			if ( 1 === id ) {
 				return next( new UserError( 'Cannot delete root org', 500 ) );
 			}
@@ -378,11 +378,11 @@ router.delete( '/:id',
 /**
  * Gets node information based off of ID.
  */
-router.get( '/internal/:id',
+router.get( '/internal/:id(\\d+)',
 	network.internal,
 	( req, res, next ) => {
 		let id = parseInt( req.params.id );
-		if ( NaN === id ) {
+		if ( isNaN( id ) ) {
 			return next( new Error( 'Invalid org id' ) );
 		}
 		let query = new OrgUnit({ id: id })
@@ -418,18 +418,17 @@ function getChain( unit ) {
 
 		// Splits chain into children and parents.
 		if ( chain ) {
-			let left  = unit.get( 'lft' );
+
+			let parents = unit.parents();
+
 			let units = _.map( chain.toArray(), u => {
 				let json = u.toJSON();
-				json.lft = u.get( 'lft' );
-				json.rgt = u.get( 'rgt' );
 				return json;
 			});
-			let split = _.partition( units, r => r.lft < left );
+			let split = _.partition( units, u => -1 !== parents.indexOf( u.id ) );
 			if ( 2 === split.length ) {
-				let map = m => _.omit( m, [ 'lft', 'rgt' ] );
-				resp.parents = _.map( split[0], map );
-				resp.children = _.map( split[1], map );
+				resp.parents  = split[0];
+				resp.children = split[1];
 			}
 		}
 

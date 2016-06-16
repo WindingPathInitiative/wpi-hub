@@ -3,17 +3,20 @@
 const router   = require( 'express' ).Router();
 const _        = require( 'lodash' );
 
+const version  = require( '../package.json' ).version;
+const prefix   = '/v' + version.split( '.' ).shift();
+
 // Authentication.
-router.use( '/auth', require( './auth' ) );
+router.use( prefix + '/auth', require( './auth' ) );
 
 // Users.
-router.use( '/users', require( './user' ) );
+router.use( prefix + '/users', require( './user' ) );
 
 // Org Units.
-router.use( '/orgunits', require( './org-units' ) );
+router.use( prefix + '/orgunits', require( './org-units' ) );
 
 // Offices.
-router.use( '/offices', require( './offices' ) );
+router.use( prefix + '/offices', require( './offices' ) );
 
 // Dev endpoints.
 if ( 'production' !== process.env.NODE_ENV ) {
@@ -22,7 +25,7 @@ if ( 'production' !== process.env.NODE_ENV ) {
 
 router.get( '/',
 	( req, res ) => {
-		res.json({ message: 'Welcome to the user hub', version: res.app.get( 'version' ) });
+		res.json({ message: 'Welcome to the user hub', version: version });
 	}
 );
 

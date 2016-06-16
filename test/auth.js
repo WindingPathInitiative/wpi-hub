@@ -13,13 +13,13 @@ module.exports = function() {
 	describe( 'GET signin', function() {
 		it( 'fails if invalid code is provided', function( done ) {
 			request
-			.get( '/auth/signin/invalid' )
+			.get( '/v1/auth/signin/invalid' )
 			.expect( 500, done );
 		});
 
 		it( 'provides url with valid redirect', function( done ) {
 			request
-			.get( '/auth/signin/test' )
+			.get( '/v1/auth/signin/test' )
 			.expect( 200 )
 			.end( ( err, res ) => {
 				if ( err ) {
@@ -37,13 +37,13 @@ module.exports = function() {
 
 		it( 'fails if invalid code is provided', function( done ) {
 			request
-			.get( '/auth/verify/invalid' )
+			.get( '/v1/auth/verify/invalid' )
 			.expect( 500, done );
 		});
 
 		it( 'redirects if no token is provided', function( done ) {
 			request
-			.get( '/auth/verify/test' )
+			.get( '/v1/auth/verify/test' )
 			.expect( 302 )
 			.end( ( err, res ) => {
 				if ( err ) {
@@ -90,7 +90,7 @@ module.exports = function() {
 
 		it( 'fails without a token', function( done ) {
 			request
-			.get( '/auth/signout' )
+			.get( '/v1/auth/signout' )
 			.expect( 403, {
 				message: 'Token not provided',
 				status: 403
@@ -99,7 +99,7 @@ module.exports = function() {
 
 		it( 'fails with an invalid token', function( done ) {
 			request
-			.get( '/auth/signout' )
+			.get( '/v1/auth/signout' )
 			.query({ token: 'test-invalid-token' })
 			.expect( 403, {
 				message: 'Invalid token',
@@ -109,7 +109,7 @@ module.exports = function() {
 
 		it( 'succeeds with a valid token', function( done ) {
 			request
-			.get( '/auth/signout' )
+			.get( '/v1/auth/signout' )
 			.query({ token: token })
 			.expect( 200, { success: 1 } )
 			.end( ( err, res ) => {
@@ -118,7 +118,7 @@ module.exports = function() {
 				}
 				const Token = require( '../models/tokens' );
 				new Token({ token: token }).fetch().then( model => {
-					( null === model ).should.be.true;
+					( null === model ).should.be.true; // jshint ignore:line
 					done();
 				});
 			});

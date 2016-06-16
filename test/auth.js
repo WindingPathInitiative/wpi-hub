@@ -59,7 +59,7 @@ module.exports = function() {
 
 		it( 'redirects to app with token set', function( done ) {
 			request.get( '/dev/auth' )
-			.query({ redirect_uri: 'http://localhost:3000/auth/verify/test' })
+			.query({ redirect_uri: 'http://localhost:3000/v1/auth/verify/test' })
 			.redirects( 1 )
 			.expect( 302 )
 			.end( ( err, res ) => {

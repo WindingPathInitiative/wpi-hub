@@ -33,10 +33,15 @@ module.exports = function() {
 				res.body.should
 				.be.instanceOf( Object )
 				.and.have.properties([
-					'firstName', 'lastName',
-					'email', 'orgUnit', 'fullName'
+					'firstName',
+					'lastName',
+					'orgUnit',
+					'fullName',
+					'email',
+					'address'
 				]);
 				res.body.should.have.property( 'id' ).Number();
+				helpers.models.orgUnit( res.body.orgUnit );
 				done();
 			});
 		});
@@ -196,7 +201,7 @@ module.exports = function() {
 
 		it( 'works for user modifying themselves', function( done ) {
 			request
-			.put( '/v1/user/5' )
+			.put( '/v1/user/me' )
 			.query({ token: 'user' })
 			.send({ firstName: 'Test2' })
 			.expect( 200 )
@@ -302,7 +307,7 @@ module.exports = function() {
 
 		it( 'fails for user with domain assigning themselves', function( done ) {
 			request
-			.put( '/v1/user/5/assign/7' )
+			.put( '/v1/user/me/assign/7' )
 			.query({ token: 'user' })
 			.expect( 403, done );
 		});

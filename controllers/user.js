@@ -14,22 +14,6 @@ const Moment    = require( 'moment' );
 
 
 /**
- * Gets the current user.
- */
-router.get( '/me',
-	token.parse(),
-	( req, res ) => {
-		req.user.load( 'orgUnit' )
-		.then( user => {
-			user.show();
-			user.showPrivate = true;
-			res.json( user.toJSON() );
-		});
-	}
-);
-
-
-/**
  * Gets a list of users, optionally with filtering.
  */
 router.get( '/',
@@ -134,10 +118,11 @@ router.get( '/:id',
 		})
 		.tap( user => {
 			if ( req.token.get( 'user' ) === user.id ) {
-				return;
+				showPrivate = true;
 			} else if ( showPrivate ) {
 				const perm = require( '../helpers/permissions' );
-				return perm.hasOverUser( user, 'user_read_private', req.token.get( 'user' ) )
+				return perm
+				.hasOverUser( user, 'user_read_private', req.token.get( 'user' ) )
 				.catch( err => {
 					// If the check fails, just don't show private data.
 					showPrivate = false;
@@ -338,6 +323,9 @@ function parseID( req, res, next ) {
 		next();
 	} else if ( Number.parseInt( id ) ) {
 		req.id = { id: Number.parseInt( id ) };
+		next();
+	} else if ( 'me' === id ) {
+		req.id = { id: req.token.get( 'user' ) };
 		next();
 	} else {
 		next( new UserError( 'Invalid ID provided', 400 ) );

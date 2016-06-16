@@ -16,34 +16,34 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.get( '/v1/orgunits/ny-004' )
+			.get( '/v1/org-unit/ny-004' )
 			.expect( 403, done );
 		});
 
 		it( 'fails if invalid code is provided', function( done ) {
 			request
-			.get( '/v1/orgunits/fd-434221' )
+			.get( '/v1/org-unit/fd-434221' )
 			.query({ token: 'user' })
 			.expect( 404, done );
 		});
 
 		it( 'fails if an id is provided', function( done ) {
 			request
-			.get( '/v1/orgunits/1' )
+			.get( '/v1/org-unit/1' )
 			.query({ token: 'user' })
 			.expect( 404, done );
 		});
 
 		it( 'works if valid code is provided', function( done ) {
 			request
-			.get( '/v1/orgunits/ne' )
+			.get( '/v1/org-unit/ne' )
 			.query({ token: 'user' })
 			.expect( 200, done );
 		});
 
 		it( 'provides the correct data', function( done ) {
 			request
-			.get( '/v1/orgunits/ny-004' )
+			.get( '/v1/org-unit/ny-004' )
 			.query({ token: 'user' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -77,19 +77,19 @@ module.exports = function() {
 	describe( 'GET internal', function() {
 		it( 'fails if code is provided', function( done ) {
 			request
-			.get( '/v1/orgunits/internal/ny-004' )
+			.get( '/v1/org-unit/internal/ny-004' )
 			.expect( 404, done );
 		});
 
 		it( 'works if an id is provided', function( done ) {
 			request
-			.get( '/v1/orgunits/internal/1' )
+			.get( '/v1/org-unit/internal/1' )
 			.expect( 200, done );
 		});
 
 		it( 'provides the correct data', function( done ) {
 			request
-			.get( '/v1/orgunits/internal/3' )
+			.get( '/v1/org-unit/internal/3' )
 			.expect( 200 )
 			.end( ( err, res ) => {
 				if ( err ) {
@@ -117,14 +117,14 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.put( '/v1/orgunits/3' )
+			.put( '/v1/org-unit/3' )
 			.send({ name: 'Test' })
 			.expect( 403, done );
 		});
 
 		it( 'fails if invalid code is provided', function( done ) {
 			request
-			.put( '/v1/orgunits/99' )
+			.put( '/v1/org-unit/99' )
 			.send({ name: 'Test' })
 			.query({ token: 'nc' })
 			.expect( 404, done );
@@ -132,14 +132,14 @@ module.exports = function() {
 
 		it( 'fails without data', function( done ) {
 			request
-			.put( '/v1/orgunits/3' )
+			.put( '/v1/org-unit/3' )
 			.query({ token: 'nc' })
 			.expect( 400, done );
 		});
 
 		it( 'fails if modifying org unit without permission', function( done ) {
 			request
-			.put( '/v1/orgunits/3' )
+			.put( '/v1/org-unit/3' )
 			.query({ token: 'user' })
 			.send({ name: 'Test' })
 			.expect( 403, done );
@@ -147,7 +147,7 @@ module.exports = function() {
 
 		it( 'fails for invalid data', function( done ) {
 			request
-			.put( '/v1/orgunits/3' )
+			.put( '/v1/org-unit/3' )
 			.query({ token: 'nc' })
 			.send({ type: 'Blah' })
 			.expect( 400, done );
@@ -155,7 +155,7 @@ module.exports = function() {
 
 		it( 'works for modifying with permission', function( done ) {
 			request
-			.put( '/v1/orgunits/3' )
+			.put( '/v1/org-unit/3' )
 			.query({ token: 'nc' })
 			.send({ name: 'Test' })
 			.expect( 200 )
@@ -169,7 +169,7 @@ module.exports = function() {
 		});
 
 		after( 'reset data', function( done ) {
-			let OrgUnit = require( '../models/org_units' );
+			let OrgUnit = require( '../models/org-unit' );
 			new OrgUnit({ id: 3 })
 			.save( { name: 'Children of the Lost Eden' }, { patch: true } )
 			.then( () => done() );
@@ -191,21 +191,21 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.post( '/v1/orgunits' )
+			.post( '/v1/org-unit' )
 			.send( data )
 			.expect( 403, done );
 		});
 
 		it( 'fails without data', function( done ) {
 			request
-			.post( '/v1/orgunits' )
+			.post( '/v1/org-unit' )
 			.query({ token: 'admin' })
 			.expect( 400, done );
 		});
 
 		it( 'fails if creating org unit without permission', function( done ) {
 			request
-			.post( '/v1/orgunits' )
+			.post( '/v1/org-unit' )
 			.query({ token: 'user' })
 			.send( data )
 			.expect( 403, done );
@@ -216,7 +216,7 @@ module.exports = function() {
 			badData.parentID = null;
 
 			request
-			.post( '/v1/orgunits' )
+			.post( '/v1/org-unit' )
 			.query({ token: 'admin' })
 			.send( badData )
 			.expect( 400, done );
@@ -227,7 +227,7 @@ module.exports = function() {
 			badData.parentID = 99;
 
 			request
-			.post( '/v1/orgunits' )
+			.post( '/v1/org-unit' )
 			.query({ token: 'admin' })
 			.send( badData )
 			.expect( 400, done );
@@ -238,7 +238,7 @@ module.exports = function() {
 			badData.type = 'Region';
 
 			request
-			.post( '/v1/orgunits' )
+			.post( '/v1/org-unit' )
 			.query({ token: 'admin' })
 			.send( badData )
 			.expect( 400, done );
@@ -250,7 +250,7 @@ module.exports = function() {
 			badData.website = 'fffffff';
 
 			request
-			.post( '/v1/orgunits' )
+			.post( '/v1/org-unit' )
 			.query({ token: 'admin' })
 			.send( badData )
 			.expect( 400, done );
@@ -261,7 +261,7 @@ module.exports = function() {
 			badData.id = 1;
 
 			request
-			.post( '/v1/orgunits' )
+			.post( '/v1/org-unit' )
 			.query({ token: 'admin' })
 			.send( badData )
 			.expect( 500, done );
@@ -269,7 +269,7 @@ module.exports = function() {
 
 		it( 'works for creating with permission', function( done ) {
 			request
-			.post( '/v1/orgunits' )
+			.post( '/v1/org-unit' )
 			.query({ token: 'admin' })
 			.send( data )
 			.expect( 200 )
@@ -286,8 +286,8 @@ module.exports = function() {
 		});
 
 		after( 'delete org unit', function( done ) {
-			let OrgUnit = require( '../models/org_units' );
-			let Office = require( '../models/offices' );
+			let OrgUnit = require( '../models/org-unit' );
+			let Office = require( '../models/office' );
 			Promise.join(
 				new OrgUnit({ id: data.id }).destroy(),
 				new Office().where( 'parentOrgID', data.id ).destroy(),
@@ -299,9 +299,9 @@ module.exports = function() {
 	describe( 'DELETE id', function() {
 
 		before( 'create units', function( done ) {
-			let OrgUnit = require( '../models/org_units' );
-			let User    = require( '../models/users' );
-			let Office  = require( '../models/offices' );
+			let OrgUnit = require( '../models/org-unit' );
+			let User    = require( '../models/user' );
+			let Office  = require( '../models/office' );
 
 			let domain = new OrgUnit({
 				id: 10,
@@ -340,39 +340,39 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.delete( '/v1/orgunits/10' )
+			.delete( '/v1/org-unit/10' )
 			.expect( 403, done );
 		});
 
 		it( 'fails if no permission', function( done ) {
 			request
-			.delete( '/v1/orgunits/10' )
+			.delete( '/v1/org-unit/10' )
 			.query({ token: 'user' })
 			.expect( 403, done );
 		});
 
 		it( 'fails if target is root', function( done ) {
 			request
-			.delete( '/v1/orgunits/1' )
+			.delete( '/v1/org-unit/1' )
 			.query({ token: 'admin' })
 			.expect( 500, done );
 		});
 
 		it( 'fails if target has children', function( done ) {
 			request
-			.delete( '/v1/orgunits/2' )
+			.delete( '/v1/org-unit/2' )
 			.query({ token: 'admin' })
 			.expect( 500, done );
 		});
 
 		it( 'works for deleting with no children', function( done ) {
 			request
-			.delete( '/v1/orgunits/10' )
+			.delete( '/v1/org-unit/10' )
 			.query({ token: 'admin' })
 			.expect( 200 )
 			.end( ( err, res ) => {
-				let User    = require( '../models/users' );
-				let Office  = require( '../models/offices' );
+				let User    = require( '../models/user' );
+				let Office  = require( '../models/office' );
 
 				let user = new User({ id: 9 })
 				.fetch()
@@ -395,9 +395,9 @@ module.exports = function() {
 		});
 
 		after( 'delete org unit', function( done ) {
-			let OrgUnit = require( '../models/org_units' );
-			let User    = require( '../models/users' );
-			let Office  = require( '../models/offices' );
+			let OrgUnit = require( '../models/org-unit' );
+			let User    = require( '../models/user' );
+			let Office  = require( '../models/office' );
 
 			let domain = new OrgUnit({ id: 10 }).destroy();
 			let user   = new User({ id: 9, orgUnit: null }).save();
@@ -416,7 +416,7 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.get( '/v1/orgunits/search' )
+			.get( '/v1/org-unit/search' )
 			.query({ name: 'children' })
 			.expect( 403, done );
 		});
@@ -458,7 +458,7 @@ module.exports = function() {
 
 			it( title, function( done ) {
 				let req = request
-				.get( '/v1/orgunits/search' )
+				.get( '/v1/org-unit/search' )
 				.query({ token: 'user' })
 				.query( test.query );
 

@@ -1,8 +1,8 @@
 'use strict';
 
-const Offices   = require( '../models/offices' );
-const Users     = require( '../models/users' );
-const OrgUnit   = require( '../models/org_units' );
+const Offices   = require( '../models/office' );
+const Users     = require( '../models/user' );
+const OrgUnit   = require( '../models/org-unit' );
 const UserError = require( '../helpers/errors' );
 const _         = require( 'lodash' );
 const Promise   = require( 'bluebird' );

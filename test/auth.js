@@ -116,7 +116,7 @@ module.exports = function() {
 				if ( err ) {
 					return done( err );
 				}
-				const Token = require( '../models/tokens' );
+				const Token = require( '../models/token' );
 				new Token({ token: token }).fetch().then( model => {
 					( null === model ).should.be.true; // jshint ignore:line
 					done();
@@ -126,7 +126,7 @@ module.exports = function() {
 	});
 
 	after( 'deletes tokens', function( done ) {
-		const Token = require( '../models/tokens' );
+		const Token = require( '../models/token' );
 		new Token()
 		.where( 'user', 8 )
 		.destroy()

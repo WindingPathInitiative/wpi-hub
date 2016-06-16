@@ -10,13 +10,13 @@ const prefix   = '/v' + version.split( '.' ).shift();
 router.use( prefix + '/auth', require( './auth' ) );
 
 // Users.
-router.use( prefix + '/users', require( './user' ) );
+router.use( prefix + '/user', require( './user' ) );
 
 // Org Units.
-router.use( prefix + '/orgunits', require( './org-units' ) );
+router.use( prefix + '/org-unit', require( './org-units' ) );
 
 // Offices.
-router.use( prefix + '/offices', require( './offices' ) );
+router.use( prefix + '/office', require( './offices' ) );
 
 // Dev endpoints.
 if ( 'production' !== process.env.NODE_ENV ) {

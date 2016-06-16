@@ -42,11 +42,11 @@ router.get( '/verify/:code',
 	( req, res ) => {
 		setupPassport( req );
 
-		let Users = require( '../models/users' );
+		let User = require( '../models/user' );
 
-		Users.getByPortalId( req.user.remoteId )
+		User.getByPortalId( req.user.remoteId )
 		.then( user => {
-			return user || new Users( req.user ).save();
+			return user || new User( req.user ).save();
 		})
 		.then( user => {
 			return user.makeToken();

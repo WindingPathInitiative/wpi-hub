@@ -7,8 +7,8 @@
 const router    = require( 'express' ).Router();
 const token     = require( '../middlewares/token' );
 const network   = require( '../middlewares/network' );
-const Office    = require( '../models/offices' );
-const Users     = require( '../models/users' );
+const Office    = require( '../models/office' );
+const Users     = require( '../models/user' );
 const UserError = require( '../helpers/errors' );
 const _         = require( 'lodash' );
 const Promise   = require( 'bluebird' );

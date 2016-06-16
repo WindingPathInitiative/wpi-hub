@@ -2,7 +2,7 @@
 
 const app       = require( '../app' );
 const supertest = require( 'supertest' );
-const Token     = require( '../models/tokens' );
+const Token     = require( '../models/token' );
 const http      = require( 'http' );
 const should    = require( 'should' );
 const _         = require( 'lodash' );

@@ -7,8 +7,8 @@
 
 const should      = require( 'should' );
 const permissions = require( '../helpers/permissions' );
-const User        = require( '../models/users' );
-const OrgUnit     = require( '../models/org_units' );
+const User        = require( '../models/user' );
+const OrgUnit     = require( '../models/org-unit' );
 const Promise     = require( 'bluebird' );
 const UserError   = require( '../helpers/errors' );
 

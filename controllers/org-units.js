@@ -4,7 +4,7 @@
  * Org unit data routes.
  */
 const router    = require( 'express' ).Router();
-const OrgUnit   = require( '../models/org_units' );
+const OrgUnit   = require( '../models/org-unit' );
 const token     = require( '../middlewares/token' );
 const network   = require( '../middlewares/network' );
 const _         = require( 'lodash' );
@@ -195,7 +195,7 @@ router.post( '/',
 		})
 		.then( attributes => {
 			let Bookshelf = require( '../helpers/db' ).Bookshelf;
-			let Office = require( '../models/offices' );
+			let Office = require( '../models/office' );
 			let Promise = require( 'bluebird' );
 			return Bookshelf.transaction( t => {
 				return new OrgUnit( attributes )
@@ -326,8 +326,8 @@ router.delete( '/:id',
 		})
 		.tap( unit => {
 			let Promise   = require( 'bluebird' );
-			let Offices   = require( '../models/offices' );
-			let Users     = require( '../models/users' );
+			let Offices   = require( '../models/office' );
+			let Users     = require( '../models/user' );
 			let Bookshelf = require( '../helpers/db' ).Bookshelf;
 
 			return Bookshelf.transaction( t => {

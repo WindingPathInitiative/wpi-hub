@@ -11,7 +11,7 @@ const Promise = require( 'bluebird' );
 const helpers = require( './helpers' );
 const request = helpers.request;
 
-const Office = require( '../models/offices' );
+const Office = require( '../models/office' );
 
 module.exports = function() {
 
@@ -27,20 +27,20 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.get( '/v1/offices/1' )
+			.get( '/v1/office/1' )
 			.expect( 403, done );
 		});
 
 		it( 'fails if invalid id is provided', function( done ) {
 			request
-			.get( '/v1/offices/1111111' )
+			.get( '/v1/office/1111111' )
 			.query({ token: 'user' })
 			.expect( 404, done );
 		});
 
 		it( 'provides the correct data', function( done ) {
 			request
-			.get( '/v1/offices/1' )
+			.get( '/v1/office/1' )
 			.query({ token: 'user' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -71,20 +71,20 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.get( '/v1/offices/internal' )
+			.get( '/v1/office/internal' )
 			.expect( 403, done );
 		});
 
 		it( 'provides no data for user without office', function( done ) {
 			request
-			.get( '/v1/offices/internal' )
+			.get( '/v1/office/internal' )
 			.query({ token: 'user' })
 			.expect( 200, [], done );
 		});
 
 		it( 'provides data for user with office', function( done ) {
 			request
-			.get( '/v1/offices/internal' )
+			.get( '/v1/office/internal' )
 			.query({ token: 'nc' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -121,41 +121,41 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.put( '/v1/offices/7/assign/7' )
+			.put( '/v1/office/7/assign/7' )
 			.expect( 403, done );
 		});
 
 		it( 'fails for invalid user id', function( done ) {
 			request
-			.put( '/v1/offices/7/assign/99' )
+			.put( '/v1/office/7/assign/99' )
 			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
 		it( 'fails for invalid office id', function( done ) {
 			request
-			.put( '/v1/offices/99/assign/7' )
+			.put( '/v1/office/99/assign/7' )
 			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
 		it( 'fails for assigning without permission', function( done ) {
 			request
-			.put( '/v1/offices/7/assign/7' )
+			.put( '/v1/office/7/assign/7' )
 			.query({ token: 'user' })
 			.expect( 403, done );
 		});
 
 		it( 'fails for vacating without permission', function( done ) {
 			request
-			.put( '/v1/offices/7/assign/0' )
+			.put( '/v1/office/7/assign/0' )
 			.query({ token: 'user' })
 			.expect( 403, done );
 		});
 
 		it( 'works for officer vacating themselves', function( done ) {
 			request
-			.put( '/v1/offices/1/assign/0' )
+			.put( '/v1/office/1/assign/0' )
 			.query({ token: 'nc' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -173,7 +173,7 @@ module.exports = function() {
 
 		it( 'works for officer vacating subordinate', function( done ) {
 			request
-			.put( '/v1/offices/7/assign/0' )
+			.put( '/v1/office/7/assign/0' )
 			.query({ token: 'nc' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -191,7 +191,7 @@ module.exports = function() {
 
 		it( 'works for officer assigning subordinate', function( done ) {
 			request
-			.put( '/v1/offices/7/assign/5' )
+			.put( '/v1/office/7/assign/5' )
 			.query({ token: 'nc' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -209,7 +209,7 @@ module.exports = function() {
 
 		it( 'fails for assigning same officer', function( done ) {
 			request
-			.put( '/v1/offices/7/assign/8' )
+			.put( '/v1/office/7/assign/8' )
 			.query({ token: 'nc' })
 			.expect( 500, done );
 		});
@@ -218,14 +218,14 @@ module.exports = function() {
 	describe( 'PUT update', function() {
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.put( '/v1/offices/7' )
+			.put( '/v1/office/7' )
 			.send({ name: 'Test' })
 			.expect( 403, done );
 		});
 
 		it( 'fails if invalid ID is provided', function( done ) {
 			request
-			.put( '/v1/offices/99' )
+			.put( '/v1/office/99' )
 			.send({ name: 'Test' })
 			.query({ token: 'nc' })
 			.expect( 404, done );
@@ -233,14 +233,14 @@ module.exports = function() {
 
 		it( 'fails without data', function( done ) {
 			request
-			.put( '/v1/offices/3' )
+			.put( '/v1/office/3' )
 			.query({ token: 'nc' })
 			.expect( 400, done );
 		});
 
 		it( 'fails if modifying office without permission', function( done ) {
 			request
-			.put( '/v1/offices/7' )
+			.put( '/v1/office/7' )
 			.query({ token: 'user' })
 			.send({ name: 'Test' })
 			.expect( 403, done );
@@ -248,7 +248,7 @@ module.exports = function() {
 
 		it( 'fails for invalid data', function( done ) {
 			request
-			.put( '/v1/offices/7' )
+			.put( '/v1/office/7' )
 			.query({ token: 'nc' })
 			.send({ email: 'invalid' })
 			.expect( 400, done );
@@ -256,7 +256,7 @@ module.exports = function() {
 
 		it( 'works for modifying with permission', function( done ) {
 			request
-			.put( '/v1/offices/7' )
+			.put( '/v1/office/7' )
 			.query({ token: 'nc' })
 			.send({
 				name: 'Test',
@@ -299,14 +299,14 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.post( '/v1/offices/7/assistant' )
+			.post( '/v1/office/7/assistant' )
 			.send( data )
 			.expect( 403, done );
 		});
 
 		it( 'fails if invalid ID is provided', function( done ) {
 			request
-			.post( '/v1/offices/99/assistant' )
+			.post( '/v1/office/99/assistant' )
 			.send( data )
 			.query({ token: 'nc' })
 			.expect( 404, done );
@@ -314,14 +314,14 @@ module.exports = function() {
 
 		it( 'fails without data', function( done ) {
 			request
-			.post( '/v1/offices/7/assistant' )
+			.post( '/v1/office/7/assistant' )
 			.query({ token: 'nc' })
 			.expect( 400, done );
 		});
 
 		it( 'fails if creating assistant without permission', function( done ) {
 			request
-			.post( '/v1/offices/7/assistant' )
+			.post( '/v1/office/7/assistant' )
 			.query({ token: 'user' })
 			.send( data )
 			.expect( 403, done );
@@ -331,7 +331,7 @@ module.exports = function() {
 			let badData = Object.assign( {}, data );
 			badData.name = null;
 			request
-			.post( '/v1/offices/7/assistant' )
+			.post( '/v1/office/7/assistant' )
 			.query({ token: 'nc' })
 			.send( badData )
 			.expect( 400, done );
@@ -341,7 +341,7 @@ module.exports = function() {
 			let badData = Object.assign( {}, data );
 			badData.roles = data.roles.concat( 'invalid_perm' );
 			request
-			.post( '/v1/offices/7/assistant' )
+			.post( '/v1/office/7/assistant' )
 			.query({ token: 'nc' })
 			.send( badData )
 			.expect( 400, done );
@@ -349,7 +349,7 @@ module.exports = function() {
 
 		it( 'works for creating with permission', function( done ) {
 			request
-			.post( '/v1/offices/7/assistant' )
+			.post( '/v1/office/7/assistant' )
 			.query({ token: 'nc' })
 			.send( data )
 			.expect( 200 )
@@ -367,7 +367,7 @@ module.exports = function() {
 
 		it( 'works for primary creating own assistant', function( done ) {
 			request
-			.post( '/v1/offices/1/assistant' )
+			.post( '/v1/office/1/assistant' )
 			.query({ token: 'nc' })
 			.send( data )
 			.expect( 200 )
@@ -415,7 +415,7 @@ module.exports = function() {
 
 		it( 'fails without permission', function( done ) {
 			request
-			.post( '/v1/offices/11/assistant' )
+			.post( '/v1/office/11/assistant' )
 			.query({ token: 'user' })
 			.send( data )
 			.expect( 403, done );
@@ -423,7 +423,7 @@ module.exports = function() {
 
 		it( 'works for permission', function( done ) {
 			request
-			.post( '/v1/offices/9/assistant' )
+			.post( '/v1/office/9/assistant' )
 			.query({ token: 'arc' })
 			.send( data )
 			.expect( 200 )
@@ -497,48 +497,48 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.delete( '/v1/offices/10/assistant' )
+			.delete( '/v1/office/10/assistant' )
 			.expect( 403, done );
 		});
 
 		it( 'fails if invalid ID is provided', function( done ) {
 			request
-			.delete( '/v1/offices/99/assistant' )
+			.delete( '/v1/office/99/assistant' )
 			.query({ token: 'rc' })
 			.expect( 404, done );
 		});
 
 		it( 'fails if office is not an assistant', function( done ) {
 			request
-			.delete( '/v1/offices/7/assistant' )
+			.delete( '/v1/office/7/assistant' )
 			.query({ token: 'rc' })
 			.expect( 400, done );
 		});
 
 		it( 'fails without permission', function( done ) {
 			request
-			.delete( '/v1/offices/10/assistant' )
+			.delete( '/v1/office/10/assistant' )
 			.query({ token: 'user' })
 			.expect( 403, done );
 		});
 
 		it( 'works for primary in chain', function( done ) {
 			request
-			.delete( '/v1/offices/10/assistant' )
+			.delete( '/v1/office/10/assistant' )
 			.query({ token: 'nc' })
 			.expect( 200, done );
 		});
 
 		it( 'works for assistant to primary', function( done ) {
 			request
-			.delete( '/v1/offices/10/assistant' )
+			.delete( '/v1/office/10/assistant' )
 			.query({ token: 'arc' })
 			.expect( 200, done );
 		});
 
 		it( 'works for assistant in chain', function( done ) {
 			request
-			.delete( '/v1/offices/10/assistant' )
+			.delete( '/v1/office/10/assistant' )
 			.query({ token: 'arc' })
 			.expect( 200, done );
 		});

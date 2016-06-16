@@ -6,7 +6,7 @@
 
 const router    = require( 'express' ).Router();
 const token     = require( '../middlewares/token' );
-const Users     = require( '../models/users' );
+const Users     = require( '../models/user' );
 const _         = require( 'lodash' );
 const UserError = require( '../helpers/errors' );
 const Promise   = require( 'bluebird' );
@@ -75,7 +75,7 @@ router.get( '/search',
 			// Gets a list of IDs of desired org unit.
 			if ( parseInt( params.orgUnit ) ) {
 				let id = parseInt( params.orgUnit );
-				const OrgUnit = require( '../models/org_units' );
+				const OrgUnit = require( '../models/org-unit' );
 
 				return new OrgUnit({ id: id })
 				.fetch({ require: true })
@@ -242,7 +242,7 @@ router.put( '/:id/assign/:domain(\\d+)',
 	token.validate(),
 	parseID,
 	( req, res, next ) => {
-		const OrgUnit = require( '../models/org_units' );
+		const OrgUnit = require( '../models/org-unit' );
 
 		// Get the user.
 		let userQuery = new Users( req.query )

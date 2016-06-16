@@ -1,6 +1,6 @@
 'use strict';
 
-const Token     = require( '../models/tokens' );
+const Token     = require( '../models/token' );
 const UserError = require( '../helpers/errors' );
 
 
@@ -82,7 +82,7 @@ function query( req, next, required, fetch ) {
 			id: 'DEV'
 		};
 		if ( fetch ) {
-			let User = require( '../models/users' );
+			let User = require( '../models/user' );
 			return new User({ id: 1 })
 			.fetch()
 			.then( user => {

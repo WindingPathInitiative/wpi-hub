@@ -1,8 +1,9 @@
 'use strict';
 
-const router   = require( 'express' ).Router();
-const _        = require( 'lodash' );
-const token    = require( '../middlewares/token' );
+const router = require( 'express' ).Router();
+const _      = require( 'lodash' );
+const token  = require( '../middlewares/token' );
+const User   = require( '../models/user' );
 
 router.get( '/',
 	token.parse( false ),
@@ -41,8 +42,7 @@ router.get( '/',
 );
 
 router.get( '/switch', ( req, res ) => {
-	let Users = require( '../models/users' );
-	Users.fetchAll()
+	User.fetchAll()
 	.then( users => {
 		let html = '<h1>Switch to user:</h1><ul>';
 		_.each( users.toJSON(), user => {
@@ -66,8 +66,7 @@ router.get( '/switch/:id',
 
 router.get( '/list/users',
 	( req, res ) => {
-		let Users = require( '../models/users' );
-		Users.fetchAll()
+		User.fetchAll()
 		.then( users => {
 			let html = '<h1>Users</h1><ul>';
 			users.each( user => {

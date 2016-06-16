@@ -27,11 +27,11 @@ module.exports = function() {
 			.expect( 404, done );
 		});
 
-		it( 'fails if an id is provided', function( done ) {
+		it( 'works if an id is provided', function( done ) {
 			request
 			.get( '/v1/org-unit/1' )
 			.query({ token: 'user' })
-			.expect( 404, done );
+			.expect( 200, done );
 		});
 
 		it( 'works if valid code is provided', function( done ) {
@@ -67,45 +67,6 @@ module.exports = function() {
 
 				res.body.should.have.property( 'parents' ).is.Array();
 				res.body.parents.should.have.length( 2 );
-				res.body.parents.forEach( helpers.models.orgUnit );
-
-				done();
-			});
-		});
-	});
-
-	describe( 'GET internal', function() {
-		it( 'fails if code is provided', function( done ) {
-			request
-			.get( '/v1/org-unit/internal/ny-004' )
-			.expect( 404, done );
-		});
-
-		it( 'works if an id is provided', function( done ) {
-			request
-			.get( '/v1/org-unit/internal/1' )
-			.expect( 200, done );
-		});
-
-		it( 'provides the correct data', function( done ) {
-			request
-			.get( '/v1/org-unit/internal/3' )
-			.expect( 200 )
-			.end( ( err, res ) => {
-				if ( err ) {
-					return done( err );
-				}
-				res.body.should.have.property( 'unit' ).is.Object();
-				let unit = res.body.unit;
-				unit.should.have.property( 'id' ).is.Number();
-				unit.should.have.property( 'name' ).is.String();
-				unit.should.not.have.property( 'users' );
-				unit.should.not.have.property( 'offices' );
-
-				res.body.should.have.property( 'children' ).is.Array();
-				res.body.children.forEach( helpers.models.orgUnit );
-
-				res.body.should.have.property( 'parents' ).is.Array();
 				res.body.parents.forEach( helpers.models.orgUnit );
 
 				done();
@@ -156,6 +117,36 @@ module.exports = function() {
 		it( 'works for modifying with permission', function( done ) {
 			request
 			.put( '/v1/org-unit/3' )
+			.query({ token: 'nc' })
+			.send({ name: 'Test' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'name', 'Test' );
+				done();
+			});
+		});
+
+		it( 'works for modifying id with permission', function( done ) {
+			request
+			.put( '/v1/org-unit/3' )
+			.query({ token: 'nc' })
+			.send({ name: 'Test' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'name', 'Test' );
+				done();
+			});
+		});
+
+		it( 'works for modifying code with permission', function( done ) {
+			request
+			.put( '/v1/org-unit/ny-004' )
 			.query({ token: 'nc' })
 			.send({ name: 'Test' })
 			.expect( 200 )
@@ -412,18 +403,18 @@ module.exports = function() {
 		});
 	});
 
-	describe( 'GET search', function() {
+	describe( 'GET', function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.get( '/v1/org-unit/search' )
+			.get( '/v1/org-unit' )
 			.query({ name: 'children' })
 			.expect( 403, done );
 		});
 
 		// Instead of manually writing these, we're just making a big array.
 		let tests = [
-			{ query: {}, error: 400, text: 'no params provided' },
+			{ query: {} },
 			{ query: { name: 'NE', type: 'test' }, error: 400, text: 'invalid org type provided' },
 			{ query: { code: 'XX', venue: 'CL' }, error: 400, text: 'code is used with a venue' },
 			{ query: { code: 'XX', type: 'venue' }, error: 400, text: 'code is used with venue type' },
@@ -458,7 +449,7 @@ module.exports = function() {
 
 			it( title, function( done ) {
 				let req = request
-				.get( '/v1/org-unit/search' )
+				.get( '/v1/org-unit' )
 				.query({ token: 'user' })
 				.query( test.query );
 

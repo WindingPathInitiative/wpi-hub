@@ -58,8 +58,7 @@ router.get( '/:id(\\d+)',
 /**
  * Gets the current user offices.
  */
-router.get( '/internal',
-	network.internal,
+router.get( '/me',
 	token.validate(),
 	( req, res, next ) => {
 		new Office()

@@ -78,7 +78,7 @@ module.exports = function() {
 			.expect( 404, done );
 		});
 
-		it( 'provides data if token is provided', function( done ) {
+		it( 'provides open data if token is provided', function( done ) {
 			request
 			.get( '/v1/user/1' )
 			.query({ token: 'user' })
@@ -101,54 +101,36 @@ module.exports = function() {
 				done();
 			});
 		});
-	});
 
-	describe( 'GET private', function() {
-
-		it( 'fails if no token is provided', function( done ) {
+		it( 'provides open data if wrong auth provided', function( done ) {
 			request
-			.get( '/v1/user/1/private' )
-			.expect( 403, done );
-		});
-
-		it( 'fails for invalid user id', function( done ) {
-			request
-			.get( '/v1/user/999999999999999/private' )
-			.query({ token: 'nc' })
-			.expect( 404, done );
-		});
-
-		it( 'fails for invalid MES number', function( done ) {
-			request
-			.get( '/v1/user/DA0000000000/private' )
-			.query({ token: 'nc' })
-			.expect( 404, done );
-		});
-
-		it( 'works for self', function( done ) {
-			request
-			.get( '/v1/user/5/private' )
+			.get( '/v1/user/1' )
+			.query({ private: true })
 			.query({ token: 'user' })
-			.expect( 200, done );
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should
+				.be.instanceOf( Object )
+				.and.have.properties([
+					'firstName',
+					'lastName',
+					'orgUnit',
+					'fullName'
+				])
+				.and.not.have.property( 'email' );
+				res.body.should.have.property( 'id' ).Number();
+				helpers.models.orgUnit( res.body.orgUnit );
+				done();
+			});
 		});
 
-		it( 'fails with no permission', function( done ) {
+		it( 'provides private data if auth provided', function( done ) {
 			request
-			.get( '/v1/user/2/private' )
-			.query({ token: 'user' })
-			.expect( 403, done );
-		});
-
-		it( 'works for correct permission', function( done ) {
-			request
-			.get( '/v1/user/1/private' )
-			.query({ token: 'nc' })
-			.expect( 200, done );
-		});
-
-		it( 'provides data if token is provided', function( done ) {
-			request
-			.get( '/v1/user/1/private' )
+			.get( '/v1/user/1' )
+			.query({ private: true })
 			.query({ token: 'nc' })
 			.expect( 200 )
 			.end( ( err, res ) => {
@@ -158,10 +140,13 @@ module.exports = function() {
 				res.body.should
 				.be.instanceOf( Object )
 				.and.have.properties([
-					'firstName', 'lastName',
-					'orgUnit', 'fullName'
-				])
-				.and.have.property( 'email' );
+					'firstName',
+					'lastName',
+					'orgUnit',
+					'fullName',
+					'email',
+					'address'
+				]);
 				res.body.should.have.property( 'id' ).Number();
 				helpers.models.orgUnit( res.body.orgUnit );
 				done();
@@ -354,7 +339,7 @@ module.exports = function() {
 		});
 	});
 
-	describe( 'GET search', function() {
+	describe( 'GET', function() {
 		before( 'create token', function( done ) {
 			let makeToken = require( './helpers' ).makeToken;
 			makeToken( 6, 'expired' ).then( () => done() );
@@ -362,36 +347,21 @@ module.exports = function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.get( '/v1/user/search' )
+			.get( '/v1/user' )
 			.expect( 403, done );
 		});
 
 		it( 'fails if expired token is provided', function( done ) {
 			request
-			.get( '/v1/user/search' )
+			.get( '/v1/user' )
 			.query({ token: 'expired' })
 			.query({ name: 'test' })
 			.expect( 403, done );
 		});
 
-		it( 'fails if no params provided', function( done ) {
-			request
-			.get( '/v1/user/search' )
-			.query({ token: 'user' })
-			.expect( 400, done );
-		});
-
-		it( 'fails if required params not provided', function( done ) {
-			request
-			.get( '/v1/user/search' )
-			.query({ token: 'user' })
-			.query({ expired: false })
-			.expect( 400, done );
-		});
-
 		it( 'fails when querying invalid domain', function( done ) {
 			request
-			.get( '/v1/user/search' )
+			.get( '/v1/user' )
 			.query({ token: 'user' })
 			.query({ orgUnit: 99 })
 			.expect( 404, done );
@@ -399,6 +369,7 @@ module.exports = function() {
 
 		// Instead of manually writing these, we're just making a big array.
 		let tests = [
+			{ query: {} },
 			{ query: { name: 'unused' }, empty: true },
 			{ query: { name: 'test' } },
 			{ query: { email: 'unused' }, empty: true },
@@ -409,6 +380,8 @@ module.exports = function() {
 			{ query: { orgUnit: 3 } },
 			{ query: { name: 'expired', expired: false }, empty: true },
 			{ query: { name: 'expired', expired: true } },
+			{ query: { expired: false } },
+			{ query: { expired: true } },
 			{ query: { name: 'user', expired: false } },
 			{ query: { name: 'user', expired: true }, empty: true }
 		];
@@ -420,7 +393,7 @@ module.exports = function() {
 
 			it( title, function( done ) {
 				request
-				.get( '/v1/user/search' )
+				.get( '/v1/user' )
 				.query({ token: 'user' })
 				.query( test.query )
 				.expect( 200 )

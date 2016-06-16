@@ -67,24 +67,24 @@ module.exports = function() {
 		});
 	});
 
-	describe( 'GET internal', function() {
+	describe( 'GET me', function() {
 
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.get( '/v1/office/internal' )
+			.get( '/v1/office/me' )
 			.expect( 403, done );
 		});
 
 		it( 'provides no data for user without office', function( done ) {
 			request
-			.get( '/v1/office/internal' )
+			.get( '/v1/office/me' )
 			.query({ token: 'user' })
 			.expect( 200, [], done );
 		});
 
 		it( 'provides data for user with office', function( done ) {
 			request
-			.get( '/v1/office/internal' )
+			.get( '/v1/office/me' )
 			.query({ token: 'nc' })
 			.expect( 200 )
 			.end( ( err, res ) => {

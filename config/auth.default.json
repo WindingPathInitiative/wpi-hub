@@ -3,6 +3,6 @@
 	"tokenURL": "http://localhost:3000/dev/auth/token",
 	"clientID": "client_id_here",
 	"clientSecret": "your_secret_here",
-	"callbackURL": "http://localhost:3000/auth/verify/",
+	"callbackURL": "http://localhost:3000/v1/auth/verify/",
 	"userURL": "http://localhost:3000/dev/auth/user"
 }

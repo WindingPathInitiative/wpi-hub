@@ -30,9 +30,9 @@ router.get( '/me',
 
 
 /**
- * Gets a list of users by search queries.
+ * Gets a list of users, optionally with filtering.
  */
-router.get( '/search',
+router.get( '/',
 	token.parse(),
 	( req, res, next ) => {
 		// Exit if the user is expired.
@@ -44,10 +44,6 @@ router.get( '/search',
 	},
 	( req, res, next ) => {
 		let params = _.omit( req.query, 'token' );
-		if ( _.isEmpty( params ) ) {
-			return next( new UserError( 'No search params provided', 400 ) );
-		}
-
 		let query = new Users();
 
 		if ( params.name ) {
@@ -61,13 +57,21 @@ router.get( '/search',
 			query.where( 'email', params.email );
 		} else if ( params.mes ) {
 			query.where( 'membershipNumber', params.mes );
-		} else if ( ! params.orgUnit ) {
-			return next( new UserError( 'Invalid query', 400 ) );
 		}
 
 		if ( undefined !== params.expired ) {
+			let normalizeBool = require( '../helpers/validation' ).normalizeBool;
 			let type = normalizeBool( params.expired ) ? '<' : '>=';
 			query.where( 'membershipExpiration', type, Moment.utc().format( 'YYYY-MM-DD' ) );
+		}
+
+		if ( ! isNaN( Number.parseInt( params.limit ) ) ) {
+			query.query( 'limit', Number.parseInt( params.limit ) );
+		} else {
+			query.query( 'limit', 100 );
+		}
+		if ( ! isNaN( Number.parseInt( params.offset ) ) ) {
+			query.query( 'offset', Number.parseInt( params.offset ) );
 		}
 
 		new Promise( res => res( query ) )
@@ -102,7 +106,7 @@ router.get( '/search',
 			if ( err instanceof UserError ) {
 				next( err );
 			} else {
-				next( new UserError( 'Search failed', 500, err ) );
+				next( new UserError( 'List failed', 500, err ) );
 			}
 		});
 	}
@@ -110,23 +114,47 @@ router.get( '/search',
 
 
 /**
- * Gets open user data.
+ * Gets user data, optionally with private info.
  */
 router.get( '/:id',
 	token.validate(),
 	parseID,
 	( req, res, next ) => {
-		new Users( req.query )
+
+		let normalizeBool = require( '../helpers/validation' ).normalizeBool;
+		let showPrivate = normalizeBool( req.query.private );
+
+		new Users( req.id )
 		.fetch({
 			require: true,
 			withRelated: 'orgUnit'
 		})
+		.catch( err => {
+			throw new UserError( 'User not found', 404, err );
+		})
+		.tap( user => {
+			if ( req.token.get( 'user' ) === user.id ) {
+				return;
+			} else if ( showPrivate ) {
+				const perm = require( '../helpers/permissions' );
+				return perm.hasOverUser( user, 'user_read_private', req.token.get( 'user' ) )
+				.catch( err => {
+					// If the check fails, just don't show private data.
+					showPrivate = false;
+				});
+			}
+		})
 		.then( user => {
 			user.show();
+			user.showPrivate = showPrivate;
 			res.json( user.toJSON() );
 		})
 		.catch( err => {
-			next( new UserError( 'User not found', 404, err ) );
+			if ( err instanceof UserError ) {
+				next( err );
+			} else {
+				next( new UserError( 'Authentication failed', 403, err ) );
+			}
 		});
 	}
 );
@@ -144,7 +172,7 @@ router.put( '/:id',
 			return;
 		}
 
-		new Users( req.query )
+		new Users( req.id )
 		.fetch({
 			require: true,
 			withRelated: 'orgUnit'
@@ -197,45 +225,6 @@ router.put( '/:id',
 
 
 /**
- * Gets private user data.
- */
-router.get( '/:id/private',
-	token.validate(),
-	parseID,
-	( req, res, next ) => {
-		new Users( req.query )
-		.fetch({
-			require: true,
-			withRelated: 'orgUnit'
-		})
-		.catch( err => {
-			throw new UserError( 'User not found', 404, err );
-		})
-		.tap( user => {
-			if ( req.token.get( 'user' ) === user.id ) {
-				return;
-			} else {
-				const perm = require( '../helpers/permissions' );
-				return perm.hasOverUser( user, 'user_read_private', req.token.get( 'user' ) );
-			}
-		})
-		.then( user => {
-			user.show();
-			user.showPrivate = true;
-			res.json( user.toJSON() );
-		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Authentication failed', 403, err ) );
-			}
-		});
-	}
-);
-
-
-/**
  * Updates user domain assignment.
  */
 router.put( '/:id/assign/:domain(\\d+)',
@@ -245,7 +234,7 @@ router.put( '/:id/assign/:domain(\\d+)',
 		const OrgUnit = require( '../models/org-unit' );
 
 		// Get the user.
-		let userQuery = new Users( req.query )
+		let userQuery = new Users( req.id )
 		.fetch({
 			require: true,
 			withRelated: 'orgUnit'
@@ -345,28 +334,15 @@ function parseID( req, res, next ) {
 	if ( ! id ) {
 		next( new UserError( 'No ID provided', 400 ) );
 	} else if ( -1 !== id.search( /^[a-z]{2}\d{10}$/i ) ) {
-		req.query = { membershipNumber: id.toUpperCase() };
+		req.id = { membershipNumber: id.toUpperCase() };
 		next();
 	} else if ( Number.parseInt( id ) ) {
-		req.query = { id: Number.parseInt( id ) };
+		req.id = { id: Number.parseInt( id ) };
 		next();
 	} else {
 		next( new UserError( 'Invalid ID provided', 400 ) );
 	}
 }
 
-
-/**
- * Normalizes a boolean query value.
- * @param {mixed} boolean Value to parse.
- * @return {boolean}
- */
-function normalizeBool( boolean ) {
-	if ( 'true' === boolean || '1' === boolean || true === boolean ) {
-		return true;
-	} else {
-		return false;
-	}
-}
 
 module.exports = router;

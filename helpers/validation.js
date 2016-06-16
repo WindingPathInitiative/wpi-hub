@@ -31,9 +31,27 @@ validate.extend( validate.validators.datetime, {
 
 module.exports = validate;
 
+/**
+ * Formats the errors.
+ * @param {mixed} errs Array or string of error text.
+ * @return {string}
+ */
 module.exports.format = function( errs ) {
 	if ( 'string' === typeof errs ) {
 		return errs;
 	}
 	return _.map( errs, err => err.join( ', ' ) ).join( ', ' );
+};
+
+/**
+ * Normalizes a boolean query value.
+ * @param {mixed} boolean Value to parse.
+ * @return {boolean}
+ */
+module.exports.normalizeBool = function( boolean ) {
+	if ( 'true' === boolean || '1' === boolean || true === boolean ) {
+		return true;
+	} else {
+		return false;
+	}
 };

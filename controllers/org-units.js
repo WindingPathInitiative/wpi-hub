@@ -13,12 +13,80 @@ const perm      = require( '../helpers/permissions' );
 
 
 /**
- * Gets node information for user.
+ * Lists units, optionally with filtering.
  */
-router.get( /^\/([a-zA-Z]{2}[\-\d]*)\/?$/,
+router.get( '/',
 	token.validate(),
 	( req, res, next ) => {
-		let query = new OrgUnit({ code: req.params[0].toUpperCase() })
+		let params = _.omit( req.query, 'token' );
+
+		params = _.mapValues( params, v => v.toLowerCase() );
+		let types = OrgUnit.getTypes().map( m => m.toLowerCase() );
+
+		// Must be a valid type.
+		if ( params.type && -1 === types.indexOf( params.type ) ) {
+			return next( new UserError( 'Invalid type specified', 400 ) );
+		}
+
+		// Must be a venue when specifying venue type.
+		if ( params.venue && undefined === params.type ) {
+			params.type = 'venue';
+		} else if ( params.venue && 'venue' !== params.type ) {
+			return next( new UserError( 'Invalid type with "venue" option', 400 ) );
+		}
+
+		// Venues never have codes.
+		if ( params.code && ( params.venue || 'venue' === params.type ) ) {
+			return next( new UserError( 'Venue type does not have codes', 400 ) );
+		}
+
+		let query = new OrgUnit();
+
+		if ( params.name ) {
+			query.where( 'name', 'LIKE', '%' + params.name + '%' );
+		}
+		if ( params.code ) {
+			query.where( 'code', 'LIKE', '%' + params.code + '%' );
+		}
+		if ( params.type ) {
+			query.where( 'type', '=', params.type );
+		}
+		if ( params.venue ) {
+			query.where( 'venueType', '=', params.venue );
+		}
+		if ( ! isNaN( Number.parseInt( params.limit ) ) ) {
+			query.query( 'limit', Number.parseInt( params.limit ) );
+		} else {
+			query.query( 'limit', 100 );
+		}
+		if ( ! isNaN( Number.parseInt( params.offset ) ) ) {
+			query.query( 'offset', Number.parseInt( params.offset ) );
+		}
+
+		query
+		.fetchAll()
+		.then( units => {
+			res.json( units.toJSON() );
+		})
+		.catch( err => {
+			if ( err instanceof UserError ) {
+				next( err );
+			} else {
+				next( new UserError( 'Search failed', 500, err ) );
+			}
+		});
+	}
+);
+
+
+/**
+ * Gets node information for user.
+ */
+router.get( '/:id',
+	token.validate(),
+	parseID,
+	( req, res, next ) => {
+		let query = new OrgUnit( req.query )
 		.fetch({
 			require: true,
 			withRelated: [
@@ -65,68 +133,6 @@ router.get( /^\/([a-zA-Z]{2}[\-\d]*)\/?$/,
 		})
 		.catch( err => {
 			next( new UserError( 'Org unit not found', 404, err ) );
-		});
-	}
-);
-
-/**
- * Searches units.
- */
-router.get( '/search',
-	token.validate(),
-	( req, res, next ) => {
-		let params = _.omit( req.query, 'token' );
-
-		if ( _.isEmpty( params ) ) {
-			return next( new UserError( 'No search params provided', 400 ) );
-		}
-
-		params = _.mapValues( params, v => v.toLowerCase() );
-		let types = OrgUnit.getTypes().map( m => m.toLowerCase() );
-
-		// Must be a valid type.
-		if ( params.type && -1 === types.indexOf( params.type ) ) {
-			return next( new UserError( 'Invalid type specified', 400 ) );
-		}
-
-		// Must be a venue when specifying venue type.
-		if ( params.venue && undefined === params.type ) {
-			params.type = 'venue';
-		} else if ( params.venue && 'venue' !== params.type ) {
-			return next( new UserError( 'Invalid type with "venue" option', 400 ) );
-		}
-
-		// Venues never have codes.
-		if ( params.code && ( params.venue || 'venue' === params.type ) ) {
-			return next( new UserError( 'Venue type does not have codes', 400 ) );
-		}
-
-		let query = new OrgUnit();
-
-		if ( params.name ) {
-			query.where( 'name', 'LIKE', '%' + params.name + '%' );
-		}
-		if ( params.code ) {
-			query.where( 'code', 'LIKE', '%' + params.code + '%' );
-		}
-		if ( params.type ) {
-			query.where( 'type', '=', params.type );
-		}
-		if ( params.venue ) {
-			query.where( 'venueType', '=', params.venue );
-		}
-
-		query
-		.fetchAll()
-		.then( units => {
-			res.json( units.toJSON() );
-		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Search failed', 500, err ) );
-			}
 		});
 	}
 );
@@ -232,22 +238,14 @@ router.post( '/',
  */
 router.put( '/:id',
 	token.validate(),
+	parseID,
 	( req, res, next ) => {
 		if ( _.isEmpty( req.body ) ) {
 			return next( new UserError( 'No data provided', 400 ) );
 		}
 
-		let query = new OrgUnit();
-		let id    = req.params.id;
-		if ( ! isNaN( Number.parseInt( id ) ) ) {
-			query.where( 'id', Number.parseInt( id ) );
-		} else {
-			query.where( 'code', id );
-		}
-
-		query.fetch({
-			require: true
-		})
+		new OrgUnit( req.query )
+		.fetch({ require: true })
 		.catch( err => {
 			throw new UserError( 'Org unit not found', 404, err );
 		})
@@ -293,22 +291,16 @@ router.put( '/:id',
  */
 router.delete( '/:id',
 	token.validate(),
+	parseID,
 	( req, res, next ) => {
 
-		let query = new OrgUnit();
-		let id    = Number.parseInt( req.params.id );
-		if ( ! isNaN( id ) ) {
-			if ( 1 === id ) {
-				return next( new UserError( 'Cannot delete root org', 500 ) );
-			}
-			query.where( 'id', id );
-		} else {
-			query.where( 'code', id );
+		// No deleting National!
+		if ( 1 === Number.parseInt( req.params.id ) ) {
+			return next( new UserError( 'Cannot delete root org', 500 ) );
 		}
 
-		query.fetch({
-			require: true
-		})
+		new OrgUnit( req.query )
+		.fetch({ require: true })
 		.catch( err => {
 			throw new UserError( 'Org unit not found', 404, err );
 		})
@@ -376,27 +368,23 @@ router.delete( '/:id',
 
 
 /**
- * Gets node information based off of ID.
+ * Parses an ID into the correct query.
  */
-router.get( '/internal/:id(\\d+)',
-	network.internal,
-	( req, res, next ) => {
-		let id = parseInt( req.params.id );
-		if ( isNaN( id ) ) {
-			return next( new Error( 'Invalid org id' ) );
-		}
-		let query = new OrgUnit({ id: id })
-		.fetch({ require: true });
+function parseID( req, res, next ) {
+	let id = req.params.id;
 
-		getChain( query )
-		.then( unit => {
-			res.json( unit );
-		})
-		.catch( err => {
-			next( new UserError( 'Org unit not found', 404, err ) );
-		});
+	if ( ! id ) {
+		next( new UserError( 'No ID provided', 400 ) );
+	} else if ( -1 !== id.search( /^[a-z]{2}[\-\d]*$/i ) ) {
+		req.query = { code: id.toUpperCase() };
+		next();
+	} else if ( Number.parseInt( id ) ) {
+		req.query = { id: Number.parseInt( id ) };
+		next();
+	} else {
+		next( new UserError( 'Invalid ID provided', 400 ) );
 	}
-);
+}
 
 
 /**

@@ -16,11 +16,11 @@ router.get( '/',
 			<h2>${ req.user.get( 'membershipNumber' ) }</h2>
 			<p>Token: <code>${ req.token.id }</code></p>
 			<ul>
-				<li><a href="/offices/internal">My offices</a></li>
-				<li><a href="/users/me">My profile</a></li>
+				<li><a href="/v1/offices/internal">My offices</a></li>
+				<li><a href="/v1/users/me">My profile</a></li>
 				<li><a href="/dev/list/users">List Users</a></li>
 				<li><a href="/dev/switch">Switch user</a></li>
-				<li><a href="/auth/signout">Log out</a></li>
+				<li><a href="/v1/auth/signout">Log out</a></li>
 			</ul>
 			`;
 		} else {
@@ -28,7 +28,7 @@ router.get( '/',
 			<button>Login</button>
 			<script>
 			$( "button" ).on( "click", function() {
-				$.get( "/auth/signin/test", function( resp ) {
+				$.get( "/v1/auth/signin/test", function( resp ) {
 					if ( resp.url ) {
 						location.assign( resp.url );
 					}
@@ -71,7 +71,7 @@ router.get( '/list/users',
 			let html = '<h1>Users</h1><ul>';
 			users.each( user => {
 				user = user.toJSON();
-				html += `<li><a href="/users/${ user.membershipNumber }">${ user.fullName }</a></li>`;
+				html += `<li><a href="/v1/users/${ user.membershipNumber }">${ user.fullName }</a></li>`;
 			});
 			html += '</li>';
 			res.send( html );

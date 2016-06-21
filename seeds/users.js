@@ -86,7 +86,7 @@ exports.seed = ( knex, Promise ) => {
 				email: 'ephraimgregor@gmail.com',
 				membershipType: 'Full',
 				membershipNumber: 'US2012030038',
-				membershipExpiration: '2015-09-05',
+				membershipExpiration: '2017-09-05',
 				orgUnit: 3
 			},
 			{

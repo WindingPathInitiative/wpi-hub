@@ -41,6 +41,13 @@ module.exports = function() {
 			.expect( 200, done );
 		});
 
+		it( 'works if "me" is provided', function( done ) {
+			request
+			.get( '/v1/org-unit/me' )
+			.query({ token: 'user' })
+			.expect( 200, done );
+		});
+
 		it( 'provides the correct data', function( done ) {
 			request
 			.get( '/v1/org-unit/ny-004' )

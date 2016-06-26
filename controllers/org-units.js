@@ -375,6 +375,22 @@ function parseID( req, res, next ) {
 
 	if ( ! id ) {
 		next( new UserError( 'No ID provided', 400 ) );
+	} else if ( 'me' === id ) {
+		let User = require( '../models/user' );
+		return new User({ id: req.token.get( 'user' ) })
+		.fetch({ require: true })
+		.catch( err => {
+			next( new UserError( 'User not found', 404 ) );
+		})
+		.then( user => {
+			if ( ! user.get( 'orgUnit' ) ) {
+				next( new UserError( 'No org unit associated', 404 ) );
+			} else {
+				req.user = user;
+				req.query = { id: user.get( 'orgUnit' ) };
+				next();
+			}
+		});
 	} else if ( -1 !== id.search( /^[a-z]{2}[\-\d]*$/i ) ) {
 		req.query = { code: id.toUpperCase() };
 		next();

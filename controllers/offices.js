@@ -75,6 +75,16 @@ router.get( '/me',
 );
 
 /**
+ * Gets the allowed roles.
+ */
+router.get( '/roles',
+	( req, res, next ) => {
+		let roles = require( '../config/roles.json' );
+		res.json( roles );
+	}
+);
+
+/**
  * Assigns a user to an office, or vacates it.
  */
 router.put( '/:id(\\d+)/assign/:user(\\d+)',

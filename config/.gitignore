@@ -2,3 +2,4 @@
 !*.default.json
 !*.travis.json
 !templates.json
+!roles.json

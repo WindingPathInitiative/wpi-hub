@@ -109,6 +109,24 @@ module.exports = function() {
 		});
 	});
 
+	describe( 'GET roles', function() {
+		it( 'returns an array of roles', function( done ) {
+			request
+			.get( '/v1/office/roles' )
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.be.an.Array();
+				res.body.forEach( role => {
+					role.should.have.properties([ 'name', 'slug' ]);
+				});
+				done();
+			});
+		});
+	});
+
 	describe( 'PUT assign', function() {
 
 		afterEach( 'reset officers', function( done ) {

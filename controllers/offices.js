@@ -78,7 +78,8 @@ router.get( '/me',
  * Assigns a user to an office, or vacates it.
  */
 router.put( '/:id(\\d+)/assign/:user(\\d+)',
-	token.validate(),
+	token.parse(),
+	token.expired,
 	( req, res, next ) => {
 
 		var curUser = req.token.get( 'user' );
@@ -154,7 +155,8 @@ router.put( '/:id(\\d+)/assign/:user(\\d+)',
  * Updates an office.
  */
 router.put( '/:id(\\d+)',
-	token.validate(),
+	token.parse(),
+	token.expired,
 	( req, res, next ) => {
 		if ( _.isEmpty( req.body ) ) {
 			return next( new UserError( 'No data provided', 400 ) );
@@ -204,7 +206,8 @@ router.put( '/:id(\\d+)',
  * Creates an assistant office.
  */
 router.post( '/:id(\\d+)/assistant',
-	token.validate(),
+	token.parse(),
+	token.expired,
 	( req, res, next ) => {
 		if ( _.isEmpty( req.body ) ) {
 			return next( new UserError( 'No data provided', 400 ) );
@@ -273,7 +276,8 @@ router.post( '/:id(\\d+)/assistant',
 
 
 router.delete( '/:id(\\d+)/assistant',
-	token.validate(),
+	token.parse(),
+	token.expired,
 	( req, res, next ) => {
 		new Office({ id: req.params.id })
 		.fetch({ require: true })

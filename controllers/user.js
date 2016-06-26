@@ -4,31 +4,24 @@
  * User data routes.
  */
 
-const router    = require( 'express' ).Router();
-const token     = require( '../middlewares/token' );
-const Users     = require( '../models/user' );
-const _         = require( 'lodash' );
-const UserError = require( '../helpers/errors' );
-const Promise   = require( 'bluebird' );
-const Moment    = require( 'moment' );
+const router        = require( 'express' ).Router();
+const token         = require( '../middlewares/token' );
+const User          = require( '../models/user' );
+const _             = require( 'lodash' );
+const UserError     = require( '../helpers/errors' );
+const Promise       = require( 'bluebird' );
+const Moment        = require( 'moment' );
+const normalizeBool = require( '../helpers/validation' ).normalizeBool;
 
 
 /**
  * Gets a list of users, optionally with filtering.
  */
 router.get( '/',
-	token.parse(),
-	( req, res, next ) => {
-		// Exit if the user is expired.
-		if ( req.user.get( 'membershipExpiration' ).getTime() < Date.now() ) {
-			next( new UserError( 'User is expired', 403 ) );
-		} else {
-			next();
-		}
-	},
+	token.validate(),
 	( req, res, next ) => {
 		let params = _.omit( req.query, 'token' );
-		let query = new Users();
+		let query = new User();
 
 		if ( params.name ) {
 			let like = '%' + params.name + '%';
@@ -44,7 +37,6 @@ router.get( '/',
 		}
 
 		if ( undefined !== params.expired ) {
-			let normalizeBool = require( '../helpers/validation' ).normalizeBool;
 			let type = normalizeBool( params.expired ) ? '<' : '>=';
 			query.where( 'membershipExpiration', type, Moment.utc().format( 'YYYY-MM-DD' ) );
 		}
@@ -103,12 +95,26 @@ router.get( '/',
 router.get( '/:id',
 	token.validate(),
 	parseID,
+	// Checks membership expiration for private query.
+	( req, res, next ) => {
+		let showPrivate = normalizeBool( req.query.private );
+		if ( showPrivate ) {
+			new User({ id: req.token.get( 'user' ) })
+			.fetch({ require: true })
+			.catch( err => next( new UserError( 'User not found', err, 500 ) ) )
+			.then( user => {
+				req.user = user;
+				token.expired( req, res, next );
+			});
+		} else {
+			next();
+		}
+	},
 	( req, res, next ) => {
 
-		let normalizeBool = require( '../helpers/validation' ).normalizeBool;
 		let showPrivate = normalizeBool( req.query.private );
 
-		new Users( req.id )
+		new User( req.id )
 		.fetch({
 			require: true,
 			withRelated: 'orgUnit'
@@ -149,7 +155,8 @@ router.get( '/:id',
  * Updates a user.
  */
 router.put( '/:id',
-	token.validate(),
+	token.parse(),
+	token.expired,
 	parseID,
 	( req, res, next ) => {
 		if ( _.isEmpty( req.body ) ) {
@@ -157,7 +164,7 @@ router.put( '/:id',
 			return;
 		}
 
-		new Users( req.id )
+		new User( req.id )
 		.fetch({
 			require: true,
 			withRelated: 'orgUnit'
@@ -213,13 +220,14 @@ router.put( '/:id',
  * Updates user domain assignment.
  */
 router.put( '/:id/assign/:domain(\\d+)',
-	token.validate(),
+	token.parse(),
+	token.expired,
 	parseID,
 	( req, res, next ) => {
 		const OrgUnit = require( '../models/org-unit' );
 
 		// Get the user.
-		let userQuery = new Users( req.id )
+		let userQuery = new User( req.id )
 		.fetch({
 			require: true,
 			withRelated: 'orgUnit'

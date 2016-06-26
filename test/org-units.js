@@ -98,6 +98,14 @@ module.exports = function() {
 			.expect( 404, done );
 		});
 
+		it( 'fails if user is expired', function( done ) {
+			request
+			.put( '/v1/org-unit/3' )
+			.send({ name: 'Test' })
+			.query({ token: 'expired' })
+			.expect( 403, done );
+		});
+
 		it( 'fails without data', function( done ) {
 			request
 			.put( '/v1/org-unit/3' )
@@ -199,6 +207,14 @@ module.exports = function() {
 			.post( '/v1/org-unit' )
 			.query({ token: 'admin' })
 			.expect( 400, done );
+		});
+
+		it( 'fails if user is expired', function( done ) {
+			request
+			.post( '/v1/org-unit' )
+			.query({ token: 'expired' })
+			.send( data )
+			.expect( 403, done );
 		});
 
 		it( 'fails if creating org unit without permission', function( done ) {
@@ -346,6 +362,13 @@ module.exports = function() {
 			request
 			.delete( '/v1/org-unit/10' )
 			.query({ token: 'user' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if user expired', function( done ) {
+			request
+			.delete( '/v1/org-unit/10' )
+			.query({ token: 'expired' })
 			.expect( 403, done );
 		});
 

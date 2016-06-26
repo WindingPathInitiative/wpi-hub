@@ -142,7 +142,8 @@ router.get( '/:id',
  * Creates a new org unit
  */
 router.post( '/',
-	token.validate(),
+	token.parse(),
+	token.expired,
 	( req, res, next ) => {
 		let data  = req.body;
 
@@ -237,7 +238,8 @@ router.post( '/',
  * Updates org unit
  */
 router.put( '/:id',
-	token.validate(),
+	token.parse(),
+	token.expired,
 	parseID,
 	( req, res, next ) => {
 		if ( _.isEmpty( req.body ) ) {
@@ -290,7 +292,8 @@ router.put( '/:id',
  * Deletes an org unit.
  */
 router.delete( '/:id',
-	token.validate(),
+	token.parse(),
+	token.expired,
 	parseID,
 	( req, res, next ) => {
 

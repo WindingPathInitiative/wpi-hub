@@ -107,6 +107,14 @@ module.exports = function() {
 			});
 		});
 
+		it( 'fails to provide private data if officer is expired', function( done ) {
+			request
+			.get( '/v1/user/1' )
+			.query({ private: true })
+			.query({ token: 'expired' })
+			.expect( 403, done );
+		});
+
 		it( 'provides open data if wrong auth provided', function( done ) {
 			request
 			.get( '/v1/user/1' )
@@ -174,6 +182,14 @@ module.exports = function() {
 			.send({ firstName: 'Test' })
 			.query({ token: 'nc' })
 			.expect( 404, done );
+		});
+
+		it( 'fails for expired member', function( done ) {
+			request
+			.put( '/v1/user/9' )
+			.send({ firstName: 'Test' })
+			.query({ token: 'expired' })
+			.expect( 403, done );
 		});
 
 		it( 'fails for invalid MES number', function( done ) {
@@ -270,6 +286,13 @@ module.exports = function() {
 			.expect( 404, done );
 		});
 
+		it( 'fails for expired member', function( done ) {
+			request
+			.put( '/v1/user/9/assign/3' )
+			.query({ token: 'expired' })
+			.expect( 403, done );
+		});
+
 		it( 'fails for invalid MES number', function( done ) {
 			request
 			.put( '/v1/user/DA0000000000/assign/3' )
@@ -345,22 +368,9 @@ module.exports = function() {
 	});
 
 	describe( 'GET', function() {
-		before( 'create token', function( done ) {
-			let makeToken = require( './helpers' ).makeToken;
-			makeToken( 6, 'expired' ).then( () => done() );
-		});
-
 		it( 'fails if no token is provided', function( done ) {
 			request
 			.get( '/v1/user' )
-			.expect( 403, done );
-		});
-
-		it( 'fails if expired token is provided', function( done ) {
-			request
-			.get( '/v1/user' )
-			.query({ token: 'expired' })
-			.query({ name: 'test' })
 			.expect( 403, done );
 		});
 
@@ -416,11 +426,6 @@ module.exports = function() {
 					done();
 				});
 			});
-		});
-
-		after( 'destroy token', function( done ) {
-			let deleteToken = require( './helpers' ).deleteToken;
-			deleteToken( 'expired' ).then( () => done() );
 		});
 	});
 };

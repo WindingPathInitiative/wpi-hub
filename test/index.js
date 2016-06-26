@@ -9,6 +9,7 @@ before( 'create tokens', function( done ) {
 		makeToken( 1, 'admin' ),
 		makeToken( 2, 'nc' ),
 		makeToken( 5, 'user' ),
+		makeToken( 6, 'expired' ),
 		() => done()
 	);
 });
@@ -30,6 +31,7 @@ after( 'destroy tokens', function( done ) {
 		deleteToken( 'admin' ),
 		deleteToken( 'nc' ),
 		deleteToken( 'user' ),
+		deleteToken( 'expired' ),
 		() => done()
 	);
 });

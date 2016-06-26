@@ -45,6 +45,24 @@ exports.parse = required => {
 
 
 /**
+ * Checks whether user is expired or not.
+ * @param {object}   req  Express request.
+ * @param {object}   res  Express response.
+ * @param {Function} next Callback.
+ * @return {void}
+ */
+exports.expired = ( req, res, next ) => {
+	if ( ! req.user ) {
+		next( new UserError( 'User not loaded', 500 ) );
+	} else if ( req.user.get( 'membershipExpiration' ).getTime() < Date.now() ) {
+		next( new UserError( 'User is expired', 403 ) );
+	} else {
+		next();
+	}
+}
+
+
+/**
  * Queries the token table.
  * @param  {Object}   req      The request object.
  * @param  {Function} next     Next function call.
@@ -116,5 +134,4 @@ function query( req, next, required, fetch ) {
 	.catch( err => {
 		next( new UserError( 'Invalid token', 403, err ) );
 	});
-
 }

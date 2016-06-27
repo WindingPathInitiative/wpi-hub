@@ -124,8 +124,8 @@ __Content__: `{ status: 400, message: 'Invalid data provided: [errors]' }`
 Assigns an office to a given user, or vacates an office. Holder of office can use this to resign.
 
 __Params__
-* `id` - Required. ID of office to assign.
-* `user` - Required. ID of user to be assigned, or zero to vacate.
+* `{id}` - Required. ID of office to assign.
+* `{user}` - Required. ID of user to be assigned, or zero to vacate.
 * `token` - Required. Parameter or cookie of user token. Needs `office_assign` role over office.
 
 __Responses__
@@ -152,7 +152,7 @@ __Content__: `{ status: 500, message: 'Office already vacant' }`
 Creates an assistant office for a given primary one.
 
 __Params__
-* `id` - Required. ID of parent office.
+* `{id}` - Required. ID of parent office.
 * `token` - Required. Parameter or cookie of user token. Needs `office_create_assistants` role over office, or `office_create_own_assistants` for self.
 
 __Body__
@@ -182,7 +182,7 @@ __Content__: `{ status: 400, message: 'Invalid data provided: [errors]' }`
 Deletes an assistant office.
 
 __Params__
-* `id` - Required. ID of assistant office to delete.
+* `{id}` - Required. ID of assistant office to delete.
 * `token` - Required. Parameter or cookie of user token. Needs `office_create_assistants` role over office, or `office_create_own_assistants` for self.
 
 __Responses__

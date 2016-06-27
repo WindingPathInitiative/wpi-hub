@@ -150,13 +150,7 @@ router.put( '/:id(\\d+)/assign/:user(\\d+)',
 				res.json({ success: true });
 			});
 		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Authentication failed', 403, err ) );
-			}
-		});
+		.catch( err => UserError.catch( err, next ) );
 	}
 );
 
@@ -201,13 +195,7 @@ router.put( '/:id(\\d+)',
 			office.show();
 			res.json( office.toJSON() );
 		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Authentication failed', 403, err ) );
-			}
-		});
+		.catch( err => UserError.catch( err, next ) );
 	}
 );
 
@@ -274,13 +262,7 @@ router.post( '/:id(\\d+)/assistant',
 			office.show();
 			res.json( office.toJSON() );
 		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Authentication failed', 403, err ) );
-			}
-		});
+		.catch( err => UserError.catch( err, next ) );
 	}
 );
 
@@ -314,13 +296,7 @@ router.delete( '/:id(\\d+)/assistant',
 		.then( () => {
 			res.json({ success: true });
 		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Authentication failed', 403, err ) );
-			}
-		});
+		.catch( err => UserError.catch( err, next ) );
 	}
 );
 

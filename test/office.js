@@ -118,10 +118,7 @@ module.exports = function() {
 				if ( err ) {
 					return done( err );
 				}
-				res.body.should.be.an.Array();
-				res.body.forEach( role => {
-					role.should.have.properties([ 'name', 'slug' ]);
-				});
+				res.body.should.be.an.Object();
 				done();
 			});
 		});

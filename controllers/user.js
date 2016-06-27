@@ -78,13 +78,7 @@ router.get( '/',
 				res.json( users.toJSON() );
 			});
 		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'List failed', 500, err ) );
-			}
-		});
+		.catch( err => UserError.catch( err, next, 'List failed' ) );
 	}
 );
 
@@ -140,13 +134,7 @@ router.get( '/:id',
 			user.showPrivate = showPrivate;
 			res.json( user.toJSON() );
 		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Authentication failed', 403, err ) );
-			}
-		});
+		.catch( err => UserError.catch( err, next ) );
 	}
 );
 
@@ -205,13 +193,7 @@ router.put( '/:id',
 			user.showPrivate = true;
 			res.json( user.toJSON() );
 		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Authentication failed', 403, err ) );
-			}
-		});
+		.catch( err => UserError.catch( err, next ) );
 	}
 );
 
@@ -307,13 +289,7 @@ router.put( '/:id/assign/:domain(\\d+)',
 				res.json({ success: true });
 			});
 		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Authentication failed', 403, err ) );
-			}
-		});
+		.catch( err => UserError.catch( err, next ) );
 	}
 );
 

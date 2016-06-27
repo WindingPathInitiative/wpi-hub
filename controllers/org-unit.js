@@ -72,7 +72,7 @@ router.get( '/',
 			if ( err instanceof UserError ) {
 				next( err );
 			} else {
-				next( new UserError( 'Search failed', 500, err ) );
+				next( new UserError( 'Search failed', err ) );
 			}
 		});
 	}
@@ -223,13 +223,7 @@ router.post( '/',
 			unit.show();
 			res.json( unit );
 		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Authentication failed', 403, err ) );
-			}
-		});
+		.catch( err => UserError.catch( err, next ) );
 	}
 );
 
@@ -277,13 +271,7 @@ router.put( '/:id',
 			unit.show();
 			res.json( unit.toJSON() );
 		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Authentication failed', 403, err ) );
-			}
-		});
+		.catch( err => UserError.catch( err, next ) );
 	}
 );
 
@@ -359,13 +347,7 @@ router.delete( '/:id',
 		.then( () => {
 			res.json({ success: true });
 		})
-		.catch( err => {
-			if ( err instanceof UserError ) {
-				next( err );
-			} else {
-				next( new UserError( 'Authentication failed', 403, err ) );
-			}
-		});
+		.catch( err => UserError.catch( err, next ) );
 	}
 );
 

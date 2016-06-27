@@ -111,11 +111,11 @@ __Responses__
 * __Code__: 200<br>
 __Content__: The modified JSON. See `GET office/{id}`, above.
 
-* No body data provided.
+* No body data provided.<br>
 __Code__: 400<br>
 __Content__: `{ status: 400, message: 'No data provided' }`
 
-* Invalid body data provided.
+* Invalid body data provided.<br>
 __Code__: 400<br>
 __Content__: `{ status: 400, message: 'Invalid data provided: [errors]' }`
 
@@ -165,15 +165,15 @@ __Responses__
 * __Code__: 200<br>
 __Content__: The modified JSON. See `GET office/{id}`, above.
 
-* No body data provided.
+* No body data provided.<br>
 __Code__: 400<br>
 __Content__: `{ status: 400, message: 'No data provided' }`
 
-* Parent office doesn't exist.
+* Parent office doesn't exist.<br>
 __Code__: 404<br>
 __Content__: `{ status: 404, message: 'Parent office not found' }`
 
-* Invalid body data provided.
+* Invalid body data provided.<br>
 __Code__: 400<br>
 __Content__: `{ status: 400, message: 'Invalid data provided: [errors]' }`
 
@@ -193,6 +193,6 @@ __Content__: `{ success: true }`
 * __Code__: 404<br>
 __Content__: `{ status: 404, message: 'Office not found' }`
 
-* Office is a primary one.
+* Office is a primary one.<br>
 __Code__: 400<br>
 __Content__: `{ status: 400, message: 'Office is not an assistant' }`

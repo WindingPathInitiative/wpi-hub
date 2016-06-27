@@ -18,11 +18,11 @@ describe( 'auth', require( './auth' ) );
 
 describe( 'users', require( './user' ) );
 
-describe( 'org units', require( './org-units' ) );
+describe( 'org units', require( './org-unit' ) );
 
-describe( 'offices', require( './offices' ) );
+describe( 'offices', require( './office' ) );
 
-describe( 'permissions', require( './permissions' ) );
+describe( 'permissions', require( './permission' ) );
 
 after( 'destroy tokens', function( done ) {
 	let deleteToken = require( './helpers' ).deleteToken;

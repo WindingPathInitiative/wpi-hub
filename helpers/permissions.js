@@ -57,7 +57,7 @@ function hasOverUser( user, permission, officer ) {
 			return new Users({ id: user })
 			.fetch({ require: true, withRelated: 'orgUnit' })
 			.catch( err => {
-				throw new UserError( 'User not found.', 404, err );
+				throw new UserError( 'User not found', 404, err );
 			})
 			.then( model => {
 				user = model;
@@ -169,7 +169,7 @@ function hasOverOffice( office, permission, officer ) {
 		officeQuery = new Offices({ id: office })
 		.fetch({ require: true })
 		.catch( err => {
-			throw new UserError( 'Office not found.', 404, err );
+			throw new UserError( 'Office not found', 404, err );
 		})
 		.then( model => {
 			office = model;

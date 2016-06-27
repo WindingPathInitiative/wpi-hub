@@ -274,7 +274,7 @@ router.delete( '/:id(\\d+)/assistant',
 		new Office({ id: req.params.id })
 		.fetch({ require: true })
 		.catch( err => {
-			throw new UserError( 'Parent office not found', 404, err );
+			throw new UserError( 'Office not found', 404, err );
 		})
 		// We're an assistant, right?
 		.tap( office => {

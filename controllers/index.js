@@ -13,10 +13,10 @@ router.use( prefix + '/auth', require( './auth' ) );
 router.use( prefix + '/user', require( './user' ) );
 
 // Org Units.
-router.use( prefix + '/org-unit', require( './org-units' ) );
+router.use( prefix + '/org-unit', require( './org-unit' ) );
 
 // Offices.
-router.use( prefix + '/office', require( './offices' ) );
+router.use( prefix + '/office', require( './office' ) );
 
 // Dev endpoints.
 if ( 'production' !== process.env.NODE_ENV ) {

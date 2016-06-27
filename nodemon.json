@@ -5,6 +5,7 @@
 		"migrations/",
 		"seeds/",
 		"Dockerfile",
-		"test/"
+		"test/",
+		"docs/"
 	]
 }

@@ -40,3 +40,5 @@ __Content__: `{ status: 403, message: 'No offices with permission' }`
 * No valid offices found<br>
   __Code__: 403<br>
   __Content__: `{ status: 403, message: 'Officer not found in chain' }`
+
+__Note__: Users with the `admin` role pass _all_ permission checks.

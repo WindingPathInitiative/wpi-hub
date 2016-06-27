@@ -125,7 +125,7 @@ module.exports = function() {
 			request
 			.put( '/v1/org-unit/3' )
 			.query({ token: 'nc' })
-			.send({ type: 'Blah' })
+			.send({ website: 'Blah' })
 			.expect( 400, done );
 		});
 

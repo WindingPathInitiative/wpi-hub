@@ -6,7 +6,7 @@ Provides information about an office.
 
 __Params__
 * `{id}` - Required. Integer ID of office.
-* `token` - Required. `GET` param or cookie of user token.
+* `token` - Required. Parameter or cookie of user token.
 
 __Responses__
 
@@ -62,7 +62,7 @@ __Responses__
 Provides an array of the current user offices.
 
 __Params__
-* `token` - Required. `GET` param or cookie of user token.
+* `token` - Required. Parameter or cookie of user token.
 
 __Responses__
 
@@ -99,7 +99,7 @@ Updates data for a given office.
 
 __Params__
 * `id` - Required. ID of office to change.
-* `token` - Required. `GET` param or cookie of user token. Needs `office_update` role over office.
+* `token` - Required. Parameter or cookie of user token. Needs `office_update` role over office.
 
 __Body__
 * `name` - Name of office.
@@ -126,7 +126,7 @@ Assigns an office to a given user, or vacates an office. Holder of office can us
 __Params__
 * `id` - Required. ID of office to assign.
 * `user` - Required. ID of user to be assigned, or zero to vacate.
-* `token` - Required. `GET` param or cookie of user token. Needs `office_assign` role over office.
+* `token` - Required. Parameter or cookie of user token. Needs `office_assign` role over office.
 
 __Responses__
 
@@ -153,7 +153,7 @@ Creates an assistant office for a given primary one.
 
 __Params__
 * `id` - Required. ID of parent office.
-* `token` - Required. `GET` param or cookie of user token. Needs `office_create_assistants` role over office, or `office_create_own_assistants` for self.
+* `token` - Required. Parameter or cookie of user token. Needs `office_create_assistants` role over office, or `office_create_own_assistants` for self.
 
 __Body__
 * `name` - Required. Name of office.
@@ -183,7 +183,7 @@ Deletes an assistant office.
 
 __Params__
 * `id` - Required. ID of assistant office to delete.
-* `token` - Required. `GET` param or cookie of user token. Needs `office_create_assistants` role over office, or `office_create_own_assistants` for self.
+* `token` - Required. Parameter or cookie of user token. Needs `office_create_assistants` role over office, or `office_create_own_assistants` for self.
 
 __Responses__
 

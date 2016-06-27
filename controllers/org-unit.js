@@ -253,12 +253,13 @@ router.put( '/:id',
 			let constraints = {
 				name: { length: { minimum: 1 } },
 				code: { length: { minimum: 1 } },
-				venueType: { isString: true },
 				location: { isString: true },
 				defDoc: { isString: true },
 				website: { url: true },
-				type: { inclusion: [ 'Venue', 'Domain', 'Region' ] }
 			};
+			if ( 'Venue' === unit.get( 'type' ) ) {
+				delete constraints.code;
+			}
 			return validate.async( req.body, constraints )
 			.catch( errs => {
 				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
@@ -287,7 +288,7 @@ router.delete( '/:id',
 
 		// No deleting National!
 		if ( 1 === Number.parseInt( req.params.id ) ) {
-			return next( new UserError( 'Cannot delete root org', 500 ) );
+			return next( new UserError( 'Cannot delete root org' ) );
 		}
 
 		new OrgUnit( req.query )
@@ -303,7 +304,7 @@ router.delete( '/:id',
 			return unit.getChildren()
 			.then( children => {
 				if ( children.length ) {
-					throw new UserError( 'Cannot delete org with children', 500 );
+					throw new UserError( 'Cannot delete org with children' );
 				}
 			});
 		})
@@ -322,7 +323,7 @@ router.delete( '/:id',
 				.then( parents => {
 					let parent = parents.pop();
 					if ( ! parent ) {
-						throw new UserError( 'No parent found', 500 );
+						throw new UserError( 'No parent found' );
 					}
 
 					return new Users()
@@ -333,7 +334,7 @@ router.delete( '/:id',
 				let unitDel = unit
 				.destroy({ transacting: t })
 				.catch( err => {
-					throw new UserError( 'Could not delete org', 500, err );
+					throw new UserError( 'Could not delete org', err );
 				});
 
 				return Promise.join(

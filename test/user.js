@@ -207,6 +207,22 @@ module.exports = function() {
 			.expect( 400, done );
 		});
 
+		it( 'fails for invalid data', function( done ) {
+			request
+			.put( '/v1/user/7' )
+			.query({ token: 'nc' })
+			.send({ email: 'Blah' })
+			.expect( 400, done );
+		});
+
+		it( 'fails for unknown attributes', function( done ) {
+			request
+			.put( '/v1/user/7' )
+			.query({ token: 'nc' })
+			.send({ membershipType: 'Full' })
+			.expect( 400, done );
+		});
+
 		it( 'fails if modifying user without permission', function( done ) {
 			request
 			.put( '/v1/user/1' )
@@ -234,29 +250,21 @@ module.exports = function() {
 			request
 			.put( '/v1/user/7' )
 			.query({ token: 'nc' })
-			.send({ membershipType: 'Full' })
+			.send({ firstName: 'Test2' })
 			.expect( 200 )
 			.end( ( err, res ) => {
 				if ( err ) {
 					return done( err );
 				}
-				res.body.should.have.property( 'membershipType', 'Full' );
+				res.body.should.have.property( 'firstName', 'Test2' );
 				done();
 			});
-		});
-
-		it( 'fails for invalid data', function( done ) {
-			request
-			.put( '/v1/user/7' )
-			.query({ token: 'nc' })
-			.send({ membershipType: 'Blah' })
-			.expect( 400, done );
 		});
 
 		after( 'reset users', function( done ) {
 			let User = require( '../models/user' );
 			let p1 = new User({ id: 5 }).save({ firstName: 'Test' }, { patch: true });
-			let p2 = new User({ id: 7 }).save({ membershipType: 'Trial' }, { patch: true });
+			let p2 = new User({ id: 7 }).save({ firstName: 'Test' }, { patch: true });
 
 			Promise.join( p1, p2, () => done() );
 		});

@@ -12,6 +12,7 @@ const UserError     = require( '../helpers/errors' );
 const Promise       = require( 'bluebird' );
 const Moment        = require( 'moment' );
 const normalizeBool = require( '../helpers/validation' ).normalizeBool;
+const perm          = require( '../helpers/permissions' );
 
 
 /**
@@ -120,7 +121,6 @@ router.get( '/:id',
 			if ( req.token.get( 'user' ) === user.id ) {
 				showPrivate = true;
 			} else if ( showPrivate ) {
-				const perm = require( '../helpers/permissions' );
 				return perm
 				.hasOverUser( user, 'user_read_private', req.token.get( 'user' ) )
 				.catch( err => {
@@ -147,12 +147,30 @@ router.put( '/:id',
 	token.expired,
 	parseID,
 	( req, res, next ) => {
-		if ( _.isEmpty( req.body ) ) {
-			next( new UserError( 'No data provided', 400 ) );
-			return;
-		}
+		let body = req.body;
+		const validate = require( '../helpers/validation' );
+		let constraints = {
+			firstName: { length: { minimum: 1 } },
+			lastName: { length: { minimum: 1 } },
+			nickname: { isString: true },
+			address: { isString: true },
+			email: { email: true }
+		};
 
-		new User( req.id )
+		// Attribute validation.
+		let attrPromise = validate.async( body, constraints )
+		.catch( errs => {
+			throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
+		})
+		.then( attributes => {
+			if ( _.isEmpty( attributes ) ) {
+				throw new UserError( 'No data provided', 400 );
+			}
+			return attributes;
+		});
+
+		// User checking.
+		let userPromise = new User( req.id )
 		.fetch({
 			require: true,
 			withRelated: 'orgUnit'
@@ -164,30 +182,18 @@ router.put( '/:id',
 			if ( req.token.get( 'user' ) === user.id ) {
 				return;
 			} else {
-				const perm = require( '../helpers/permissions' );
 				return perm.hasOverUser( user, 'user_update', req.token.get( 'user' ) );
 			}
-		})
-		.then( user => {
-			const validate = require( '../helpers/validation' );
-			let constraints = {
-				portalID: { numericality: { onlyInteger: true } },
-				firstName: { length: { minimum: 1 } },
-				lastName: { length: { minimum: 1 } },
-				nickname: { isString: true },
-				address: { isString: true },
-				email: { email: true },
-				membershipType: { inclusion: [ 'None', 'Trial', 'Full', 'Expelled' ] },
-				membershipExpiration: { date: true, format: /\d{4}-\d{2}-\d{2}/ }
-			};
-			return validate.async( req.body, constraints )
-			.catch( errs => {
-				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
-			})
-			.then( attributes => {
+		});
+
+		// If both check out, update and display.
+		Promise.join(
+			attrPromise,
+			userPromise,
+			( attributes, user ) => {
 				return user.save( attributes );
-			});
-		})
+			}
+		)
 		.then( user => {
 			user.show();
 			user.showPrivate = true;
@@ -271,7 +277,6 @@ router.put( '/:id/assign/:domain(\\d+)',
 			}
 			// Otherwise, check permissions.
 			else {
-				const perm = require( '../helpers/permissions' );
 				return perm.prefetch( req.token.get( 'user' ) )
 				.then( offices => {
 					return Promise.any([

@@ -160,3 +160,22 @@ __Content__: `{ status: 403, message: 'Cannot leave domain' }`
 * If a user is assigning themselves, they can't be assigned outside their region.<br>
 __Code__: 403<br>
 __Content__: `{ status: 403, message: 'Domain not under current region' }`
+
+
+## `PUT /v1/user/{id}/suspend`
+Suspends a user, or restores a suspended user.
+
+__Params__
+* `{id}` - Required. Can be the numeric ID, MES #, or "me" for the current user.
+* `token` - Required. Parameter or cookie of user token. Needs `user_suspend` role over user.
+
+__Responses__
+
+* __Code__: 200<br>
+__Content__: Updated details of user.
+
+* __Code__: 400<br>
+__Content__: `{ status: 400, message: 'Invalid ID provided' }`
+
+* __Code__: 404<br>
+__Content__: `{ status: 404, message: 'User not found' }`

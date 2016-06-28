@@ -13,6 +13,68 @@ const request = helpers.request;
 
 module.exports = function() {
 
+	describe( 'GET', function() {
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.get( '/v1/user' )
+			.expect( 403, done );
+		});
+
+		it( 'fails when querying invalid domain', function( done ) {
+			request
+			.get( '/v1/user' )
+			.query({ token: 'user' })
+			.query({ orgUnit: 99 })
+			.expect( 404, done );
+		});
+
+		// Instead of manually writing these, we're just making a big array.
+		let tests = [
+			{ query: {} },
+			{ query: { name: 'unused' }, empty: true },
+			{ query: { name: 'test' } },
+			{ query: { email: 'unused' }, empty: true },
+			{ query: { email: 'test@test.com' } },
+			{ query: { mes: 'test' }, empty: true },
+			{ query: { mes: 'US2012030038' } },
+			{ query: { orgUnit: 4 }, empty: true },
+			{ query: { orgUnit: 3 } },
+			{ query: { name: 'expired', expired: false }, empty: true },
+			{ query: { name: 'expired', expired: true } },
+			{ query: { expired: false } },
+			{ query: { expired: true } },
+			{ query: { name: 'user', expired: false } },
+			{ query: { name: 'user', expired: true }, empty: true }
+		];
+
+		tests.forEach( test => {
+			let s1 = test.empty ? 'empty array with unused' : 'list of users for used';
+			let s2 = Object.keys( test.query ).join( ' and ' );
+			let title = `returns ${ s1 } ${ s2 }`;
+
+			it( title, function( done ) {
+				request
+				.get( '/v1/user' )
+				.query({ token: 'user' })
+				.query( test.query )
+				.expect( 200 )
+				.end( ( err, res ) => {
+					if ( err ) {
+						return done( err );
+					}
+					res.body.should.be.an.Array();
+					if ( test.empty ) {
+						res.body.should.be.empty();
+					} else {
+						res.body.should.be.not.empty();
+						res.body.forEach( helpers.models.user );
+					}
+					done();
+				});
+			});
+		});
+	});
+
 	describe( 'GET me', function() {
 
 		it( 'fails if no token is provided', function( done ) {
@@ -375,65 +437,77 @@ module.exports = function() {
 		});
 	});
 
-	describe( 'GET', function() {
+	describe( 'PUT suspend', function() {
+
 		it( 'fails if no token is provided', function( done ) {
 			request
-			.get( '/v1/user' )
+			.put( '/v1/user/9/suspend' )
 			.expect( 403, done );
 		});
 
-		it( 'fails when querying invalid domain', function( done ) {
+		it( 'fails for invalid user id', function( done ) {
 			request
-			.get( '/v1/user' )
-			.query({ token: 'user' })
-			.query({ orgUnit: 99 })
+			.put( '/v1/user/999999999999999/suspend' )
+			.query({ token: 'nc' })
 			.expect( 404, done );
 		});
 
-		// Instead of manually writing these, we're just making a big array.
-		let tests = [
-			{ query: {} },
-			{ query: { name: 'unused' }, empty: true },
-			{ query: { name: 'test' } },
-			{ query: { email: 'unused' }, empty: true },
-			{ query: { email: 'test@test.com' } },
-			{ query: { mes: 'test' }, empty: true },
-			{ query: { mes: 'US2012030038' } },
-			{ query: { orgUnit: 4 }, empty: true },
-			{ query: { orgUnit: 3 } },
-			{ query: { name: 'expired', expired: false }, empty: true },
-			{ query: { name: 'expired', expired: true } },
-			{ query: { expired: false } },
-			{ query: { expired: true } },
-			{ query: { name: 'user', expired: false } },
-			{ query: { name: 'user', expired: true }, empty: true }
-		];
+		it( 'fails for invalid MES number', function( done ) {
+			request
+			.put( '/v1/user/DA0000000000/suspend' )
+			.query({ token: 'nc' })
+			.expect( 404, done );
+		});
 
-		tests.forEach( test => {
-			let s1 = test.empty ? 'empty array with unused' : 'list of users for used';
-			let s2 = Object.keys( test.query ).join( ' and ' );
-			let title = `returns ${ s1 } ${ s2 }`;
+		it( 'fails for expired member', function( done ) {
+			request
+			.put( '/v1/user/9/suspend' )
+			.query({ token: 'expired' })
+			.expect( 403, done );
+		});
 
-			it( title, function( done ) {
-				request
-				.get( '/v1/user' )
-				.query({ token: 'user' })
-				.query( test.query )
-				.expect( 200 )
-				.end( ( err, res ) => {
-					if ( err ) {
-						return done( err );
-					}
-					res.body.should.be.an.Array();
-					if ( test.empty ) {
-						res.body.should.be.empty();
-					} else {
-						res.body.should.be.not.empty();
-						res.body.forEach( helpers.models.user );
-					}
-					done();
-				});
+		it( 'fails without permission', function( done ) {
+			request
+			.put( '/v1/user/9/suspend' )
+			.query({ token: 'user' })
+			.expect( 403, done );
+		});
+
+		it( 'works to suspend with permission', function( done ) {
+			request
+			.put( '/v1/user/9/suspend' )
+			.query({ token: 'nc' })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'membershipType', 'Suspended' );
+				done();
 			});
+		});
+
+		it( 'works to restore with permission', function( done ) {
+			request
+			.put( '/v1/user/11/suspend' )
+			.query({ token: 'nc' })
+			.query({ restore: true })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'membershipType', 'Full' );
+				done();
+			});
+		});
+
+		after( 'reset users', function( done ) {
+			let User = require( '../models/user' );
+			let p1 = new User({ id: 9 }).save({ membershipType: 'Full' }, { patch: true });
+			let p2 = new User({ id: 11 }).save({ membershipType: 'Suspended' }, { patch: true });
+
+			Promise.join( p1, p2, () => done() );
 		});
 	});
 };

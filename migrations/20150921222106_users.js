@@ -2,7 +2,7 @@
 
 exports.up = ( knex, Promise ) => {
 	return knex.schema.createTable( 'users', ( table ) => {
-		var membershipTypes = [ 'None', 'Trial', 'Full', 'Expelled' ];
+		var membershipTypes = [ 'None', 'Trial', 'Full', 'Suspended' ];
 
 		table.increments().primary();
 		table.integer( 'portalID' ).index().unique();

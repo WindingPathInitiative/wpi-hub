@@ -300,6 +300,37 @@ router.put( '/:id/assign/:domain(\\d+)',
 
 
 /**
+ * Sets a user to be suspended or not.
+ */
+router.put( '/:id/suspend',
+	token.parse(),
+	token.expired,
+	parseID,
+	( req, res, next ) => {
+		new User( req.id )
+		.fetch({ require: true })
+		.catch( err => {
+			throw new UserError( 'User not found', 404, err );
+		})
+		.tap( user => perm.hasOverUser( user, 'user_suspend', req.token.get( 'user' ) ) )
+		.then( user => {
+			let status = 'Suspended';
+			if ( normalizeBool( req.query.restore ) ) {
+				status = 'Full'; // We're assuming the user isn't a Trial member.
+			}
+			return user.save( { membershipType: status }, { patch: true } );
+		})
+		.then( user => {
+			user.show();
+			user.showPrivate = true;
+			res.json( user.toJSON() );
+		})
+		.catch( err => UserError.catch( err, next ) );
+	}
+);
+
+
+/**
  * Parses an ID into the correct query.
  */
 function parseID( req, res, next ) {

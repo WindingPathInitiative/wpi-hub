@@ -106,6 +106,16 @@ exports.seed = ( knex, Promise ) => {
 				membershipType: 'Full',
 				membershipNumber: 'US2016010010',
 				membershipExpiration: '2020-01-01'
+			},
+			{
+				id: 11,
+				firstName: 'Test',
+				lastName: 'Suspended',
+				email: 'suspended@test.com',
+				membershipType: 'Suspended',
+				membershipNumber: 'US2016010011',
+				membershipExpiration: '2020-01-01',
+				orgUnit: 3
 			}
 		])
 	);

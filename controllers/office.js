@@ -235,7 +235,7 @@ router.post( '/:id(\\d+)/assistant',
 			.fetch({ require: true })
 			.catch( err => {
 				throw new UserError( 'Parent office not found', 404, err );
-			})
+			});
 		})
 		// Check for permissions.
 		.tap( office => {

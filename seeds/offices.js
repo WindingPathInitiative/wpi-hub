@@ -16,7 +16,7 @@ exports.seed = ( knex, Promise ) => {
 				parentOrgID: 1,
 				parentPath: '1',
 				userID: 2,
-				roles: JSON.stringify([ 'user_read_private', 'user_update', 'user_assign', 'org_update', 'office_update', 'office_assign', 'office_create_assistants',
+				roles: JSON.stringify([ 'user_read_private', 'user_update', 'user_assign', 'user_suspend', 'org_update', 'office_update', 'office_assign', 'office_create_assistants',
 				'office_create_own_assistants', 'org_create_domain' ])
 			},
 			{
@@ -35,7 +35,7 @@ exports.seed = ( knex, Promise ) => {
 				parentOrgID: 2,
 				parentPath: '1.3',
 				userID: 3,
-				roles: JSON.stringify([ 'user_read_private', 'user_update', 'user_assign', 'org_update', 'office_update', 'office_assign', 'office_create_assistants' ])
+				roles: JSON.stringify([ 'user_read_private', 'user_update', 'user_assign', 'user_suspend', 'org_update', 'office_update', 'office_assign', 'office_create_assistants' ])
 			},
 			{
 				id: 4,

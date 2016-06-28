@@ -6,7 +6,7 @@
 	"Nation": {
 		"coordinator": {
 			"name": "National Coordinator",
-			"roles": [ "user_read_private", "user_update", "user_assign", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants", "org_create_domain" ]
+			"roles": [ "user_read_private", "user_update", "user_assign", "user_suspend", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants", "org_create_domain" ]
 		},
 		"storyteller": {
 			"name": "National Storyteller",
@@ -16,7 +16,7 @@
 	"Region": {
 		"coordinator": {
 			"name": "Regional Coordinator",
-			"roles": [ "user_read_private", "user_update", "user_assign", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants" ]
+			"roles": [ "user_read_private", "user_update", "user_assign", "user_suspend", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants" ]
 		},
 		"storyteller": {
 			"name": "Regional Storyteller",

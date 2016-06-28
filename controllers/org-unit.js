@@ -255,7 +255,7 @@ router.put( '/:id',
 				code: { length: { minimum: 1 } },
 				location: { isString: true },
 				defDoc: { isString: true },
-				website: { url: true },
+				website: { url: true }
 			};
 			if ( 'Venue' === unit.get( 'type' ) ) {
 				delete constraints.code;

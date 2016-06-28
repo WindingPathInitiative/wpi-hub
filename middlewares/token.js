@@ -59,7 +59,7 @@ exports.expired = ( req, res, next ) => {
 	} else {
 		next();
 	}
-}
+};
 
 
 /**

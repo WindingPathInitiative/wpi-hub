@@ -154,6 +154,13 @@ module.exports = function() {
 			.expect( 403, done );
 		});
 
+		it( 'fails for suspended user', function( done ) {
+			request
+			.put( '/v1/office/7/assign/7' )
+			.query({ token: 'suspended' })
+			.expect( 403, done );
+		});
+
 		it( 'fails for invalid office id', function( done ) {
 			request
 			.put( '/v1/office/99/assign/7' )
@@ -261,6 +268,14 @@ module.exports = function() {
 			.expect( 403, done );
 		});
 
+		it( 'fails if user is suspended', function( done ) {
+			request
+			.put( '/v1/office/7' )
+			.send({ name: 'Test' })
+			.query({ token: 'suspended' })
+			.expect( 403, done );
+		});
+
 		it( 'fails without data', function( done ) {
 			request
 			.put( '/v1/office/3' )
@@ -355,6 +370,14 @@ module.exports = function() {
 			.post( '/v1/office/7/assistant' )
 			.send( data )
 			.query({ token: 'expired' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if user is suspended', function( done ) {
+			request
+			.post( '/v1/office/7/assistant' )
+			.send( data )
+			.query({ token: 'suspended' })
 			.expect( 403, done );
 		});
 
@@ -467,6 +490,14 @@ module.exports = function() {
 			.expect( 403, done );
 		});
 
+		it( 'fails if suspended', function( done ) {
+			request
+			.post( '/v1/office/11/assistant' )
+			.query({ token: 'suspended' })
+			.send( data )
+			.expect( 403, done );
+		});
+
 		it( 'fails without permission', function( done ) {
 			request
 			.post( '/v1/office/11/assistant' )
@@ -573,6 +604,13 @@ module.exports = function() {
 			request
 			.delete( '/v1/office/10/assistant' )
 			.query({ token: 'expired' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if user is suspended', function( done ) {
+			request
+			.delete( '/v1/office/10/assistant' )
+			.query({ token: 'suspended' })
 			.expect( 403, done );
 		});
 

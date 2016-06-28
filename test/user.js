@@ -246,11 +246,19 @@ module.exports = function() {
 			.expect( 404, done );
 		});
 
-		it( 'fails for expired member', function( done ) {
+		it( 'fails for expired user', function( done ) {
 			request
 			.put( '/v1/user/9' )
 			.send({ firstName: 'Test' })
 			.query({ token: 'expired' })
+			.expect( 403, done );
+		});
+
+		it( 'fails for suspended user', function( done ) {
+			request
+			.put( '/v1/user/9' )
+			.send({ firstName: 'Test' })
+			.query({ token: 'suspended' })
 			.expect( 403, done );
 		});
 
@@ -356,10 +364,17 @@ module.exports = function() {
 			.expect( 404, done );
 		});
 
-		it( 'fails for expired member', function( done ) {
+		it( 'fails for expired user', function( done ) {
 			request
 			.put( '/v1/user/9/assign/3' )
 			.query({ token: 'expired' })
+			.expect( 403, done );
+		});
+
+		it( 'fails for suspended user', function( done ) {
+			request
+			.put( '/v1/user/9/assign/3' )
+			.query({ token: 'suspended' })
 			.expect( 403, done );
 		});
 
@@ -459,10 +474,17 @@ module.exports = function() {
 			.expect( 404, done );
 		});
 
-		it( 'fails for expired member', function( done ) {
+		it( 'fails for expired user', function( done ) {
 			request
 			.put( '/v1/user/9/suspend' )
 			.query({ token: 'expired' })
+			.expect( 403, done );
+		});
+
+		it( 'fails for suspended user', function( done ) {
+			request
+			.put( '/v1/user/9/suspend' )
+			.query({ token: 'suspended' })
 			.expect( 403, done );
 		});
 

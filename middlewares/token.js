@@ -45,7 +45,7 @@ exports.parse = required => {
 
 
 /**
- * Checks whether user is expired or not.
+ * Checks whether user is expired/suspended or not.
  * @param {object}   req  Express request.
  * @param {object}   res  Express response.
  * @param {Function} next Callback.
@@ -56,6 +56,8 @@ exports.expired = ( req, res, next ) => {
 		next( new UserError( 'User not loaded', 500 ) );
 	} else if ( req.user.get( 'membershipExpiration' ).getTime() < Date.now() ) {
 		next( new UserError( 'User is expired', 403 ) );
+	} else if ( 'Suspended' === req.user.get( 'membershipType' ) ) {
+		next( new UserError( 'User is suspended', 403 ) );
 	} else {
 		next();
 	}

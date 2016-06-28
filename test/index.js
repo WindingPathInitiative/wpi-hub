@@ -10,6 +10,7 @@ before( 'create tokens', function( done ) {
 		makeToken( 2, 'nc' ),
 		makeToken( 5, 'user' ),
 		makeToken( 6, 'expired' ),
+		makeToken( 11, 'suspended' ),
 		() => done()
 	);
 });
@@ -32,6 +33,7 @@ after( 'destroy tokens', function( done ) {
 		deleteToken( 'nc' ),
 		deleteToken( 'user' ),
 		deleteToken( 'expired' ),
+		deleteToken( 'suspended' ),
 		() => done()
 	);
 });

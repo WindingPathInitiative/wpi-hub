@@ -106,6 +106,14 @@ module.exports = function() {
 			.expect( 403, done );
 		});
 
+		it( 'fails if user is suspended', function( done ) {
+			request
+			.put( '/v1/org-unit/3' )
+			.send({ name: 'Test' })
+			.query({ token: 'suspended' })
+			.expect( 403, done );
+		});
+
 		it( 'fails without data', function( done ) {
 			request
 			.put( '/v1/org-unit/3' )
@@ -213,6 +221,14 @@ module.exports = function() {
 			request
 			.post( '/v1/org-unit' )
 			.query({ token: 'expired' })
+			.send( data )
+			.expect( 403, done );
+		});
+
+		it( 'fails if user is suspended', function( done ) {
+			request
+			.post( '/v1/org-unit' )
+			.query({ token: 'suspended' })
 			.send( data )
 			.expect( 403, done );
 		});
@@ -369,6 +385,13 @@ module.exports = function() {
 			request
 			.delete( '/v1/org-unit/10' )
 			.query({ token: 'expired' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if user suspended', function( done ) {
+			request
+			.delete( '/v1/org-unit/10' )
+			.query({ token: 'suspended' })
 			.expect( 403, done );
 		});
 

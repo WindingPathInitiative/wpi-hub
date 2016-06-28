@@ -20,6 +20,10 @@ Errors with tokens are as follows:
   __Code__: 403<br>
   __Content__: `{ status: 403, message: 'User is expired' }`
 
+* Member is suspended and attempting to act as an officer.
+  __Code__: 403<br>
+  __Content__: `{ status: 403, message: 'User is suspended' }`
+
 * Attempted to check user expiration but no user data found.<br>
   __Code__: 500<br>
   __Content__: `{ status: 500, message: 'User is not loaded' }`

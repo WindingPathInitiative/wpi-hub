@@ -284,6 +284,14 @@ module.exports = function() {
 			.expect( 400, done );
 		});
 
+		it( 'fails for invalid key', function( done ) {
+			request
+			.put( '/v1/office/7' )
+			.query({ token: 'nc' })
+			.send({ parentPath: '1.2.3' })
+			.expect( 400, done );
+		});
+
 		it( 'works for modifying with permission', function( done ) {
 			request
 			.put( '/v1/office/7' )

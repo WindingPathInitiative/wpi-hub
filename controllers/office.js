@@ -13,6 +13,7 @@ const UserError = require( '../helpers/errors' );
 const _         = require( 'lodash' );
 const Promise   = require( 'bluebird' );
 const perm      = require( '../helpers/permissions' );
+const validate  = require( '../helpers/validation' );
 
 
 /**
@@ -162,35 +163,38 @@ router.put( '/:id(\\d+)',
 	token.parse(),
 	token.expired,
 	( req, res, next ) => {
-		if ( _.isEmpty( req.body ) ) {
-			return next( new UserError( 'No data provided', 400 ) );
-		}
+		let attributes  = {}; // Whitelisted attributes.
+		let body        = req.body;
+		let constraints = {
+			name: { length: { minimum: 1 } },
+			email: { email: true },
+			roles: { isArray: true }
+		};
 
-		new Office({ id: req.params.id })
-		.fetch({
-			require: true
+		validate.async( body, constraints )
+		.catch( errs => {
+			throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
 		})
-		.catch( err => {
-			throw new UserError( 'Office not found', 404, err );
+		.then( attr => {
+			if ( _.isEmpty( attr ) ) {
+				throw new UserError( 'No data provided', 400 );
+			}
+
+			attributes = attr;
+		})
+		.then( () => {
+			return new Office({ id: req.params.id })
+			.fetch({
+				require: true
+			})
+			.catch( err => {
+				throw new UserError( 'Office not found', 404, err );
+			});
 		})
 		.tap( office => {
 			return perm.hasOverOffice( office, 'office_update', req.token.get( 'user' ) );
 		})
-		.then( office => {
-			const validate = require( '../helpers/validation' );
-			let constraints = {
-				name: { length: { minimum: 1 } },
-				email: { email: true },
-				roles: { isArray: true }
-			};
-			return validate.async( req.body, constraints )
-			.catch( errs => {
-				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
-			})
-			.then( attributes => {
-				return office.save( attributes );
-			});
-		})
+		.then( office => office.save( attributes ) )
 		.then( office => {
 			office.show();
 			res.json( office.toJSON() );
@@ -207,14 +211,31 @@ router.post( '/:id(\\d+)/assistant',
 	token.parse(),
 	token.expired,
 	( req, res, next ) => {
-		if ( _.isEmpty( req.body ) ) {
-			return next( new UserError( 'No data provided', 400 ) );
-		}
+		let attributes  = {}; // Whitelisted attributes.
+		let body        = req.body;
+		let constraints = {
+			name: { length: { minimum: 1 }, presence: true },
+			email: { email: true },
+			roles: { isArray: true }
+		};
 
-		new Office({ id: req.params.id })
-		.fetch({ require: true })
-		.catch( err => {
-			throw new UserError( 'Parent office not found', 404, err );
+		validate.async( body, constraints )
+		.catch( errs => {
+			throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
+		})
+		.then( attrs => {
+			if ( _.isEmpty( attrs ) ) {
+				throw new UserError( 'No data provided', 400 );
+			}
+
+			attributes = attrs;
+		})
+		.then( () => {
+			return new Office({ id: req.params.id })
+			.fetch({ require: true })
+			.catch( err => {
+				throw new UserError( 'Parent office not found', 404, err );
+			})
 		})
 		// Check for permissions.
 		.tap( office => {
@@ -233,30 +254,21 @@ router.post( '/:id(\\d+)/assistant',
 				);
 			});
 		})
-		.then( office => {
-			const validate = require( '../helpers/validation' );
-			let constraints = {
-				name: { length: { minimum: 1 }, presence: true },
-				email: { email: true },
-				roles: { isArray: true }
-			};
-			return validate.async( req.body, constraints )
-			.tap( attributes => {
-				if ( _.difference( attributes.roles, office.get( 'roles' ) ).length ) {
-					throw new Error( 'role not in parent office' );
-				}
-			})
-			.catch( errs => {
-				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
-			})
-			.then( attributes => {
-				attributes.type = 'Assistant';
-				attributes.parentOfficeID = office.get( 'parentOfficeID' ) || office.id;
-				attributes.parentPath = office.get( 'parentPath' ) + '.';
-				attributes.parentOrgID = office.get( 'parentOrgID' );
-				return attributes;
-			});
+		// Make sure the roles are kosher.
+		.tap( office => {
+			if ( _.difference( attributes.roles, office.get( 'roles' ) ).length ) {
+				throw new UserError( 'Role not in parent office', 400 );
+			}
 		})
+		// Configures the attributes.
+		.then( office => {
+			attributes.type = 'Assistant';
+			attributes.parentOfficeID = office.get( 'parentOfficeID' ) || office.id;
+			attributes.parentPath = office.get( 'parentPath' ) + '.';
+			attributes.parentOrgID = office.get( 'parentOrgID' );
+			return attributes;
+		})
+		// Create and show.
 		.then( attributes => new Office( attributes ).insertWithPath() )
 		.then( office => {
 			office.show();

@@ -16,8 +16,8 @@ router.get( '/',
 			<h2>${ req.user.get( 'membershipNumber' ) }</h2>
 			<p>Token: <code>${ req.token.id }</code></p>
 			<ul>
-				<li><a href="/v1/offices/internal">My offices</a></li>
-				<li><a href="/v1/users/me">My profile</a></li>
+				<li><a href="/v1/office/me">My offices</a></li>
+				<li><a href="/v1/user/me">My profile</a></li>
 				<li><a href="/dev/list/users">List Users</a></li>
 				<li><a href="/dev/switch">Switch user</a></li>
 				<li><a href="/v1/auth/signout">Log out</a></li>
@@ -71,7 +71,7 @@ router.get( '/list/users',
 			let html = '<h1>Users</h1><ul>';
 			users.each( user => {
 				user = user.toJSON();
-				html += `<li><a href="/v1/users/${ user.membershipNumber }">${ user.fullName }</a></li>`;
+				html += `<li><a href="/v1/user/${ user.membershipNumber }">${ user.fullName }</a></li>`;
 			});
 			html += '</li>';
 			res.send( html );

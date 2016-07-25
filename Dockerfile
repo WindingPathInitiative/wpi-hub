@@ -1,6 +1,6 @@
 FROM node
 
-RUN apt-get update
+RUN npm install
 
 RUN npm install -g nodemon knex
 

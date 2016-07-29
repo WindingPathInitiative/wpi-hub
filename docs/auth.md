@@ -2,15 +2,15 @@
 Provides way to authenticate user. Requires correct configuration in `auth.json` to properly interface with the Portal.
 
 ## `GET /v1/auth/signin/{code}`
-Provides redirect URL to log user in.
+Redirects the user for authentication.
 
 __Params__
 * `{code}` - Required. Valid client configured in `clients.json`.
 
 __Responses__
 
-* __Code__: 200<br>
-  __Content__: `{ url: 'http://portal.mindseyesociety.org/[...]' }`
+* __Code__: 302<br>
+  __Content__: Redirect to OAuth portal server.
 
 * __Code__: 500<br>
   __Content__: `{ status: 500, message: 'Error message' }`

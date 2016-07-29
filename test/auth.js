@@ -7,6 +7,7 @@
 
 const request = require( './helpers' ).request;
 const should  = require( 'should' );
+const config  = require( '../config' ).auth;
 
 module.exports = function() {
 
@@ -17,17 +18,17 @@ module.exports = function() {
 			.expect( 500, done );
 		});
 
-		it( 'provides url with valid redirect', function( done ) {
+		it( 'redirects with valid redirect', function( done ) {
 			request
 			.get( '/v1/auth/signin/test' )
-			.expect( 200 )
+			.expect( 302 )
 			.end( ( err, res ) => {
 				if ( err ) {
 					return done( err );
 				}
-				res.body.should
-				.have.property( 'url' )
-				.match( /localhost:3000/ );
+				res.header.should
+				.have.property( 'location' )
+				.startWith( config.authorizationURL );
 				done();
 			});
 		});
@@ -51,7 +52,7 @@ module.exports = function() {
 				}
 				res.headers.should
 				.have.property( 'location' )
-				.startWith( 'http://localhost:3000/dev/auth' )
+				.startWith( config.authorizationURL )
 				.and.containEql( 'client_id=client_id_here' );
 				done();
 			});
@@ -59,7 +60,7 @@ module.exports = function() {
 
 		it( 'redirects to app with token set', function( done ) {
 			request.get( '/dev/auth' )
-			.query({ redirect_uri: 'http://localhost:3000/v1/auth/verify/test' })
+			.query({ redirect_uri: config.callbackURL + 'test' })
 			.redirects( 1 )
 			.expect( 302 )
 			.end( ( err, res ) => {

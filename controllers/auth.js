@@ -13,19 +13,19 @@ const token      = require( '../middlewares/token' );
 
 
 /**
- * Gets initial redirect URL for app.
+ * Does initial redirect URL for app.
  */
 router.get( '/signin/:code',
 	validateParam,
 	( req, res ) => {
 		let url = setupPassport( req );
-		res.json({
-			url: authConfig.authorizationURL + '?' + stringify({
+		res.redirect(
+			authConfig.authorizationURL + '?' + stringify({
 				response_type: 'code',
 				redirect_uri:  url,
 				client_id:     authConfig.clientID
 			})
-		});
+		);
 	}
 );
 

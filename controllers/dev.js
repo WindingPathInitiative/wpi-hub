@@ -28,11 +28,7 @@ router.get( '/',
 			<button>Login</button>
 			<script>
 			$( "button" ).on( "click", function() {
-				$.get( "/v1/auth/signin/test", function( resp ) {
-					if ( resp.url ) {
-						location.assign( resp.url );
-					}
-				});
+				location.assign( '/v1/auth/signin/test' );
 			});
 			</script>`;
 		}

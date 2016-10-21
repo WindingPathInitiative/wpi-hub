@@ -50,7 +50,7 @@ module.exports = function() {
 			{ query: { name: 'trial', type: 'trial' } },
 			{ query: { name: 'user', type: 'trial' }, empty: true },
 			{ query: { name: 'suspended', type: 'suspended' } },
-			{ query: { name: 'user', type: 'suspended' }, empty: true },
+			{ query: { name: 'user', type: 'suspended' }, empty: true }
 		];
 
 		tests.forEach( test => {

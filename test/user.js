@@ -44,7 +44,13 @@ module.exports = function() {
 			{ query: { expired: false } },
 			{ query: { expired: true } },
 			{ query: { name: 'user', expired: false } },
-			{ query: { name: 'user', expired: true }, empty: true }
+			{ query: { name: 'user', expired: true }, empty: true },
+			{ query: { name: 'user', type: 'full' } },
+			{ query: { name: 'user', type: 'trial' }, empty: true },
+			{ query: { name: 'trial', type: 'trial' } },
+			{ query: { name: 'user', type: 'trial' }, empty: true },
+			{ query: { name: 'suspended', type: 'suspended' } },
+			{ query: { name: 'user', type: 'suspended' }, empty: true },
 		];
 
 		tests.forEach( test => {

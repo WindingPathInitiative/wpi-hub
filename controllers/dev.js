@@ -270,7 +270,7 @@ router.get( '/migrate/vss',
 		.then( resp => res.json( resp ) )
 		.catch( err => {
 			res.json( err );
-		})
+		});
 	}
 );
 

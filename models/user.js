@@ -48,6 +48,7 @@ module.exports = bookshelf.model( 'User', Base.extend({
 		if ( ! this.showPrivate ) {
 			attrs = _.omit( attrs, [ 'email', 'address' ] );
 		}
+		delete attrs.portalID;
 		return attrs;
 	},
 

@@ -39,6 +39,10 @@ const OrgUnit = bookshelf.model( 'OrgUnit', Base.extend({
 		if ( null === attrs.venueType ) {
 			delete attrs.venueType;
 		}
+		// Escape newlines.
+		if ( attrs.defDoc ) {
+			attrs.defDoc = attrs.defDoc.replace( /\n/g, '\\n' );
+		}
 		return attrs;
 	},
 

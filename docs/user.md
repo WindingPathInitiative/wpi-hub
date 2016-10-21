@@ -9,6 +9,7 @@ __Params__
 * `name` - Search of names.
 * `email` - Search by email. Exact search only.
 * `mes` - Search by membership number. Exact search only.
+* `type` - Search by membership type, full, trial, or suspended. Exact search only.
 * `orgUnit` - Show members only under a specific org unit ID and it's descendants.
 * `expired` - Shows expired members or not. Defaults to true.
 * `limit` - Integer. Number of results to return, defaults to 100.

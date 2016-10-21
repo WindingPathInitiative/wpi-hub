@@ -37,6 +37,10 @@ router.get( '/',
 			query.where( 'membershipNumber', params.mes );
 		}
 
+		if ( undefined !== params.type ) {
+			query.where( 'membershipType', params.type );
+		}
+
 		if ( undefined !== params.expired ) {
 			let type = normalizeBool( params.expired ) ? '<' : '>=';
 			query.where( 'membershipExpiration', type, Moment.utc().format( 'YYYY-MM-DD' ) );

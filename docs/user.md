@@ -57,7 +57,6 @@ __Content__: Details of the user. Email and address are hidden without the `priv
 ```json
 {
 	"id": 1,
-	"portalID": null,
 	"firstName": "Test",
 	"lastName": "Admin",
 	"nickname": null,
@@ -92,7 +91,6 @@ __Params__
 * `token` - Required. Parameter or cookie of user token. Needs `user_update` role over user, or be updating self.
 
 __Body__
-* `portalID`: The Portal ID.
 * `firstName`: First name.
 * `lastName`: Last name.
 * `nickname`: The nickname.

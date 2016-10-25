@@ -1,9 +1,10 @@
 'use strict';
 
-const router = require( 'express' ).Router();
-const _      = require( 'lodash' );
-const token  = require( '../middlewares/token' );
-const User   = require( '../models/user' );
+const router  = require( 'express' ).Router();
+const _       = require( 'lodash' );
+const token   = require( '../middlewares/token' );
+const User    = require( '../models/user' );
+const network = require( '../middlewares/network' );
 
 router.get( '/',
 	token.parse( false ),
@@ -310,6 +311,13 @@ router.get( '/migrate/offices',
 		.then( offices => {
 			res.json( offices );
 		});
+	}
+);
+
+router.get( '/internal',
+	network.internal,
+	( req, res ) => {
+		res.json({ message: 'oh hai!' });
 	}
 );
 

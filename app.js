@@ -62,4 +62,16 @@ app.use( ( err, req, res, next ) => {
 	});
 });
 
+let port = process.env.PORT || '3000';
+let internalPort = process.env.INTERNAL_PORT || '1010';
+app.set( 'port', port );
+app.set( 'internalPort', internalPort );
+
+app.listen( port, () => {
+	console.log( 'Listening on port', port );
+});
+app.listen( internalPort, () => {
+	console.log( 'Listening on internal port', internalPort );
+});
+
 module.exports = app;

@@ -1,6 +1,6 @@
 {
 	"verbose": true,
-	"ext": "js json jade",
+	"ext": "js json",
 	"ignore": [
 		"migrations/",
 		"seeds/",

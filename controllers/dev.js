@@ -298,7 +298,7 @@ router.get( '/migrate/offices',
 						return Offices.makeOfficeForUnit( unit, 'storyteller', t );
 					}
 				});
-			}));
+			}) );
 		};
 
 		knex( 'offices' ).whereNot( 'parentOrgID', 1 ).del()

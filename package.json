@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Mind's Eye Society User integration.",
   "scripts": {
-    "start": "node ./www",
+    "start": "node app.js",
     "test": "./test.sh"
   },
   "author": "Ephraim Gregor",

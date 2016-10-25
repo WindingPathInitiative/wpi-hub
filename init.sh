@@ -10,4 +10,4 @@ echo 'Inserting seed data.'
 knex seed:run
 
 echo 'Starting application.'
-nodemon www
+nodemon app.js

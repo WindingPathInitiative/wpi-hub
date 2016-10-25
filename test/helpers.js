@@ -7,11 +7,6 @@ const http      = require( 'http' );
 const should    = require( 'should' );
 const _         = require( 'lodash' );
 
-app.set( 'port', '3000' );
-
-let server = http.createServer( app );
-server.listen( '3000' );
-
 /**
  * Makes a token.
  * @param {integer} user  User ID.
@@ -53,7 +48,7 @@ function _dataValidationFactory( pub, pri ) {
 }
 
 module.exports = {
-	request: supertest( server ),
+	request: supertest( app ),
 	makeToken: makeToken,
 	deleteToken: deleteToken,
 

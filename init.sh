@@ -1,13 +1,13 @@
 #!/bin/bash
 
 echo 'Delaying for MySQL.'
-# sleep 10
+sleep 10
 
 echo 'Running migration.'
-# knex migrate:latest
+knex migrate:latest
 
 echo 'Inserting seed data.'
-# knex seed:run
+knex seed:run
 
 echo 'Starting application.'
 nodemon app.js

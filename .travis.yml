@@ -2,8 +2,7 @@ language: node_js
 node_js:
   - "5"
 env:
-  - NODE_ENV=testing
-  - INTERNAL_PORT=1050
+  - NODE_ENV=testing INTERNAL_PORT=1050
 before_script:
   - npm install -g knex grunt-cli
   - for file in ./config/*.default.json; do cp "$file" "${file/.default.json/.json}"; done

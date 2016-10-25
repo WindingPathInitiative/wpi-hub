@@ -274,4 +274,43 @@ router.get( '/migrate/vss',
 	}
 );
 
+
+router.get( '/migrate/offices',
+	( req, res ) => {
+		let OrgUnits = require( '../models/org-unit' );
+		let Offices = require( '../models/office' );
+		let Promise = require( 'bluebird' );
+		let Bookshelf = require( '../helpers/db' ).Bookshelf;
+
+		let knex = require( '../helpers/db' ).Knex;
+
+		let officeCreate = type => {
+			return OrgUnits.where( 'type', type ).fetchAll()
+			.then( units => Bookshelf.transaction( t => {
+				return Promise.map( units.toArray(), unit => {
+					if ( 'Venue' !== type ) {
+						return Promise.join(
+							Offices.makeOfficeForUnit( unit, 'coordinator', t ),
+							Offices.makeOfficeForUnit( unit, 'storyteller', t ),
+							( c, st ) => ({ coordinator: c, storyteller: st })
+						);
+					} else {
+						return Offices.makeOfficeForUnit( unit, 'storyteller', t );
+					}
+				});
+			}));
+		};
+
+		knex( 'offices' ).whereNot( 'parentOrgID', 1 ).del()
+		.then( () => knex.raw( 'ALTER TABLE offices AUTO_INCREMENT = 1' ) )
+		.then( () => officeCreate( 'Region' ) )
+		.then( () => officeCreate( 'Domain' ) )
+		.then( () => officeCreate( 'Venue' ) )
+		.then( () => Offices.fetchAll() )
+		.then( offices => {
+			res.json( offices );
+		});
+	}
+);
+
 module.exports = router;

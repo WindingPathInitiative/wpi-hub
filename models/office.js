@@ -82,9 +82,14 @@ const Office = bookshelf.model( 'Office', Base.extend({
 			throw new Error( 'Office config not found' );
 		}
 
+		let parentPath = config.rootOffices[ type ];
+		if ( 1 !== unit.parents().pop() ) {
+			parentPath += '.%';
+		}
+
 		return new Office()
 		.where( 'parentOrgID', unit.parents().pop() )
-		.where( 'parentPath', 'LIKE', config.rootOffices[ type ] + '.%' )
+		.where( 'parentPath', 'LIKE', parentPath )
 		.fetch({ require: true, transacting: trans })
 		.catch( err => {
 			throw new Error( 'Parent not found' );

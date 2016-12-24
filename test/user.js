@@ -625,10 +625,10 @@ module.exports = function() {
 					membership_expiration: {
 						date: '2017-03-06 00:00:00',
 						timezone_type: '3',
-						timezone: 'UTC',
+						timezone: 'UTC'
 					},
 					status: 'Member',
-					type: 'Full',
+					type: 'Full'
 				}
 			})
 			.expect( 200 )

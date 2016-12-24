@@ -105,7 +105,8 @@ exports.seed = ( knex, Promise ) => {
 				email: 'arc.members@ne.mindseyesociety.org',
 				membershipType: 'Full',
 				membershipNumber: 'US2016010010',
-				membershipExpiration: '2020-01-01'
+				membershipExpiration: '2020-01-01',
+				portalID: 10
 			},
 			{
 				id: 11,

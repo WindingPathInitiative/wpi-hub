@@ -5,14 +5,17 @@
  */
 
 const router        = require( 'express' ).Router();
-const token         = require( '../middlewares/token' );
-const User          = require( '../models/user' );
 const _             = require( 'lodash' );
-const UserError     = require( '../helpers/errors' );
 const Promise       = require( 'bluebird' );
 const Moment        = require( 'moment' );
+
+const token         = require( '../middlewares/token' );
+const network       = require( '../middlewares/network' );
+const User          = require( '../models/user' );
+const UserError     = require( '../helpers/errors' );
 const normalizeBool = require( '../helpers/validation' ).normalizeBool;
 const perm          = require( '../helpers/permissions' );
+
 
 
 /**
@@ -330,6 +333,41 @@ router.put( '/:id/suspend',
 			res.json( user.toJSON() );
 		})
 		.catch( err => UserError.catch( err, next ) );
+	}
+);
+
+
+/**
+ * Updates a user based off the Portal changing.
+ */
+router.post( '/portal',
+	network.internal,
+	( req, res, next ) => {
+		if ( ! _.has( req, 'body.changes' ) || ! _.has( req, 'body.id' ) ) {
+			return next( new UserError( 'Invalid POST', 400 ) );
+		}
+		let changes = req.body.changes;
+		return new User({ portalID: req.body.id })
+		.fetch()
+		.then( query => {
+			let member = query || new User({ portalID: req.body.id });
+			let expiration = changes.membership_expiration.date;
+			return member.save({
+				membershipNumber: changes.membership_number,
+				firstName: changes.firstname,
+				lastName: changes.lastname,
+				email: changes.email,
+				address: `${changes.address}\n${changes.city}, ${changes.state} ${changes.zip}`,
+				membershipExpiration: Moment( expiration ).format( 'YYYY-MM-DD' ),
+				membershipType: changes.type
+			});
+		})
+		.then( member => member.refresh() )
+		.then( member => {
+			member.show();
+			member.showPrivate = true;
+			res.json( member.toJSON() );
+		});
 	}
 );
 

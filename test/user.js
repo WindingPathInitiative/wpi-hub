@@ -8,8 +8,9 @@
 const should  = require( 'should' );
 const Promise = require( 'bluebird' );
 
-const helpers = require( './helpers' );
-const request = helpers.request;
+const helpers  = require( './helpers' );
+const request  = helpers.request;
+const internal = helpers.internal;
 
 module.exports = function() {
 
@@ -537,5 +538,120 @@ module.exports = function() {
 
 			Promise.join( p1, p2, () => done() );
 		});
+	});
+
+	describe( 'POST portal', function() {
+
+		it( 'fails if accessed from the normal network', function( done ) {
+			request
+			.post( '/v1/user/portal' )
+			.expect( 403 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'message', 'Request over insecure port' );
+				res.body.should.have.property( 'status', 403 );
+				done();
+			});
+		});
+
+		it( 'fails if data not provided', function( done ) {
+			internal
+			.post( '/v1/user/portal' )
+			.expect( 400 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'message', 'Invalid POST' );
+				res.body.should.have.property( 'status', 400 );
+				done();
+			});
+		});
+
+		it( 'works to update a user', function( done ) {
+			internal
+			.post( '/v1/user/portal' )
+			.send({
+				id: '10',
+				changes: {
+					membership_number: 'US2016010010',
+					firstname: 'Test',
+					lastname: 'aRC',
+					email: 'arc.members@ne.mindseyesociety.org',
+					type: 'Full',
+					cam_expiry: '1577836800',
+					membership_expiration: {
+						date: '2020-01-01 00:00:00'
+					},
+					address: '301 Wilson Road',
+					city: 'Cherry Hill',
+					state: 'New Jersey',
+					zip: '08001',
+					country: 'US'
+				}
+			})
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'address' ).and.startWith( '301 Wilson Road' );
+				helpers.models.user( res.body, true );
+				done();
+			});
+		});
+
+		it( 'works to create a user', function( done ) {
+			internal
+			.post( '/v1/user/portal' )
+			.send({
+				id: '1865',
+				cam_id: 'US2010086415',
+				changes: {
+					membership_number: 'US2010086415',
+					firstname: 'Joseph',
+					lastname: 'Terranova',
+					birthday: '1986-11-15',
+					email: 'joeterranova@gmail.com',
+					address: '301 Wilson Road',
+					city: 'Cherry Hill',
+					state: 'New Jersey',
+					zip: '08001',
+					country: 'US',
+					phone: '856-448-4294',
+					cam_expiry: '1488758400',
+					membership_expiration: {
+						date: '2017-03-06 00:00:00',
+						timezone_type: '3',
+						timezone: 'UTC',
+					},
+					status: 'Member',
+					type: 'Full',
+				}
+			})
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				helpers.models.user( res.body, true );
+				res.body.should.have.properties({
+					firstName: 'Joseph',
+					lastName:  'Terranova'
+				});
+				done();
+			});
+		});
+
+		after( 'reset users', function( done ) {
+			let User = require( '../models/user' );
+			let p1 = new User({ id: 10 }).save({ address: null }, { patch: true });
+			let p2 = new User().where({ portalID: 1865 }).destroy();
+
+			Promise.join( p1, p2, () => done() );
+		});
+
 	});
 };

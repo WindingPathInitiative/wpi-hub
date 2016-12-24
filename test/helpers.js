@@ -3,7 +3,6 @@
 const app       = require( '../app' );
 const supertest = require( 'supertest' );
 const Token     = require( '../models/token' );
-const http      = require( 'http' );
 const should    = require( 'should' );
 const _         = require( 'lodash' );
 
@@ -48,7 +47,8 @@ function _dataValidationFactory( pub, pri ) {
 }
 
 module.exports = {
-	request: supertest( app ),
+	request: supertest( 'localhost:' + app.get( 'port' ) ),
+	internal: supertest( 'localhost:' + app.get( 'internalPort' ) ),
 	makeToken: makeToken,
 	deleteToken: deleteToken,
 

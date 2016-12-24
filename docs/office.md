@@ -196,3 +196,23 @@ __Content__: `{ status: 404, message: 'Office not found' }`
 * Office is a primary one.<br>
 __Code__: 400<br>
 __Content__: `{ status: 400, message: 'Office is not an assistant' }`
+
+## `GET /v1/office/verify/orgunit/{unit}`
+_Internal endpoint only_. Verifies the user has a given role over an org unit.
+
+__Params__
+* `{unit}` - Required. ID of org unit to check.
+* `roles` - Required. Comma separated list of roles to verify.
+* `token` - Required. Parameter or cookie of user token.
+
+__Responses__
+
+* __Code__: 200<br>
+__Content__: `{ success: true }`
+
+* __Code__: 400<br>
+__Content__: `{ status: 400, message: 'Missing required "roles" param' }`
+
+* All other permission errors.<br>
+__Code__: 403<br>
+__Content__: `{ status: 403, message: {mixed} }`

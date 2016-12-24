@@ -338,4 +338,26 @@ router.get( '/verify/orgunit/:unit(\\d+)',
 );
 
 
+/**
+ * Verifies a user is an officer over a given user.
+ * Internal only.
+ */
+router.get( '/verify/user/:user(\\d+)',
+	network.internal,
+	token.parse(),
+	token.expired,
+	( req, res, next ) => {
+		if ( ! req.query.roles ) {
+			return next( new UserError( 'Missing required "roles" param', 400 ) );
+		}
+		let roles = req.query.roles.split( ',' );
+		perm.hasOverUser( Number.parseInt( req.params.user ), roles, req.token.get( 'user' ) )
+		.then( () => {
+			res.json({ success: true });
+		})
+		.catch( err => next( new UserError( err.message, 403 ) ) );
+	}
+);
+
+
 module.exports = router;

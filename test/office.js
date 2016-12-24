@@ -724,6 +724,73 @@ module.exports = function() {
 		});
 	});
 
+	describe( 'GET internal verify user', function() {
+
+		const internal = helpers.internal;
+
+		it( 'fails if accessed from the normal network', function( done ) {
+			request
+			.get( '/v1/office/verify/user/4' )
+			.query({ token: 'rc' })
+			.query({ roles: 'user_read_private' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if accessed without a token', function( done ) {
+			internal
+			.get( '/v1/office/verify/user/4' )
+			.query({ roles: 'user_read_private' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if expired', function( done ) {
+			internal
+			.get( '/v1/office/verify/user/4' )
+			.query({ token: 'expired' })
+			.query({ roles: 'user_read_private' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if suspended', function( done ) {
+			internal
+			.get( '/v1/office/verify/user/4' )
+			.query({ token: 'suspended' })
+			.query({ roles: 'user_read_private' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if missing roles', function( done ) {
+			internal
+			.get( '/v1/office/verify/user/4' )
+			.query({ token: 'arc' })
+			.expect( 400, done );
+		});
+
+		it( 'fails if roles not in office', function( done ) {
+			internal
+			.get( '/v1/office/verify/user/4' )
+			.query({ token: 'rc' })
+			.query({ roles: 'org_create_domain' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if user not under office', function( done ) {
+			internal
+			.get( '/v1/office/verify/user/2' )
+			.query({ token: 'rc' })
+			.query({ roles: 'user_read_private' })
+			.expect( 403, done );
+		});
+
+		it( 'works if user under office', function( done ) {
+			internal
+			.get( '/v1/office/verify/user/4' )
+			.query({ token: 'rc' })
+			.query({ roles: 'user_read_private' })
+			.expect( 200, done );
+		});
+	});
+
 	after( 'deletes token', function( done ) {
 		Promise.join(
 			helpers.deleteToken( 'rc' ),

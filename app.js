@@ -63,7 +63,7 @@ app.use( ( err, req, res, next ) => {
 });
 
 let port = process.env.PORT || '3000';
-let internalPort = process.env.INTERNAL_PORT || '1010';
+let internalPort = process.env.INTERNAL_PORT || '3030';
 app.set( 'port', port );
 app.set( 'internalPort', internalPort );
 

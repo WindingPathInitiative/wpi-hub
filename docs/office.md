@@ -198,7 +198,7 @@ __Code__: 400<br>
 __Content__: `{ status: 400, message: 'Office is not an assistant' }`
 
 ## `GET /v1/office/verify/orgunit/{unit}`
-Internal endpoint only. Verifies the user has a given role over an org unit.
+_Internal endpoint only_. Verifies the user has a given role over an org unit.
 
 __Params__
 * `{unit}` - Required. ID of org unit to check.

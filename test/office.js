@@ -657,7 +657,7 @@ module.exports = function() {
 		});
 	});
 
-	describe.only( 'GET internal verify orgunit', function() {
+	describe( 'GET internal verify orgunit', function() {
 
 		const internal = helpers.internal;
 

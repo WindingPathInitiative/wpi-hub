@@ -236,3 +236,23 @@ __Content__: `{ status: 400, message: 'Missing required "roles" param' }`
 * All other permission errors.<br>
 __Code__: 403<br>
 __Content__: `{ status: 403, message: {mixed} }`
+
+## `GET /v1/office/verify/office/{office}`
+_Internal endpoint only_. Verifies the user has a given role over an office.
+
+__Params__
+* `{office}` - Required. ID of office to check.
+* `roles` - Required. Comma separated list of roles to verify.
+* `token` - Required. Parameter or cookie of user token.
+
+__Responses__
+
+* __Code__: 200<br>
+__Content__: `{ success: true }`
+
+* __Code__: 400<br>
+__Content__: `{ status: 400, message: 'Missing required "roles" param' }`
+
+* All other permission errors.<br>
+__Code__: 403<br>
+__Content__: `{ status: 403, message: {mixed} }`

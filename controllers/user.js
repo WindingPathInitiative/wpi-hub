@@ -15,6 +15,7 @@ const User          = require( '../models/user' );
 const UserError     = require( '../helpers/errors' );
 const normalizeBool = require( '../helpers/validation' ).normalizeBool;
 const perm          = require( '../helpers/permissions' );
+const audit         = require( '../helpers/audit' );
 
 
 
@@ -176,6 +177,8 @@ router.put( '/:id',
 			return attributes;
 		});
 
+		var userJSON;
+
 		// User checking.
 		let userPromise = new User( req.id )
 		.fetch({
@@ -186,6 +189,7 @@ router.put( '/:id',
 			throw new UserError( 'User not found', 404, err );
 		})
 		.tap( user => {
+			userJSON = user.toJSON();
 			if ( req.token.get( 'user' ) === user.id ) {
 				return;
 			} else {
@@ -201,6 +205,7 @@ router.put( '/:id',
 				return user.save( attributes );
 			}
 		)
+		.tap( user => audit( req, 'Updated user data', user, {}, userJSON ) )
 		.then( user => {
 			user.show();
 			user.showPrivate = true;
@@ -293,6 +298,7 @@ router.put( '/:id/assign/:domain(\\d+)',
 				});
 			}
 		})
+		.tap( user => audit( req, 'Updated user domain', user, { curOrg: user.get( 'orgUnit' ) } ) )
 		.then( user => {
 			// Validation passed, move the user now.
 			user
@@ -327,6 +333,7 @@ router.put( '/:id/suspend',
 			}
 			return user.save( { membershipType: status }, { patch: true } );
 		})
+		.tap( user => audit( req, 'Suspended user', user ) )
 		.then( user => {
 			user.show();
 			user.showPrivate = true;

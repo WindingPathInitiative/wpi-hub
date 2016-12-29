@@ -14,6 +14,7 @@ const _         = require( 'lodash' );
 const Promise   = require( 'bluebird' );
 const perm      = require( '../helpers/permissions' );
 const validate  = require( '../helpers/validation' );
+const audit     = require( '../helpers/audit' );
 
 
 /**
@@ -142,6 +143,7 @@ router.put( '/:id(\\d+)/assign/:user(\\d+)',
 				return perm.hasOverOffice( office, 'office_assign', curUser );
 			}
 		})
+		.tap( office => audit( req, 'Updated user in office', office, { curUser } ) )
 		.then( office => {
 
 			// Let's change the officer now.
@@ -194,6 +196,7 @@ router.put( '/:id(\\d+)',
 		.tap( office => {
 			return perm.hasOverOffice( office, 'office_update', req.token.get( 'user' ) );
 		})
+		.tap( office => audit( req, 'Updated office', office, {}, office.toJSON() ) )
 		.then( office => office.save( attributes ) )
 		.then( office => {
 			office.show();
@@ -270,6 +273,7 @@ router.post( '/:id(\\d+)/assistant',
 		})
 		// Create and show.
 		.then( attributes => new Office( attributes ).insertWithPath() )
+		.tap( office => audit( req, 'Created assistant office', office, { parent: req.params.id } ) )
 		.then( office => {
 			office.show();
 			res.json( office.toJSON() );
@@ -305,6 +309,7 @@ router.delete( '/:id(\\d+)/assistant',
 				req.token.get( 'user' )
 			);
 		})
+		.tap( office => audit( req, 'Deleted assistant office', office, {}, office.toJSON() ) )
 		.then( office => {
 			return office.destroy();
 		})

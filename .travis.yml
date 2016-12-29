@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "5"
+  - "7.3"
 env:
   - NODE_ENV=testing INTERNAL_PORT=1050
 before_script:

@@ -10,6 +10,7 @@ const network   = require( '../middlewares/network' );
 const _         = require( 'lodash' );
 const UserError = require( '../helpers/errors' );
 const perm      = require( '../helpers/permissions' );
+const audit     = require( '../helpers/audit' );
 
 
 /**
@@ -219,6 +220,7 @@ router.post( '/',
 				throw new UserError( 'There was an error creating the org unit', 500, err );
 			});
 		})
+		.tap( unit => audit( req, 'Creating new org unit', unit ) )
 		.then( unit => {
 			unit.show();
 			res.json( unit );
@@ -264,6 +266,7 @@ router.put( '/:id',
 			.catch( errs => {
 				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
 			})
+			.tap( () => audit( req, 'Updating org unit', unit, {}, unit ) )
 			.then( attributes => {
 				return unit.save( attributes );
 			});
@@ -308,6 +311,7 @@ router.delete( '/:id',
 				}
 			});
 		})
+		.tap( unit => audit( req, 'Deleted org unit', unit, {}, unit.toJSON() ) )
 		.tap( unit => {
 			let Promise   = require( 'bluebird' );
 			let Offices   = require( '../models/office' );

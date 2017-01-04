@@ -1,5 +1,6 @@
 node_modules
 .*
+docs
 switch.sh
 config/*.json
 !config/*.default.json

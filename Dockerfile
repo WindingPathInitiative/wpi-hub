@@ -1,12 +1,15 @@
-FROM node
+FROM node:7.3
+MAINTAINER Ephraim Gregor "nta@mindseyesociety.org"
 
-RUN npm install
-
-RUN npm install -g nodemon knex
+RUN npm install -g nodemon knex forever
 
 EXPOSE 3000
 EXPOSE 3030
 
-WORKDIR /usr/src
+ADD . /app
+
+WORKDIR /app
+
+RUN npm install
 
 CMD ["./init.sh"]

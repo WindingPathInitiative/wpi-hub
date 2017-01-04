@@ -1,0 +1,7 @@
+node_modules
+.*
+switch.sh
+config/*.json
+!config/*.default.json
+!config/templates.json
+!config/roles.json

@@ -1,7 +1,7 @@
 # Mind's Eye Society User Hub
 This system is a REST API designed to handle member and org unit hierarchy and permissions. Designed to interface with the MES Portal via OAuth and configurable clients.
 
-Details of the endpoints can be found in the [docs](docs) directory.
+Documentation can be found [here](https://mindseyesociety.github.io/mes-hub/)
 
 [![Dependency Status](https://david-dm.org/MindsEyeSociety/mes-hub.svg)](https://david-dm.org/MindsEyeSociety/mes-hub)
 [![Build Status](https://travis-ci.org/MindsEyeSociety/mes-hub.svg?branch=master)](https://travis-ci.org/MindsEyeSociety/mes-hub)

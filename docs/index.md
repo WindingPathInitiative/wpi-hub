@@ -1,3 +1,9 @@
+# Endpoint Details
+* [Authentication](auth.md)
+* [User](user.md)
+* [Office](office.md)
+* [Org Unit](org-unit.md)
+
 # All Endpoints
 The following information applies to most or all endpoints:
 

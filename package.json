@@ -1,6 +1,6 @@
 {
-  "name": "mes-users",
-  "version": "1.0.0",
+  "name": "mes-hub",
+  "version": "1.0.1",
   "description": "Mind's Eye Society User integration.",
   "scripts": {
     "start": "node app.js",

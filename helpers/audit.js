@@ -22,7 +22,7 @@ module.exports = function( req, message, refs = [], metadata = {}, delta = '' ) 
 		return Promise.reject( new UserError( 'Config not set', 500 ) );
 	}
 
-	if ( 'bypass' === config.host ) {
+	if ( 'bypass' === config.host || 'testing' === req.app.get( 'env' ) ) {
 		return Promise.resolve( false );
 	}
 
@@ -71,5 +71,8 @@ module.exports = function( req, message, refs = [], metadata = {}, delta = '' ) 
 		method: 'POST',
 		json: true,
 		body
+	})
+	.catch( err => {
+		return Promise.reject( new UserError( 'Audit error', 500, err ) );
 	});
 };

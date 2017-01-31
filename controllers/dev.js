@@ -97,7 +97,7 @@ router.post( '/auth/token',
 router.get( '/auth/user',
 	( req, res ) => {
 		res.json({
-			remoteId: 375
+			id: 375
 		});
 	}
 );

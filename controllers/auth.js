@@ -44,7 +44,7 @@ router.get( '/verify/:code',
 
 		let User = require( '../models/user' );
 
-		User.getByPortalId( req.user.remoteId )
+		User.getByPortalId( req.user.id )
 		.then( user => {
 			return user || new User( req.user ).save();
 		})

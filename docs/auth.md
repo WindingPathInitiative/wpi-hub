@@ -5,6 +5,7 @@ Provides way to authenticate user. Requires correct configuration in `auth.json`
 Redirects the user for authentication.
 
 __Params__
+
 * `{code}` - Required. Valid client configured in `clients.json`.
 
 __Responses__
@@ -19,6 +20,7 @@ __Responses__
 Internal, used to pass user back to User Hub before directing to client. Also creates the user if they are not found in the DB.
 
 __Params__
+
 * `{code}` - Required. Valid client configured in `clients.json`.
 
 __Responses__
@@ -45,6 +47,7 @@ __Responses__
 Destroys provided `token`.
 
 __Params__
+
 * `token` - Required, either as GET param or cookie. The user token.
 
 __Responses__

@@ -1,4 +1,5 @@
 # Endpoint Details
+
 * [Authentication](auth.md)
 * [User](user.md)
 * [Office](office.md)
@@ -22,11 +23,11 @@ Errors with tokens are as follows:
   __Code__: 403<br>
   __Content__: `{ status: 403, message: 'Invalid token' }`
 
-* Member is expired and attempting to act as an officer.
+* Member is expired and attempting to act as an officer.<br>
   __Code__: 403<br>
   __Content__: `{ status: 403, message: 'User is expired' }`
 
-* Member is suspended and attempting to act as an officer.
+* Member is suspended and attempting to act as an officer.<br>
   __Code__: 403<br>
   __Content__: `{ status: 403, message: 'User is suspended' }`
 

@@ -60,6 +60,36 @@ __Responses__
 * __Code__: 404<br>
   __Content__: `{ status: 404, message: 'Office not found' }`
 
+## `POST /v1/office/`
+Creates a primary national office. Requires `admin` role.
+
+__Params__
+
+* `token` - Required. Parameter or cookie of user token.
+
+__Body__
+
+* `name` - Name of office.
+
+* `email` - Optional. The office email.
+
+* `roles` - Array of roles.
+
+* `userID` - Optional. User to assign new office to.
+
+__Responses__
+
+* __Code__: 200<br>
+__Content__: The office JSON. See `GET office/{id}`, above.
+
+* No body data provided.<br>
+__Code__: 400<br>
+__Content__: `{ status: 400, message: 'No data provided' }`
+
+* Invalid body data provided.<br>
+__Code__: 400<br>
+__Content__: `{ status: 400, message: 'Invalid data provided: [errors]' }`
+
 ## `GET /v1/office/me`
 Provides an array of the current user offices.
 

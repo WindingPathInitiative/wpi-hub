@@ -67,6 +67,80 @@ module.exports = function() {
 		});
 	});
 
+	describe( 'POST', function() {
+
+		let data = {
+			name: 'Test Primary',
+			email: 'nta@mindseyesociety.org',
+			roles: [ 'admin', 'test' ]
+		};
+
+		it( 'fails if no token is provided', function( done ) {
+			request
+			.post( '/v1/office' )
+			.expect( 403, done );
+		});
+
+		it( 'fails if non-admin token is provided', function( done ) {
+			request
+			.post( '/v1/office' )
+			.query({ token: 'nc' })
+			.expect( 403, done );
+		});
+
+		it( 'fails if data is not provided', function( done ) {
+			request
+			.post( '/v1/office' )
+			.query({ token: 'admin' })
+			.expect( 400, done );
+		});
+
+		it( 'fails if office name is missing', function( done ) {
+			let badData = Object.assign( {}, data );
+			badData.name = null;
+			request
+			.post( '/v1/office' )
+			.query({ token: 'admin' })
+			.send( badData )
+			.expect( 400, done );
+		});
+
+		it( 'fails if office roles are missing', function( done ) {
+			let badData = Object.assign( {}, data );
+			badData.roles = null;
+			request
+			.post( '/v1/office' )
+			.query({ token: 'admin' })
+			.send( badData )
+			.expect( 400, done );
+		});
+
+		it( 'works for creating with permission', function( done ) {
+			request
+			.post( '/v1/office' )
+			.query({ token: 'admin' })
+			.send( data )
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				helpers.models.office( res.body, true );
+				res.body.should.have.properties( data );
+				res.body.should.have.property( 'parentOrgID', 1 );
+				done();
+			});
+		});
+
+		after( 'delete assistants', function( done ) {
+			data.roles = JSON.stringify( data.roles );
+			new Office()
+			.where( data )
+			.destroy()
+			.then( () => done() );
+		});
+	});
+
 	describe( 'GET me', function() {
 
 		it( 'fails if no token is provided', function( done ) {

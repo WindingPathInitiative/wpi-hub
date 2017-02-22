@@ -58,6 +58,42 @@ router.get( '/:id(\\d+)',
 );
 
 /**
+ * Creates a new office.
+ */
+router.post( '/',
+	token.validate(),
+	( req, res, next ) => {
+		let constraints = {
+			name: { length: { minimum: 1 }, presence: true },
+			email: { email: true },
+			roles: { isArray: true, presence: true },
+			userID: { numericality: { onlyInteger: true, strict: true } }
+		};
+
+		perm.hasOverUnit( 1, 'admin', req.token.get( 'user' ) )
+		.then( () => {
+			return validate.async( req.body, constraints )
+			.catch( errs => {
+				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
+			});
+		})
+		.then( attrs => Object.assign( attrs, {
+			type: 'Primary',
+			parentOrgID: 1,
+			parentPath: ''
+		}) )
+		.then( attrs => new Office().save( attrs ) )
+		.then( office => office.save({ parentPath: office.id }, { patch: true }) )
+		.then( office => office.refresh() )
+		.then( office => {
+			office.show();
+			res.json( office.toJSON() );
+		})
+		.catch( err => UserError.catch( err, next ) );
+	}
+);
+
+/**
  * Gets the current user offices.
  */
 router.get( '/me',

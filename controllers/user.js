@@ -168,7 +168,7 @@ router.get( '/:id',
 					return unit.getChildren()
 					.then( children => {
 						office.children = children.pluck( 'id' );
-					})
+					});
 				})
 				.then( () => office );
 			})

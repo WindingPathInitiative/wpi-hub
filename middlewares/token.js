@@ -11,7 +11,7 @@ const UserError = require( '../helpers/errors' );
 exports.normalize = ( req, res, next ) => {
 
 	// Normalize the query with cookie data.
-	if ( 'token' in req.cookies ) {
+	if ( 'development' === req.app.get( 'env' ) && 'token' in req.cookies ) {
 		req.query.token = req.cookies.token;
 	} else if ( 'authorization' in req.headers ) {
 		req.query.token = req.headers.authorization.toLowerCase().replace( 'bearer ', '' );

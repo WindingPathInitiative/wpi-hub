@@ -59,7 +59,9 @@ router.get( '/verify/:code',
 			let url     = require( 'url' );
 			let urlObj  = url.parse( clients[ req.params.code ], true );
 
-			res.cookie( 'token', token.id, { domain: urlObj.hostname } );
+			if ( 'development' === req.app.get( 'env' ) ) {
+				res.cookie( 'token', token.id, { domain: urlObj.hostname } );
+			}
 			urlObj.query.token = token.id;
 			urlObj.search = null;
 			res.redirect( url.format( urlObj ) );

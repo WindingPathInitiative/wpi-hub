@@ -71,9 +71,6 @@ module.exports = function() {
 				.have.property( 'location' )
 				.startWith( 'http://localhost:3000/dev' )
 				.and.containEql( 'token' );
-				res.headers.should
-				.have.property( 'set-cookie' )
-				.match( /token=\w+-\w+-\w+-\w+-\w+/ );
 				done();
 			});
 		});

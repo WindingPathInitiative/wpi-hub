@@ -7,7 +7,7 @@
  * to allow systems to log in on their behalf.
  */
 const bookshelf = require( '../helpers/db' ).Bookshelf;
-const uuid      = require( 'node-uuid' ).v4;
+const uuid      = require( 'uuid/v4' );
 
 /**
  * Gets time in an hour.

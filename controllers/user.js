@@ -116,11 +116,17 @@ router.get( '/:id',
 	( req, res, next ) => {
 
 		let showPrivate = normalizeBool( req.query.private );
+		let showOffices = normalizeBool( req.query.offices );
+
+		let withRelated = [ 'orgUnit' ];
+		if ( showOffices ) {
+			withRelated.push( 'offices' );
+		}
 
 		new User( req.id )
 		.fetch({
 			require: true,
-			withRelated: 'orgUnit'
+			withRelated
 		})
 		.catch( err => {
 			throw new UserError( 'User not found', 404, err );
@@ -137,11 +143,41 @@ router.get( '/:id',
 				});
 			}
 		})
+		.tap( user => {
+			if ( ! showOffices ) {
+				return;
+			}
+
+			user.related( 'offices' ).each( o => o.show() );
+		})
 		.then( user => {
 			user.show();
 			user.showPrivate = showPrivate;
-			res.json( user.toJSON() );
+			return user.toJSON();
 		})
+		.then( user => {
+			if ( ! normalizeBool( req.query.children ) || ! user.offices ) {
+				return user;
+			}
+			const OrgUnit = require( '../models/org-unit' );
+			return Promise.map( user.offices, office => {
+				return new OrgUnit({ id: office.parentOrgID })
+				.fetch({ require: true })
+				.tap( unit => {
+					office.unit = unit.toJSON();
+					return unit.getChildren()
+					.then( children => {
+						office.children = children.pluck( 'id' );
+					});
+				})
+				.then( () => office );
+			})
+			.then( offices => {
+				user.offices = offices;
+				return user;
+			});
+		})
+		.then( user => res.json( user ) )
 		.catch( err => UserError.catch( err, next ) );
 	}
 );

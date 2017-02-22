@@ -114,6 +114,38 @@ module.exports = function() {
 				done();
 			});
 		});
+
+		it( 'provides office data if query set', function( done ) {
+			request
+			.get( '/v1/user/me' )
+			.query({ token: 'admin' })
+			.query({ offices: true })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.offices.forEach( office => helpers.models.office( office, true ) );
+				done();
+			});
+		});
+
+		it( 'provides office children if query set', function( done ) {
+			request
+			.get( '/v1/user/me' )
+			.query({ token: 'admin' })
+			.query({ offices: true, children: true })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.offices.forEach( office => {
+					office.should.have.property( 'children' ).and.is.Array();
+				});
+				done();
+			});
+		});
 	});
 
 	describe( 'GET id', function() {

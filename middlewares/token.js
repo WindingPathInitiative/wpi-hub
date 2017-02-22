@@ -2,6 +2,7 @@
 
 const Token     = require( '../models/token' );
 const UserError = require( '../helpers/errors' );
+const User      = require( '../models/user' );
 
 
 /**
@@ -97,22 +98,15 @@ function query( req, next, required, fetch ) {
 	}
 
 	// Development mode bypass.
-	if ( 'production' !== req.get( 'env' ) && 'DEV' === req.query.token ) {
-		req.token = {
-			get: () => 1,
-			destroy: () => null,
-			id: 'DEV'
-		};
-		if ( fetch ) {
-			let User = require( '../models/user' );
-			return new User({ id: 1 })
-			.fetch()
-			.then( user => {
-				req.user = user;
-				next();
-			});
-		}
-		return next();
+	if ( 'development' === req.app.get( 'env' ) && 'DEV' === req.query.token ) {
+		return fakeToken( req, 1, fetch, () => {
+			req.token.id = 'DEV';
+			next();
+		});
+	}
+
+	if ( 'auth-user' in req.headers ) {
+		return fakeToken( req, 1, fetch, next );
 	}
 
 	let fetchParams = { require: required };
@@ -139,3 +133,34 @@ function query( req, next, required, fetch ) {
 		next( new UserError( 'Invalid token', 403, err ) );
 	});
 }
+
+/**
+ * Creates a fake token.
+ * @param {Object}   req   Express request object.
+ * @param {Number}   id    ID of user.
+ * @param {Boolean}  fetch True to get user data.
+ * @param {Function} next  Callback.
+ * @return {mixed}
+ */
+function fakeToken( req, id, fetch, next ) {
+	req.token = {
+		get: () => id,
+		destroy: () => null,
+		id: `authorizer-${id}`
+	};
+	if ( fetch ) {
+		return new User({ id })
+		.fetch({ require: true })
+		.then( user => {
+			req.user = user;
+			next();
+		})
+		.catch( err => {
+			next( new UserError( 'Invalid token', 403, err ) );
+		});
+	}
+	next();
+}
+
+// Expose for unit tests.
+module.exports.fakeToken = fakeToken;

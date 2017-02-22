@@ -130,4 +130,41 @@ module.exports = function() {
 		.destroy()
 		.then( () => done() );
 	});
+
+	describe( 'fakeToken', function() {
+
+		const fakeToken = require( '../middlewares/token' ).fakeToken;
+
+		it( 'sets the correct user ID', function( done ) {
+			let req = {};
+			fakeToken( req, 999, false, () => {
+				req.should.have.property( 'token' ).and.be.an.Object();
+				req.token.get().should.equal( 999 );
+				req.token.id.should.equal( 'authorizer-999' );
+				done();
+			});
+		});
+
+		it( 'fetches the correct user data', function( done ) {
+			let req = {};
+			fakeToken( req, 1, true, () => {
+				req.should.have.property( 'user' );
+				req.user.should.have.property( 'attributes' )
+				.and.have.property( 'id', 1 );
+				done();
+			});
+		});
+
+		it( 'fails when user does not exist', function( done ) {
+			let req = {};
+			fakeToken( req, 999, true, err => {
+				err.should.be.an.Error();
+				err.should.have.properties({
+					message: 'Invalid token',
+					status: 403
+				});
+				done();
+			});
+		});
+	});
 };

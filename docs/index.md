@@ -9,7 +9,7 @@
 The following information applies to most or all endpoints:
 
 ## Tokens
-Most endpoints require a token, provided by the `auth` endpoint. This should be stored and passed in the query string or in the cookie with a key of `token`.
+Most endpoints require a token, provided by the `auth` endpoint. This should be stored and passed in the query string with a key of `token`. Alternatively, passing a header of `Auth-User` with the user ID of the current user also works. The latter is designed to work with the AWS API Gateway functionality.
 
 Successful queries with a valid token refreshes it for an additional hour on all endpoints that require the token.
 

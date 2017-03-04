@@ -61,6 +61,14 @@ __Params__
 
 * `token` - Required. Parameter or cookie of user token.
 
+* `users` - If set to 0, hide users from response.
+
+* `offices` - If set to 0, hide offices from response.
+
+* `children` - Sets depth of children returned, -1 is all and 0 is none. Defaults to all.
+
+* `parents` - Sets number of parents returned, -1 is all and 0 is none. Defaults to all.
+
 __Responses__
 
 * __Code__: 200<br>

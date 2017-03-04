@@ -38,6 +38,8 @@ Errors with tokens are as follows:
 ## Permissions
 Some endpoints, mostly write ones, require the user associated with a given `token` to have a given role.
 
+Endpoints that check permissions can accept an optional query string of `useOffice` equal to the ID of the office to use. This is useful where a user wants to act as a specific office, instead of the first available one.
+
 Errors with permission errors are as follows:
 
 * User has no offices<br>

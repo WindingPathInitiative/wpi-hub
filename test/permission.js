@@ -264,4 +264,28 @@ module.exports = function() {
 			});
 		});
 	});
+
+	describe( 'preset office', function() {
+		let query = { query: { useOffice: 3 } };
+
+		it( 'correctly returns office if user holds it', function( done ) {
+			permissions.presetOffice( query, null, () => {
+				permissions.prefetch( 3 )
+				.then( offices => {
+					offices.should.have.a.length( 1 );
+					done();
+				});
+			});
+		});
+
+		it( 'throws if office is not controlled by user', function( done ) {
+			permissions.presetOffice( query, null, () => {
+				permissions.prefetch( 1 )
+				.catch( err => {
+					errorTest( err );
+					done();
+				});
+			});
+		});
+	});
 };

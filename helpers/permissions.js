@@ -8,6 +8,9 @@ const _         = require( 'lodash' );
 const Promise   = require( 'bluebird' );
 
 
+let presetOffice;
+
+
 /**
  * Checks if officer has permission.
  * @param  {mixed}  permissions Role to check.
@@ -217,7 +220,11 @@ function normalizeOfficer( officer ) {
 	} else if ( ! Number.isInteger( officer ) ) {
 		officer = officer.id;
 	}
-	return new Offices().where( 'userID', officer ).fetchAll({ require: true });
+	let query = new Offices().where( 'userID', officer );
+	if ( presetOffice ) {
+		query.where( 'id', presetOffice );
+	}
+	return query.fetchAll({ require: true });
 }
 
 
@@ -247,10 +254,27 @@ function unmapCollection( offices, field, valid ) {
 }
 
 
+/**
+ * Express middleware to set office to use.
+ * @param {Object}   req  Request object.
+ * @param {Object}   res  Response object.
+ * @param {Function} next Callback.
+ */
+function setPresetOffice( req, res, next ) {
+	if ( req.query.useOffice ) {
+		presetOffice = Number.parseInt( req.query.useOffice );
+	} else {
+		presetOffice = false;
+	}
+	next();
+}
+
+
 module.exports = {
-	has: has,
-	hasOverUnit: hasOverUnit,
-	hasOverUser: hasOverUser,
-	hasOverOffice: hasOverOffice,
-	prefetch: normalizeOfficer
+	has,
+	hasOverUnit,
+	hasOverUser,
+	hasOverOffice,
+	prefetch: normalizeOfficer,
+	presetOffice: setPresetOffice
 };

@@ -24,6 +24,9 @@ app.use( require( './middlewares/token' ).normalize );
 // Sets up CORS.
 app.use( require( './middlewares/cors' ) );
 
+// Presets office.
+app.use( require( './helpers/permissions' ).presetOffice );
+
 // Load routes.
 app.use( require( './controllers' ) );
 

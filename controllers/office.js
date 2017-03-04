@@ -371,9 +371,7 @@ router.get( '/verify/orgunit/:unit(\\d+)',
 		}
 		let roles = req.query.roles.split( ',' );
 		perm.hasOverUnit( Number.parseInt( req.params.unit ), roles, req.token.get( 'user' ) )
-		.then( () => {
-			res.json({ success: true });
-		})
+		.then( offices => res.json({ success: true, offices }) )
 		.catch( err => next( new UserError( err.message, 403 ) ) );
 	}
 );
@@ -393,9 +391,7 @@ router.get( '/verify/user/:user(\\d+)',
 		}
 		let roles = req.query.roles.split( ',' );
 		perm.hasOverUser( Number.parseInt( req.params.user ), roles, req.token.get( 'user' ) )
-		.then( () => {
-			res.json({ success: true });
-		})
+		.then( offices => res.json({ success: true, offices }) )
 		.catch( err => next( new UserError( err.message, 403 ) ) );
 	}
 );
@@ -415,9 +411,7 @@ router.get( '/verify/office/:office(\\d+)',
 		}
 		let roles = req.query.roles.split( ',' );
 		perm.hasOverOffice( Number.parseInt( req.params.office ), roles, req.token.get( 'user' ) )
-		.then( () => {
-			res.json({ success: true });
-		})
+		.then( offices => res.json({ success: true, offices }) )
 		.catch( err => next( new UserError( err.message, 403 ) ) );
 	}
 );

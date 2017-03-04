@@ -259,7 +259,7 @@ __Params__
 __Responses__
 
 * __Code__: 200<br>
-__Content__: `{ success: true }`
+__Content__: `{ success: true, offices: [Array of offices] }`
 
 * __Code__: 400<br>
 __Content__: `{ status: 400, message: 'Missing required "roles" param' }`
@@ -282,7 +282,7 @@ __Params__
 __Responses__
 
 * __Code__: 200<br>
-__Content__: `{ success: true }`
+__Content__: `{ success: true, offices: [Array of offices] }`
 
 * __Code__: 400<br>
 __Content__: `{ status: 400, message: 'Missing required "roles" param' }`
@@ -305,7 +305,7 @@ __Params__
 __Responses__
 
 * __Code__: 200<br>
-__Content__: `{ success: true }`
+__Content__: `{ success: true, offices: [Array of offices] }`
 
 * __Code__: 400<br>
 __Content__: `{ status: 400, message: 'Missing required "roles" param' }`

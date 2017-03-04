@@ -143,7 +143,7 @@ module.exports = function() {
 		it( 'works if the user has no unit and office is national', function( done ) {
 			permissions.hasOverUser( 9, perm, nc )
 			.then( res => {
-				res.should.be.ok();
+				res.should.be.an.Array().and.have.length( 1 );
 				done();
 			});
 		});
@@ -151,7 +151,7 @@ module.exports = function() {
 		it( 'works if the officer and user are part of same unit', function( done ) {
 			permissions.hasOverUser( 5, perm, dc )
 			.then( res => {
-				res.should.be.ok();
+				res.should.be.an.Array().and.have.length( 1 );
 				done();
 			});
 		});
@@ -159,7 +159,7 @@ module.exports = function() {
 		it( 'works if the officer unit is a parent of the user unit', function( done ) {
 			permissions.hasOverUser( 5, perm, rc )
 			.then( res => {
-				res.should.be.ok();
+				res.should.be.an.Array().and.have.length( 1 );
 				done();
 			});
 		});
@@ -185,7 +185,7 @@ module.exports = function() {
 		it( 'works if the office is national', function( done ) {
 			permissions.hasOverUnit( {}, perm, nc )
 			.then( res => {
-				res.should.be.ok();
+				res.should.be.an.Array().and.have.length( 1 );
 				done();
 			});
 		});
@@ -193,7 +193,7 @@ module.exports = function() {
 		it( 'works if the office is the same as the unit', function( done ) {
 			permissions.hasOverUnit( 3, perm, dc )
 			.then( res => {
-				res.should.be.ok();
+				res.should.be.an.Array().and.have.length( 1 );
 				done();
 			});
 		});
@@ -201,7 +201,7 @@ module.exports = function() {
 		it( 'works if the office unit is a parent of the unit', function( done ) {
 			permissions.hasOverUnit( 3, perm, rc )
 			.then( res => {
-				res.should.be.ok();
+				res.should.be.an.Array().and.have.length( 1 );
 				done();
 			});
 		});
@@ -227,7 +227,7 @@ module.exports = function() {
 		it( 'works if the office is itself', function( done ) {
 			permissions.hasOverOffice( 1, perm, nc )
 			.then( res => {
-				res.should.be.ok();
+				res.should.be.an.Array().and.have.length( 1 );
 				done();
 			});
 		});
@@ -235,7 +235,7 @@ module.exports = function() {
 		it( 'works if the office is a parent of the target office', function( done ) {
 			permissions.hasOverOffice( 7, perm, rc )
 			.then( res => {
-				res.should.be.ok();
+				res.should.be.an.Array().and.have.length( 1 );
 				done();
 			});
 		});
@@ -243,7 +243,7 @@ module.exports = function() {
 		it( 'works if the office is an assistant to a parent of the target', function( done ) {
 			permissions.hasOverOffice( 7, perm, 10 )
 			.then( res => {
-				res.should.be.ok();
+				res.should.be.an.Array().and.have.length( 1 );
 				done();
 			});
 		});

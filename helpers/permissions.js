@@ -78,15 +78,16 @@ function hasOverUser( user, permission, officer ) {
 		if ( user.has( 'orgUnit' ) ) {
 			// Checks if user is attached to the office domain.
 			if ( -1 !== officeOrgs.indexOf( user.get( 'orgUnit' ) ) ) {
-				return true;
+				return unmapCollection( offices, 'parentOrgID', user.get( 'orgUnit' ) );
 			}
 
 			// Checks if current org has the parents org.
 			let unit = user.related( 'orgUnit' );
-			if ( ! _.intersection( unit.parents(), officeOrgs ).length ) {
+			let validOrgs = _.intersection( unit.parents(), officeOrgs );
+			if ( ! validOrgs.length ) {
 				throw new Error( 'Officer not found in chain' );
 			} else {
-				return true;
+				return unmapCollection( offices, 'parentOrgID', validOrgs );
 			}
 		}
 		// If the user isn't attached to a domain,
@@ -94,7 +95,7 @@ function hasOverUser( user, permission, officer ) {
 		// This operates under the assumption National is 1.
 		else {
 			if ( -1 !== officeOrgs.indexOf( 1 ) ) {
-				return true;
+				return unmapCollection( offices, 'parentOrgID', 1 );
 			} else {
 				throw new Error( 'Not national officer' );
 			}
@@ -136,19 +137,20 @@ function hasOverUnit( unit, permission, officer ) {
 
 		// If one of these is National, we're good.
 		if ( -1 !== officeOrgs.indexOf( 1 ) ) {
-			return true;
+			return unmapCollection( offices, 'parentOrgID', 1 );
 		}
 
 		// Checks if unit is one of the office domains.
 		if ( -1 !== officeOrgs.indexOf( unit.id ) ) {
-			return true;
+			return unmapCollection( offices, 'parentOrgID', unit.id );
 		}
 
 		// Checks if current org has the parents org.
-		if ( ! _.intersection( unit.parents(), officeOrgs ).length ) {
+		let valid = _.intersection( unit.parents(), officeOrgs );
+		if ( ! valid.length ) {
 			throw new Error( 'Officer not found in chain' );
 		} else {
-			return true;
+			return unmapCollection( offices, 'parentOrgID', valid );
 		}
 	});
 }
@@ -191,11 +193,11 @@ function hasOverOffice( office, permission, officer ) {
 		.filter( o => 'Assistant' === o.get( 'type' ) )
 		.map( o => parseInt( o.get( 'parentOfficeID' ) ) );
 
-		officeIds = _.uniq( officeIds.concat( parentOfficeIDs ) );
-
 		for ( let i = 0; i < parents.length; i++ ) {
 			if ( -1 !== officeIds.indexOf( parents[ i ] ) ) {
-				return true;
+				return unmapCollection( offices, 'id', parents[ i ] );
+			} else if ( -1 !== parentOfficeIDs.indexOf( parents[ i ] ) ) {
+				return unmapCollection( offices, 'parentOfficeID', parents[ i ] );
 			}
 		}
 		throw new Error( 'Officer not found in chain' );
@@ -227,6 +229,21 @@ function normalizeOfficer( officer ) {
  */
 function mapCollection( coll, field ) {
 	return coll.map( c => c.get( field ) );
+}
+
+
+/**
+ * Reverses a map to get the original data back.
+ * @param {Collection} offices Original collection.
+ * @param {String}     field   Field to key off of.
+ * @param {Array}      valid   Array of valid fields.
+ * @return {Collection}
+ */
+function unmapCollection( offices, field, valid ) {
+	if ( ! _.isArray( valid ) ) {
+		valid = [ valid ];
+	}
+	return offices.filter( o => -1 !== valid.indexOf( o.get( field ) ) );
 }
 
 

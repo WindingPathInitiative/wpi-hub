@@ -796,6 +796,22 @@ module.exports = function() {
 			.query({ roles: 'user_read_private' })
 			.expect( 200, done );
 		});
+
+		it( 'returns the correct office', function( done ) {
+			internal
+			.get( '/v1/office/verify/orgunit/2' )
+			.query({ token: 'nc' })
+			.query({ roles: 'user_read_private' })
+			.expect( 200 )
+			.end( ( err, resp ) => {
+				if ( err ) {
+					return done( err );
+				}
+				resp.body.should.have.property( 'offices' ).and.be.an.Array();
+				resp.body.offices.forEach( o => o.should.have.property( 'id', 1 ) );
+				done();
+			});
+		});
 	});
 
 	describe( 'GET internal verify user', function() {
@@ -862,6 +878,22 @@ module.exports = function() {
 			.query({ token: 'rc' })
 			.query({ roles: 'user_read_private' })
 			.expect( 200, done );
+		});
+
+		it( 'returns the correct office', function( done ) {
+			internal
+			.get( '/v1/office/verify/user/4' )
+			.query({ token: 'nc' })
+			.query({ roles: 'user_read_private' })
+			.expect( 200 )
+			.end( ( err, resp ) => {
+				if ( err ) {
+					return done( err );
+				}
+				resp.body.should.have.property( 'offices' ).and.be.an.Array();
+				resp.body.offices.forEach( o => o.should.have.property( 'id', 1 ) );
+				done();
+			});
 		});
 	});
 
@@ -937,6 +969,22 @@ module.exports = function() {
 			.query({ token: 'rc' })
 			.query({ roles: 'user_read_private' })
 			.expect( 200, done );
+		});
+
+		it( 'returns the correct office', function( done ) {
+			internal
+			.get( '/v1/office/verify/office/3' )
+			.query({ token: 'nc' })
+			.query({ roles: 'user_read_private' })
+			.expect( 200 )
+			.end( ( err, resp ) => {
+				if ( err ) {
+					return done( err );
+				}
+				resp.body.should.have.property( 'offices' ).and.be.an.Array();
+				resp.body.offices.forEach( o => o.should.have.property( 'id', 1 ) );
+				done();
+			});
 		});
 	});
 

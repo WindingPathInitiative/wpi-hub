@@ -146,7 +146,7 @@ function hasOverUnit( unit, permission, officer ) {
 		}
 
 		// Checks if current org has the parents org.
-		let valid = _.intersection( unit.parents(), officeOrgs )
+		let valid = _.intersection( unit.parents(), officeOrgs );
 		if ( ! valid.length ) {
 			throw new Error( 'Officer not found in chain' );
 		} else {

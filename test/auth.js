@@ -7,6 +7,7 @@
 
 const request = require( './helpers' ).request;
 const should  = require( 'should' );
+const _       = require( 'lodash' );
 const config  = require( '../config' ).auth;
 
 module.exports = function() {
@@ -135,18 +136,22 @@ module.exports = function() {
 
 		const fakeToken = require( '../middlewares/token' ).fakeToken;
 
+		let req;
+
+		beforeEach( 'resets the JS object', function() {
+			req = { query: { token: 'fake-token' } };
+		});
+
 		it( 'sets the correct user ID', function( done ) {
-			let req = {};
 			fakeToken( req, 999, false, () => {
 				req.should.have.property( 'token' ).and.be.an.Object();
 				req.token.get().should.equal( 999 );
-				req.token.id.should.equal( 'authorizer-999' );
+				req.token.id.should.equal( 'fake-token' );
 				done();
 			});
 		});
 
 		it( 'fetches the correct user data', function( done ) {
-			let req = {};
 			fakeToken( req, 1, true, () => {
 				req.should.have.property( 'user' );
 				req.user.should.have.property( 'attributes' )
@@ -156,7 +161,6 @@ module.exports = function() {
 		});
 
 		it( 'fails when user does not exist', function( done ) {
-			let req = {};
 			fakeToken( req, 999, true, err => {
 				err.should.be.an.Error();
 				err.should.have.properties({

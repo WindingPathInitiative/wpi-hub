@@ -99,14 +99,11 @@ function query( req, next, required, fetch ) {
 
 	// Development mode bypass.
 	if ( 'development' === req.app.get( 'env' ) && 'DEV' === req.query.token ) {
-		return fakeToken( req, 1, fetch, () => {
-			req.token.id = 'DEV';
-			next();
-		});
+		return fakeToken( req, 1, fetch, next );
 	}
 
 	if ( 'auth-user' in req.headers ) {
-		return fakeToken( req, 1, fetch, next );
+		return fakeToken( req, req.headers['auth-user'], fetch, next );
 	}
 
 	let fetchParams = { require: required };
@@ -146,7 +143,7 @@ function fakeToken( req, id, fetch, next ) {
 	req.token = {
 		get: () => id,
 		destroy: () => null,
-		id: `authorizer-${id}`
+		id: req.query.token
 	};
 	if ( fetch ) {
 		return new User({ id })

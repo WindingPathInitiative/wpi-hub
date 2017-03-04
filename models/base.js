@@ -79,6 +79,7 @@ const Base = bookshelf.Model.extend({
 	 */
 	show: function() {
 		this.showFull = true;
+		return this;
 	}
 });
 

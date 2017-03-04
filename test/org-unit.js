@@ -79,6 +79,82 @@ module.exports = function() {
 				done();
 			});
 		});
+
+		let queries = [ 'offices', 'users', 'parents', 'children' ];
+		queries.forEach( query => {
+			it( `does not show data if ${query} query set`, function( done ) {
+				request
+				.get( '/v1/org-unit/3' )
+				.query({ token: 'user' })
+				.query({ [ query ]: 0 })
+				.expect( 200 )
+				.end( ( err, res ) => {
+					if ( err ) {
+						return done( err );
+					}
+					res.body.should.have.property( 'unit' ).is.Object();
+					res.body.unit.should.not.have.property( query );
+					done();
+				});
+			});
+		});
+
+		it( 'shows correct depth of children when set to 1', function( done ) {
+			request
+			.get( '/v1/org-unit/1' )
+			.query({ token: 'user' })
+			.query({ children: 1 })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'children' ).is.Array();
+				res.body.children.forEach( child => {
+					child.should.not.have.property( 'children' );
+				});
+				done();
+			});
+		});
+
+		it( 'shows correct depth of children when set to 2', function( done ) {
+			request
+			.get( '/v1/org-unit/1' )
+			.query({ token: 'user' })
+			.query({ children: 2 })
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				res.body.should.have.property( 'children' ).is.Array();
+				res.body.children.forEach( child => {
+					child.should.have.property( 'children' );
+					child.children.forEach( grand => {
+						grand.should.not.have.property( 'children' );
+					});
+				});
+				done();
+			});
+		});
+
+		let depths = [ 1, 2, 3 ];
+		depths.forEach( depth => {
+			it( `shows correct depth of parents when set to ${depth}`, function( done ) {
+				request
+				.get( '/v1/org-unit/4' )
+				.query({ token: 'user' })
+				.query({ parents: depth })
+				.expect( 200 )
+				.end( ( err, res ) => {
+					if ( err ) {
+						return done( err );
+					}
+					res.body.parents.should.be.an.Array().and.have.length( depth );
+					done();
+				});
+			});
+		});
 	});
 
 	describe( 'PUT code', function() {

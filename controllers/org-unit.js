@@ -87,22 +87,27 @@ router.get( '/:id',
 	token.validate(),
 	parseID,
 	( req, res, next ) => {
-		let query = new OrgUnit( req.query )
-		.fetch({
-			require: true,
-			withRelated: [
-				'users',
-				{
-					offices: query => {
-						query
-						.select([ 'offices.*', 'users.firstName', 'users.lastName', 'users.membershipNumber' ])
-						.leftJoin( 'users', 'offices.userID', 'users.id' );
-					}
+		let related = [];
+		if ( '0' !== req.query.users ) {
+			related.push( 'users' );
+		}
+		if ( '0' !== req.query.offices ) {
+			related.push({
+				offices: query => {
+					query
+					.select([ 'offices.*', 'users.firstName', 'users.lastName', 'users.membershipNumber' ])
+					.leftJoin( 'users', 'offices.userID', 'users.id' );
 				}
-			]
-		})
+			});
+		}
+
+		let query = new OrgUnit( req.where )
+		.fetch({ withRelated: related })
 		// Hides org unit, because why?
 		.tap( unit => {
+			if ( '0' === req.query.users ) {
+				return;
+			}
 			let users = unit.related( 'users' );
 			users.each( user => {
 				user.unset( 'orgUnit' );
@@ -110,6 +115,9 @@ router.get( '/:id',
 		})
 		// Sets user key for offices.
 		.tap( unit => {
+			if ( '0' === req.query.offices ) {
+				return;
+			}
 			let offices = unit.related( 'offices' );
 			offices.each( office => {
 				let user = {};
@@ -128,9 +136,17 @@ router.get( '/:id',
 			});
 		});
 
-		getChain( query )
-		.then( unit => {
-			res.json( unit );
+		if ( '0' !== req.query.parents || '0' !== req.query.children ) {
+			query = getChain( query );
+		} else {
+			query.then( unit => ({ unit: unit.show().toJSON() }) );
+		}
+
+		query
+		.then( resp => {
+			setDepth( resp, 'parents', req.query.parents );
+			setDepth( resp, 'children', req.query.children );
+			res.json( resp );
 		})
 		.catch( err => {
 			next( new UserError( 'Org unit not found', 404, err ) );
@@ -242,7 +258,7 @@ router.put( '/:id',
 			return next( new UserError( 'No data provided', 400 ) );
 		}
 
-		new OrgUnit( req.query )
+		new OrgUnit( req.where )
 		.fetch({ require: true })
 		.catch( err => {
 			throw new UserError( 'Org unit not found', 404, err );
@@ -294,7 +310,7 @@ router.delete( '/:id',
 			return next( new UserError( 'Cannot delete root org' ) );
 		}
 
-		new OrgUnit( req.query )
+		new OrgUnit( req.where )
 		.fetch({ require: true })
 		.catch( err => {
 			throw new UserError( 'Org unit not found', 404, err );
@@ -377,15 +393,15 @@ function parseID( req, res, next ) {
 				next( new UserError( 'No org unit associated', 404 ) );
 			} else {
 				req.user = user;
-				req.query = { id: user.get( 'orgUnit' ) };
+				req.where = { id: user.get( 'orgUnit' ) };
 				next();
 			}
 		});
 	} else if ( -1 !== id.search( /^[a-z]{2}[\-\d]*$/i ) ) {
-		req.query = { code: id.toUpperCase() };
+		req.where = { code: id.toUpperCase() };
 		next();
 	} else if ( Number.parseInt( id ) ) {
-		req.query = { id: Number.parseInt( id ) };
+		req.where = { id: Number.parseInt( id ) };
 		next();
 	} else {
 		next( new UserError( 'Invalid ID provided', 400 ) );
@@ -457,6 +473,51 @@ function sortChain( units ) {
 		}
 	}
 	return _.compact( units );
+}
+
+
+/**
+ * Sets how many levels of unit should be trimmed.
+ * @param {Object} resp  Object to be mutated.
+ * @param {String} type  Key to mutate.
+ * @param {Number} depth Levels to keep, undefined means all.
+ * @return {Object}
+ */
+function setDepth( resp, type, depth ) {
+	if ( undefined === depth || '-1' === depth ) {
+		return resp;
+	}
+	if ( 'string' === typeof depth ) {
+		depth = Number.parseInt( depth );
+	}
+
+	let object = resp[ type ];
+	if ( ! object || ! _.isArray( object ) ) {
+		return resp;
+	}
+
+	if ( 0 === depth ) {
+		_.unset( resp, type );
+		return resp;
+	}
+
+	if ( ! object.length ) {
+		return resp;
+	}
+
+	if ( 'parents' === type ) {
+		resp.parents = object.slice( object.length - depth );
+	} else {
+		const iterate = ( obj, curDepth = 1 ) => {
+			if ( curDepth < depth ) {
+				obj.children.forEach( c => iterate( c, curDepth + 1 ) );
+			} else {
+				_.unset( obj, 'children' );
+			}
+		};
+		object.forEach( c => iterate( c ) );
+	}
+	return resp;
 }
 
 

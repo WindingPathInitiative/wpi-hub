@@ -417,6 +417,37 @@ router.post( '/portal',
 
 
 /**
+ * Shows a user's private information. Internal only.
+ */
+router.get( '/:id/internal',
+	network.internal,
+	( req, res, next ) => {
+		let query;
+		let id = req.params.id;
+		if ( ! id ) {
+			return next( new UserError( 'No ID provided', 400 ) );
+		} else if ( -1 !== id.search( /^[a-z]{2}\d{10}$/i ) ) {
+			query = { membershipNumber: id.toUpperCase() };
+		} else if ( Number.parseInt( id ) ) {
+			query = { id: Number.parseInt( id ) };
+		}
+
+		return new User( query )
+		.fetch({ require: true, withRelated: [ 'orgUnit', 'offices' ] })
+		.catch( err => {
+			throw new UserError( 'User not found', 404, err );
+		})
+		.then( user => {
+			user.show();
+			user.showPrivate = true;
+			return res.json( user.toJSON() );
+		})
+		.catch( err => UserError.catch( err, next ) );
+	}
+);
+
+
+/**
  * Parses an ID into the correct query.
  */
 function parseID( req, res, next ) {

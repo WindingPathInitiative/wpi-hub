@@ -686,4 +686,33 @@ module.exports = function() {
 		});
 
 	});
+
+	describe( 'GET id internal', function() {
+		it( 'fails if accessed from the normal network', function( done ) {
+			request
+			.get( '/v1/user/1/internal' )
+			.expect( 403, done );
+		});
+
+		it( 'fails if accessing a user that does not exist', function( done ) {
+			internal
+			.get( '/v1/user/1000/internal' )
+			.expect( 404, done );
+		});
+
+		it( 'provides expected data', function( done ) {
+			internal
+			.get( '/v1/user/1/internal' )
+			.expect( 200 )
+			.end( ( err, res ) => {
+				if ( err ) {
+					return done( err );
+				}
+				helpers.models.user( res.body, true );
+				res.body.offices.forEach( o => helpers.models.office( o ) );
+				helpers.models.orgUnit( res.body.orgUnit );
+				done();
+			});
+		});
+	});
 };

@@ -7,12 +7,25 @@ const UserError = require( '../helpers/errors' );
  * @return {void}
  */
 exports.internal = ( req, res, next ) => {
-	let port = req.app.get( 'internalPort' );
-	if ( ! port ) {
-		next( new UserError( 'Internal error', 500 ) );
-	}
-	if ( Number.parseInt( port ) !== req.socket.localPort ) {
-		next( new UserError( 'Request over insecure port', 403 ) );
+	let err = exports.isNotInternal( req );
+	if ( err ) {
+		return next( err );
 	}
 	next();
+};
+
+
+/**
+ * Checks if a port is internal, returning an error if not.
+ * @param {Object} req Request object.
+ * @return {void|UserError}
+ */
+exports.isNotInternal = req => {
+	let port = req.app.get( 'internalPort' );
+	if ( ! port ) {
+		return new UserError( 'Internal error', 500 );
+	}
+	if ( Number.parseInt( port ) !== req.socket.localPort ) {
+		return new UserError( 'Request over insecure port', 403 );
+	}
 };

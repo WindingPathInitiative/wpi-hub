@@ -204,3 +204,31 @@ __Content__: `{ status: 400, message: 'Invalid ID provided' }`
 
 * __Code__: 404<br>
 __Content__: `{ status: 404, message: 'User not found' }`
+
+
+## `POST /v1/user/portal`
+_Internal endpoint only_. Creates or updates a user based off of the portal ID.
+
+__Responses__
+
+* __Code__: 200<br>
+__Content__: Updated details of user.
+
+* __Code__: 400<br>
+__Content__: `{ status: 400, message: 'Invalid POST' }`
+
+
+## `GET /v1/user/{id}/internal`
+_Internal endpoint only_. Gets data about user for internal use.
+
+__Params__
+
+* `{id}` - Required. Can be the numeric ID, MES #, or "me" for the current user.
+
+__Responses__
+
+* __Code__: 200<br>
+__Content__: Details of user.
+
+* __Code__: 404<br>
+__Content__: `{ status: 404, message: 'User not found' }`

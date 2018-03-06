@@ -3,7 +3,7 @@
 const _    = require( 'lodash' );
 
 // Get the files.
-let files = [ 'audit', 'auth', 'clients', 'db' ];
+let files = [ 'audit', 'auth', 'clients', 'db', 'jwks' ];
 
 // Generate configs.
 let config = _.zipObject(

@@ -1,41 +1,31 @@
 {
 	"rootOffices": {
-		"coordinator": 1,
-		"storyteller": 2
+		"manager": 1,
+		"storyteller": 2,
 	},
 	"Nation": {
-		"coordinator": {
-			"name": "National Coordinator",
+		"manager": {
+			"name": "Community Manager",
 			"roles": [ "user_read_private", "user_update", "user_assign", "user_suspend", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants", "org_create_domain" ]
 		},
 		"storyteller": {
-			"name": "National Storyteller",
+			"name": "Creative Director",
 			"roles": [ "user_read_private", "office_assign", "office_create_assistants", "office_create_own_assistants", "office_update" ]
 		}
 	},
-	"Region": {
-		"coordinator": {
-			"name": "Regional Coordinator",
-			"roles": [ "user_read_private", "user_update", "user_assign", "user_suspend", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants" ]
-		},
-		"storyteller": {
-			"name": "Regional Storyteller",
-			"roles": [ "user_read_private", "office_assign", "office_create_own_assistants",  "office_create_assistants", "office_update" ]
-		}
-	},
-	"Domain": {
-		"coordinator": {
-			"name": "Domain Coordinator",
+	"Chapter": {
+		"manager": {
+			"name": "Chapter Owner",
 			"roles": [ "user_read_private", "user_update", "user_assign", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants" ]
 		},
 		"storyteller": {
-			"name": "Domain Storyteller",
+			"name": "Chapter Storyteller",
 			"roles": [ "user_read_private", "office_assign", "office_create_own_assistants",  "office_create_assistants", "office_update" ]
 		}
 	},
 	"Venue": {
-		"storyteller": {
-			"name": "Venue Storyteller",
+		"manager": {
+			"name": "Game Storyteller",
 			"roles": [ "user_read_private", "org_update", "office_create_own_assistants",  "office_update" ]
 		}
 	}

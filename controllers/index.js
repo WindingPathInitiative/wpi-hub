@@ -6,9 +6,6 @@ const _        = require( 'lodash' );
 const version  = require( '../package.json' ).version;
 const prefix   = '/v' + version.split( '.' ).shift();
 
-// Authentication.
-router.use( prefix + '/auth', require( './auth' ) );
-
 // Users.
 router.use( prefix + '/user', require( './user' ) );
 

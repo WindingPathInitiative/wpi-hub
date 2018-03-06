@@ -12,54 +12,19 @@ exports.seed = ( knex, Promise ) => {
 				id: 1,
 				name: 'United States',
 				code: 'US',
-				website: 'http://mindseyesociety.org',
+				website: 'https://wpi.club',
 				type: 'Nation',
 				parentPath: '1'
 			},
 			{
 				id: 2,
-				name: 'North East',
-				code: 'NE',
-				type: 'Region',
+				name: 'Role Initiative Philadelphia',
+				code: 'PA-001',
+				type: 'Domain',
+				website: 'https://phillylarp.com/',
+				location: 'Philadelphia, PA',
+				defDoc: 'City of Philadelphia and metropolitan area, New Jersey',
 				parentPath: '1.2'
-			},
-			{
-				id: 3,
-				name: 'Children of the Lost Eden',
-				code: 'NY-004',
-				type: 'Domain',
-				website: 'http://www.mesnyc.org',
-				location: 'New York, NY',
-				defDoc: 'City of New York, NY, Nassau and Suffolk County, Long Island, NY',
-				parentPath: '1.2.3'
-			},
-			{
-				id: 4,
-				name: 'The Bitten Apple',
-				venueType: 'CL',
-				type: 'Venue',
-				parentPath: '1.2.3.4'
-			},
-			{
-				id: 5,
-				name: 'North Central',
-				code: 'NC',
-				type: 'Region',
-				parentPath: '1.5'
-			},
-			{
-				id: 6,
-				name: 'Nuclear Winter',
-				code: 'ND-001',
-				type: 'Domain',
-				parentPath: '1.5.6'
-			},
-			{
-				id: 7,
-				name: 'Domain of Pending Doom',
-				code: 'ME-008',
-				type: 'Domain',
-				parentPath: '1.2.7'
 			}
 		])
 	);

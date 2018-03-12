@@ -162,14 +162,16 @@ function fakeToken( req, id, fetch, next ) {
 		destroy: () => null,
 		id: req.query.token
 	};
+	if(isNaN(id) && id.sub){
+		var userPromise = User.getByPortalId( id.sub )
+			.then( user => {
+				console.log('get portal by ID in fake token');
+				console.log(user);
+				return user || new User( id ).save();
+			})
+	}
+	else if(fetch) var userPromise = new User({ id });
 	if ( fetch ) {
-		if(isNaN(id) && id.sub){
-			var userPromise = User.getByPortalId( id.sub )
-				.then( user => {
-					return user || new User( id ).save();
-				})
-		}
-		else var userPromise = new User({ id });
 		return userPromise
 		.fetch({ require: true })
 		.then( user => {

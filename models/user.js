@@ -34,6 +34,32 @@ module.exports = bookshelf.model( 'User', Base.extend({
 	},
 
 	saving: function( model, attrs, options ) {
+		console.log('saving user');
+		if(model.has('sub')){ // Convert from Cognito data format
+			model.set('portalID', model.get('sub'));
+			var name = model.get('name');
+			var nameSplit = name.lastIndexOf(' ');
+			if(nameSplit!=-1){
+				model.set('firstname',name.slice(0,nameSplit));
+				model.set('lastname',name.slice(nameSplit+1,name.length));
+			}else model.set('firstname',name);
+			
+			console.log('cognito address', model.get('address'));
+			var addressformat = model.get('address');
+			if(addressformat.formatted){
+				var address = JSON.parse(addressformat.formatted);
+				if(address){
+					model.set('address', address['street_address'] + ', '
+						+ address['locality']+', ' + address['region'] + ' '
+						+ address['postal_code'] + ', ' + address['country']);
+				}
+			}
+			model.set('membershipType','None');
+			model.set('membershipNumber','');
+			model.set('membershipExpiration','0000-00-00');
+			
+			model.unset(['aud','auth_time','birthdate','cognito:username','email_verified', 'event_id','exp','iat','iss','name','sub','token_use']);
+		}
 		if ( ! model.has( 'email' ) ) {
 			model.set( 'email', model.get( 'emailAddress' ) );
 		}

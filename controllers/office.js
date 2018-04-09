@@ -362,7 +362,6 @@ router.delete( '/:id(\\d+)/assistant',
  * Internal only.
  */
 router.get( '/verify/orgunit/:unit(\\d+)',
-	network.internal,
 	token.parse(),
 	token.expired,
 	( req, res, next ) => {
@@ -382,7 +381,6 @@ router.get( '/verify/orgunit/:unit(\\d+)',
  * Internal only.
  */
 router.get( '/verify/user/:user(\\d+)',
-	network.internal,
 	token.parse(),
 	token.expired,
 	( req, res, next ) => {
@@ -402,7 +400,6 @@ router.get( '/verify/user/:user(\\d+)',
  * Internal only.
  */
 router.get( '/verify/office/:office(\\d+)',
-	network.internal,
 	token.parse(),
 	token.expired,
 	( req, res, next ) => {

@@ -462,7 +462,9 @@ function parseID( req, res, next ) {
 		req.id = { id: Number.parseInt( id ) };
 		next();
 	} else if ( 'me' === id ) {
-		req.id = { id: req.token.get( 'user' ) };
+		req.id = { id: req.token.get( 'user' ).id };
+		console.log('getting user for me!');
+		console.log(req.id);
 		next();
 	} else {
 		next( new UserError( 'Invalid ID provided', 400 ) );

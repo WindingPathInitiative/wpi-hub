@@ -157,32 +157,44 @@ function verifyToken(token){
  * @return {mixed}
  */
 function fakeToken( req, id, fetch, next ) {
-	req.token = {
-		get: () => id,
-		destroy: () => null,
-		id: req.query.token
-	};
 	if(isNaN(id) && id.sub){
-		var userPromise = User.getByPortalId( id.sub )
+		return User.getByPortalId( id.sub )
 			.then( user => {
+				//delete req.user.id;
 				console.log('get portal by ID in fake token');
+				//console.log(user);
+				if(user) return user;
+				else return new User( id ).save();
+			}).then( user => {
+				console.log('setting user in request and token');
 				console.log(user);
-				return user || new User( id ).save();
+				req.user = user;
+				req.token = {
+					get: () => {console.log('fetching user'); return user;},
+					destroy: () => null,
+					id: req.query.token
+				};
+				next();
+			});
+	}else{
+		req.token = {
+			get: () => id,
+			destroy: () => null,
+			id: req.query.token
+		};
+		if ( fetch ) {
+			return new User({ id })
+			.fetch({ require: true })
+			.then( user => {
+				req.user = user;
+				next();
 			})
+			.catch( err => {
+				next( new UserError( 'Invalid token', 403, err ) );
+			});
+		}
+		next();
 	}
-	else if(fetch) var userPromise = new User({ id });
-	if ( fetch ) {
-		return userPromise
-		.fetch({ require: true })
-		.then( user => {
-			req.user = user;
-			next();
-		})
-		.catch( err => {
-			next( new UserError( 'Invalid token', 403, err ) );
-		});
-	}
-	next();
 }
 
 // Expose for unit tests.

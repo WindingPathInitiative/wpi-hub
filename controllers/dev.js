@@ -180,7 +180,7 @@ router.get( '/migrate',
 			id: 1,
 			name: 'United States',
 			type: 'Nation',
-			website: 'https://www.mindseyesociety.org',
+			website: 'https://windingpath.club',
 			code: 'US',
 			parentPath: '1'
 		}].concat( rows ) )

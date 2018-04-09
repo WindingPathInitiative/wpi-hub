@@ -18,7 +18,7 @@ __Responses__
 {
 	"id":1,
 	"name":"National Coordinator",
-	"email":"nc@mindseyesociety.org",
+	"email":"nc@test.org",
 	"type":"Primary",
 	"roles":[
 		"user_read_private",

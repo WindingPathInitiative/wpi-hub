@@ -80,7 +80,7 @@ __Content__: Details of org unit.<br>
 		"name":"United States",
 		"code":"US",
 		"location":null,
-		"website":"http://mindseyesociety.org",
+		"website":"http://test.org",
 		"type":"Nation",
 		"defDoc":null,
 		"users":[],

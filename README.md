@@ -1,12 +1,7 @@
-# Mind's Eye Society User Hub
-This system is a REST API designed to handle member and org unit hierarchy and permissions. Designed to interface with the MES Portal via OAuth and configurable clients.
+# Winding Path Initiative User Hub
+This system is a REST API designed to handle member and org unit hierarchy and permissions. Designed to work with Amazon Cognito to handle membership.
 
-Documentation can be found [here](https://mindseyesociety.github.io/mes-hub/)
-
-[![Dependency Status](https://david-dm.org/MindsEyeSociety/mes-hub.svg)](https://david-dm.org/MindsEyeSociety/mes-hub)
-[![Build Status](https://travis-ci.org/MindsEyeSociety/mes-hub.svg?branch=master)](https://travis-ci.org/MindsEyeSociety/mes-hub)
-
-[JIRA (private)](https://mindseyesociety.atlassian.net/secure/RapidBoard.jspa?rapidView=1)
+Documentation can be found [here](https://windingpathinitiative.github.io/wpi-hub/)
 
 ## Installation
 1. `npm install`.
@@ -17,7 +12,7 @@ Documentation can be found [here](https://mindseyesociety.github.io/mes-hub/)
 6. Start server with `node www`.
 
 ## Config
-* `auth` - Contains OAuth credentials for the Portal server.
+* `auth` - Contains OAuth credentials for Amazon Cognito
 * `clients` - Clients, organized via ID : redirect URL.
 * `db` - Database credentials.
 * `roles` - JSON of valid roles, with descriptions.

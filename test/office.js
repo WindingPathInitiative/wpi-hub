@@ -52,7 +52,7 @@ module.exports = function() {
 					id: 1,
 					name: 'National Coordinator',
 					type: 'Primary',
-					email: 'nc@mindseyesociety.org'
+					email: 'nc@test.org'
 				});
 				body.should.have.property( 'roles' ).is.Array();
 
@@ -71,7 +71,7 @@ module.exports = function() {
 
 		let data = {
 			name: 'Test Primary',
-			email: 'nta@mindseyesociety.org',
+			email: 'nta@test.org',
 			roles: [ 'admin', 'test' ]
 		};
 
@@ -171,7 +171,7 @@ module.exports = function() {
 					id: 1,
 					name: 'National Coordinator',
 					type: 'Primary',
-					email: 'nc@mindseyesociety.org',
+					email: 'nc@test.org',
 					userID: 2,
 					parentOrgID: 1,
 					parentOfficeID: null

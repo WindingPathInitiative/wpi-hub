@@ -57,7 +57,7 @@ Provides details about a given user.
 
 __Params__
 
-* `{id}` - Required. Can be the numeric ID, MES #, or "me" for the current user.
+* `{id}` - Required. Can be the numeric ID, WPI #, or "me" for the current user.
 
 * `token` - Required. Parameter or cookie of user token.
 
@@ -101,7 +101,7 @@ Updates a user.
 
 __Params__
 
-* `{id}` - Required. Can be the numeric ID, MES #, or "me" for the current user.
+* `{id}` - Required. Can be the numeric ID, WPI #, or "me" for the current user.
 
 * `token` - Required. Parameter or cookie of user token. Needs `user_update` role over user, or be updating self.
 
@@ -147,7 +147,7 @@ Moves a user to a given domain.
 
 __Params__
 
-* `{id}` - Required. Can be the numeric ID, MES #, or "me" for the current user.
+* `{id}` - Required. Can be the numeric ID, WPI #, or "me" for the current user.
 
 * `{domain}` - Required. Numeric ID of the target domain.
 
@@ -190,7 +190,7 @@ Suspends a user, or restores a suspended user.
 
 __Params__
 
-* `{id}` - Required. Can be the numeric ID, MES #, or "me" for the current user.
+* `{id}` - Required. Can be the numeric ID, WPI #, or "me" for the current user.
 
 * `token` - Required. Parameter or cookie of user token. Needs `user_suspend` role over user.
 
@@ -223,7 +223,7 @@ _Internal endpoint only_. Gets data about user for internal use.
 
 __Params__
 
-* `{id}` - Required. Can be the numeric ID, MES #, or "me" for the current user.
+* `{id}` - Required. Can be the numeric ID, WPI #, or "me" for the current user.
 
 __Responses__
 

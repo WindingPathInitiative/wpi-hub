@@ -1,14 +1,14 @@
 {
-  "name": "mes-hub",
-  "version": "1.0.4",
-  "description": "Mind's Eye Society User integration.",
+  "name": "wpi-hub",
+  "version": "1.0.5",
+  "description": "Winding Path Initiative User Hub.",
   "scripts": {
     "start": "node app.js",
     "test": "./test.sh"
   },
-  "author": "Ephraim Gregor",
+  "author": "Joe Terranova",
   "license": "ISC",
-  "repository": "https://github.com/MindsEyeSociety/mes-user-portal",
+  "repository": "https://github.com/WindingPathInitiative/wpi-hub",
   "dependencies": {
     "bluebird": "^3.3.4",
     "body-parser": "^1.13.2",

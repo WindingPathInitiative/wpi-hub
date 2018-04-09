@@ -170,14 +170,14 @@ module.exports = function() {
 			.expect( 404, done );
 		});
 
-		it( 'works for valid MES number', function( done ) {
+		it( 'works for valid WPI number', function( done ) {
 			request
 			.get( '/v1/user/US2016010001' )
 			.query({ token: 'user' })
 			.expect( 200, done );
 		});
 
-		it( 'fails for invalid MES number', function( done ) {
+		it( 'fails for invalid WPI number', function( done ) {
 			request
 			.get( '/v1/user/DA0000000000' )
 			.query({ token: 'user' })
@@ -301,7 +301,7 @@ module.exports = function() {
 			.expect( 403, done );
 		});
 
-		it( 'fails for invalid MES number', function( done ) {
+		it( 'fails for invalid WPI number', function( done ) {
 			request
 			.put( '/v1/user/DA0000000000' )
 			.send({ firstName: 'Test' })
@@ -417,7 +417,7 @@ module.exports = function() {
 			.expect( 403, done );
 		});
 
-		it( 'fails for invalid MES number', function( done ) {
+		it( 'fails for invalid WPI number', function( done ) {
 			request
 			.put( '/v1/user/DA0000000000/assign/3' )
 			.query({ token: 'nc' })
@@ -506,7 +506,7 @@ module.exports = function() {
 			.expect( 404, done );
 		});
 
-		it( 'fails for invalid MES number', function( done ) {
+		it( 'fails for invalid WPI number', function( done ) {
 			request
 			.put( '/v1/user/DA0000000000/suspend' )
 			.query({ token: 'nc' })
@@ -611,7 +611,7 @@ module.exports = function() {
 					membership_number: 'US2016010010',
 					firstname: 'Test',
 					lastname: 'aRC',
-					email: 'arc.members@ne.mindseyesociety.org',
+					email: 'arc.members@test.org',
 					type: 'Full',
 					cam_expiry: '1577836800',
 					membership_expiration: {
@@ -647,12 +647,12 @@ module.exports = function() {
 					lastname: 'Terranova',
 					birthday: '1986-11-15',
 					email: 'joeterranova@gmail.com',
-					address: '301 Wilson Road',
+					address: '301 Anywhere',
 					city: 'Cherry Hill',
 					state: 'New Jersey',
 					zip: '08001',
 					country: 'US',
-					phone: '856-448-4294',
+					phone: '856-123-4567',
 					cam_expiry: '1488758400',
 					membership_expiration: {
 						date: '2017-03-06 00:00:00',

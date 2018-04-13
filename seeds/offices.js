@@ -41,7 +41,7 @@ exports.seed = ( knex, Promise ) => {
 			},
 			{
 				id: 6,
-				name: 'DST',
+				name: 'Chapter Storyteller',
 				type: 'Primary',
 				parentOrgID: 2,
 				parentOfficeID: 2,

@@ -11,15 +11,17 @@ exports.seed = ( knex, Promise ) => {
 			{
 				id: 1,
 				name: 'United States',
-				code: 'US',
-				website: 'https://wpi.club',
+				code: 'WPI-US',
+				website: 'https://windingpath.club',
 				type: 'Nation',
+				location: 'United States',
+				defDoc: 'United States',
 				parentPath: '1'
 			},
 			{
 				id: 2,
 				name: 'Role Initiative Philadelphia',
-				code: 'PA-001',
+				code: 'WPI-PA-001',
 				type: 'Domain',
 				website: 'https://phillylarp.com/',
 				location: 'Philadelphia, PA',

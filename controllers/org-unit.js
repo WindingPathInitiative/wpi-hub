@@ -127,6 +127,7 @@ router.get( '/:id',
 					}
 					office.unset( field );
 				});
+				if(user['userID']) user['id'] = user['userID']; //include id for user like everywhere else
 				if ( _.isEmpty( user ) ) {
 					user = null;
 				}

@@ -158,12 +158,20 @@ function verifyToken(token){
  */
 function fakeToken( req, id, fetch, next ) {
 	if(isNaN(id) && id.sub){
-		return User.getByPortalId( id.sub )
+		return User.getByPortalId( id.sub ) //See if we have a User by this Cognito Identity
 			.then( user => {
-				//delete req.user.id;
 				console.log('get portal by ID in fake token');
 				//console.log(user);
 				if(user) return user;
+				else if (id.email && id.email_verified){
+					//See if we have an existing user with the same email, so we can just update them.
+					return new User({'email': id.email}).fetch().then( user => {
+						if(user){
+							console.log('Found existing email user, updating');
+							return user.save(id);
+						}else return new User( id ).save(); //Did not find user, just create new one
+					});
+				}
 				else return new User( id ).save();
 			}).then( user => {
 				console.log('setting user in request and token');

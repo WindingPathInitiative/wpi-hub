@@ -10,9 +10,9 @@ exports.seed = ( knex, Promise ) => {
 		knex( 'offices' ).insert([
 			{
 				id: 1,
-				name: 'Community Manager',
+				name: 'Club Manager',
 				type: 'Primary',
-				email: 'community.manager@wpi.club',
+				email: 'community.manager@windingpath.club',
 				parentOrgID: 1,
 				parentPath: '1',
 				userID: 2,
@@ -23,7 +23,7 @@ exports.seed = ( knex, Promise ) => {
 				id: 2,
 				name: 'Creative Director',
 				type: 'Primary',
-				email: 'creative.director@wpi.club',
+				email: 'creative.director@windingpath.club',
 				parentOrgID: 1,
 				parentPath: '2',
 				userID: 1,

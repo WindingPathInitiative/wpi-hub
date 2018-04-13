@@ -54,9 +54,11 @@ module.exports = bookshelf.model( 'User', Base.extend({
 						+ address['postal_code'] + ', ' + address['country']);
 				}
 			}
-			model.set('membershipType','None');
-			model.set('membershipNumber','');
-			model.set('membershipExpiration','0000-00-00');
+			if(!model.has('membershipType')){ //set the defaults
+				model.set('membershipType','None');
+				model.set('membershipNumber','');
+				model.set('membershipExpiration','0000-00-00');
+			}
 			
 			model.unset(['aud','auth_time','birthdate','cognito:username','email_verified', 'event_id','exp','iat','iss','name','sub','token_use']);
 		}

@@ -15,7 +15,8 @@ const Office = bookshelf.model( 'Office', Base.extend({
 		'name',
 		'type',
 		'user',
-		'email'
+		'email',
+		'roles'
 	],
 
 	parse: function( attrs ) {

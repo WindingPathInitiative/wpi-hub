@@ -95,7 +95,7 @@ router.get( '/:id',
 			related.push({
 				offices: query => {
 					query
-					.select([ 'offices.*', 'users.firstName', 'users.lastName', 'users.membershipNumber' ])
+					.select([ 'offices.*', 'users.nickname', 'users.membershipNumber' ])
 					.leftJoin( 'users', 'offices.userID', 'users.id' );
 				}
 			});
@@ -121,7 +121,7 @@ router.get( '/:id',
 			let offices = unit.related( 'offices' );
 			offices.each( office => {
 				let user = {};
-				_.each([ 'membershipNumber', 'firstName', 'lastName', 'userID' ], field => {
+				_.each([ 'membershipNumber', 'nickname', 'userID' ], field => {
 					if ( office.has( field ) ) {
 						user[ field ] = office.get( field );
 					}

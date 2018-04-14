@@ -56,9 +56,7 @@ module.exports = bookshelf.model( 'User', Base.extend({
 				model.set('membershipNumber','');
 				model.set('membershipExpiration','0000-00-00');
 			}
-			if(model.has('custom:preferred_name')){
-				model.set('nickname',model.get('custom:preferred_name'));
-			}
+
 			if(!model.has('nickname')) model.set('nickname',model.get('firstName')+' '+model.get('lastName'));
 			
 			model.unset(['aud','auth_time','birthdate','cognito:username', 'custom:preferred_name','email_verified', 'event_id','exp','iat','iss','name','sub','token_use']);

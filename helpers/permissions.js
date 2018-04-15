@@ -135,26 +135,35 @@ function hasOverUnit( unit, permission, officer ) {
 		}
 	})
 	.then( offices => {
-
 		let officeOrgs = mapCollection( offices, 'parentOrgID' );
-
+		let officesReturn = [];
+		let officeResponses = [];
 		// If one of these is National, we're good.
 		if ( -1 !== officeOrgs.indexOf( 1 ) ) {
-			return unmapCollection( offices, 'parentOrgID', 1 );
+			officeResponses.push(unmapCollection( offices, 'parentOrgID', 1 ));
 		}
 
 		// Checks if unit is one of the office domains.
 		if ( -1 !== officeOrgs.indexOf( unit.id ) ) {
-			return unmapCollection( offices, 'parentOrgID', unit.id );
+			officeResponses.push(unmapCollection( offices, 'parentOrgID', unit.id ));
 		}
 
 		// Checks if current org has the parents org.
 		let valid = _.intersection( unit.parents(), officeOrgs );
 		if ( ! valid.length ) {
-			throw new Error( 'Officer not found in chain' );
+			if(officeResponses.length == 0) throw new Error( 'Officer not found in chain' );
 		} else {
-			return unmapCollection( offices, 'parentOrgID', valid );
+			officeResponses.push(unmapCollection( offices, 'parentOrgID', valid ));
 		}
+		//it's not pretty, but it works
+		for(let j = 0; j < officeResponses.length; j++){
+			for(let k = 0; k < officeResponses[j].length; k++){
+				if(-1 == officesReturn.indexOf(officeResponses[j][k])){
+					officesReturn.push(officeResponses[j][k]);
+				}
+			}
+		}
+		return officesReturn;
 	});
 }
 

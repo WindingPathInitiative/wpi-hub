@@ -5,7 +5,7 @@
 	},
 	"Nation": {
 		"manager": {
-			"name": "Community Manager",
+			"name": "Club Manager",
 			"roles": [ "user_read_private", "user_update", "user_assign", "user_suspend", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants", "org_create_domain" ]
 		},
 		"storyteller": {

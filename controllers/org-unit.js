@@ -271,6 +271,14 @@ router.put( '/:id',
 		.tap( unit => {
 			return perm.hasOverUnit( unit, 'org_update', req.token.get( 'user' ) );
 		})
+		.tap( unit => {
+			if(req.body.code && req.body.code != unit.get('code')){
+				//if we're changing the code, make sure we have create control over this unit
+				let role = 'org_create_' + unit.get( 'type' ).toLowerCase();
+				req.body.code = req.body.code.toUpperCase();
+				return perm.hasOverUnit( unit, role, req.token.get( 'user' ) );
+			}
+		})
 		.then( unit => {
 			const validate = require( '../helpers/validation' );
 			let constraints = {

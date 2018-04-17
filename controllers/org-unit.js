@@ -147,7 +147,11 @@ router.get( '/:id',
 		.then( resp => {
 			setDepth( resp, 'parents', req.query.parents );
 			setDepth( resp, 'children', req.query.children );
-			res.json( resp );
+			//we need the return to be an actual orgUnit, not a unit subproperty.
+			let resp2 =resp.unit;
+			resp2.parents = resp.parents;
+			resp2.children = resp.children;
+			res.json( resp2 );
 		})
 		.catch( err => {
 			next( new UserError( 'Org unit not found', 404, err ) );

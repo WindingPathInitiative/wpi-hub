@@ -12,6 +12,13 @@ const UserError = require( '../helpers/errors' );
 const perm      = require( '../helpers/permissions' );
 const audit     = require( '../helpers/audit' );
 
+router.get('/types',
+	//don't really need a valid token for this
+	( req, res, next ) => {
+		let types = OrgUnit.getTypes();
+		res.json(types);
+	}
+);
 
 /**
  * Lists units, optionally with filtering.

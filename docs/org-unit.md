@@ -122,6 +122,16 @@ __Content__: Details of org unit.<br>
 * __Code__: 404<br>
 __Content__: `{ status: 404, message: 'Org unit not found' }`
 
+## `GET /v1/org-unit/types`
+Provide list of org unit types
+
+__Responses__
+
+* __Code__: 200<br>
+__Content__: List of org unit types.<br>
+```
+["Nation","Region","Domain","Venue"]
+```
 
 ## `POST /v1/org-unit`
 Creates a new org unit, along with the given offices.

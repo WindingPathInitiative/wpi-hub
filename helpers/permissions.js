@@ -272,6 +272,8 @@ function unmapCollection( offices, field, valid ) {
 function setPresetOffice( req, res, next ) {
 	if ( req.query.useOffice ) {
 		presetOffice = Number.parseInt( req.query.useOffice );
+	}else if(req.body.useOffice){
+		presetOffice = Number.parseInt( req.body.useOffice );
 	} else {
 		presetOffice = false;
 	}

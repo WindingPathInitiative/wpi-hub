@@ -50,9 +50,9 @@ module.exports = function() {
 				let body = res.body;
 				body.should.have.properties({
 					id: 1,
-					name: 'National Coordinator',
+					name: 'Club Manager',
 					type: 'Primary',
-					email: 'nc@test.org'
+					email: 'club.manager@windingpath.club'
 				});
 				body.should.have.property( 'roles' ).is.Array();
 
@@ -169,9 +169,9 @@ module.exports = function() {
 				let office = res.body[0];
 				office.should.have.properties({
 					id: 1,
-					name: 'National Coordinator',
+					name: 'Club Manager',
 					type: 'Primary',
-					email: 'nc@test.org',
+					email: 'club.manager@windingpath.club',
 					userID: 2,
 					parentOrgID: 1,
 					parentOfficeID: null
@@ -777,7 +777,7 @@ module.exports = function() {
 			internal
 			.get( '/v1/office/verify/orgunit/2' )
 			.query({ token: 'rc' })
-			.query({ roles: 'org_create_domain' })
+			.query({ roles: 'org_create_chapter' })
 			.expect( 403, done );
 		});
 
@@ -860,7 +860,7 @@ module.exports = function() {
 			internal
 			.get( '/v1/office/verify/user/4' )
 			.query({ token: 'rc' })
-			.query({ roles: 'org_create_domain' })
+			.query({ roles: 'org_create_chapter' })
 			.expect( 403, done );
 		});
 
@@ -943,7 +943,7 @@ module.exports = function() {
 			internal
 			.get( '/v1/office/verify/office/7' )
 			.query({ token: 'rc' })
-			.query({ roles: 'org_create_domain' })
+			.query({ roles: 'org_create_chapter' })
 			.expect( 403, done );
 		});
 

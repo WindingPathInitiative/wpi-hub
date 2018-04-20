@@ -114,7 +114,7 @@ router.get( '/migrate',
 		let locationTypes = {
 			2: 'Nation',
 			3: 'Region',
-			4: 'Domain'
+			4: 'Chapter'
 		};
 
 		let Promise = require( 'bluebird' );
@@ -155,7 +155,7 @@ router.get( '/migrate',
 				defDoc: row.location_bounds
 			};
 
-			if ( 'Domain' === data.type ) {
+			if ( 'Chapter' === data.type ) {
 				data.code = data.code.substring( 0, data.code.length - 2 );
 			}
 
@@ -217,41 +217,41 @@ router.get( '/migrate/vss',
 		};
 		let idOffset;
 
-		let appQuery = apps.select([ 'venue_id', 'name', 'domain', 'region', 'vss' ])
+		let appQuery = apps.select([ 'venue_id', 'name', 'chapter', 'region', 'vss' ])
 		.from( 'vsss' )
 		.leftJoin( 'organizations', 'vsss.org_id', '=', 'organizations.id' )
 		.whereNot( 'region', 'CAN' )
 		.whereNot( 'region', '' )
 		.then( resp => Promise.map( resp, row => {
 			row.venue = venueTypes[ row.venue_id ];
-			if ( row.domain ) {
-				row.domain = row.domain.substring( 0, row.domain.length - 2 );
+			if ( row.chapter ) {
+				row.chapter = row.chapter.substring( 0, row.chapter.length - 2 );
 			}
 			return _.omit( row, 'venue_id' );
 		}) );
 
-		let domainQuery = knex.select([ 'id', 'parentPath', 'code' ]).from( 'org_units' )
-		.whereIn( 'type', [ 'Domain', 'Region' ] )
+		let chapterQuery = knex.select([ 'id', 'parentPath', 'code' ]).from( 'org_units' )
+		.whereIn( 'type', [ 'Chapter', 'Region' ] )
 		.then( resp => _.keyBy( resp, 'code' ) );
 
 		Promise.join(
 			appQuery,
-			domainQuery,
+			chapterQuery,
 			knex.count( '* as c' ).from( 'org_units' ).first(),
-			( vsses, domains, count ) => {
+			( vsses, chapters, count ) => {
 				idOffset = count.c + 1;
 				return Promise.map( vsses, row => {
 
 					let parent;
-					if ( domains[ row.domain ] ) {
-						parent = domains[ row.domain ];
-					} else if ( domains[ row.region ] ) {
-						parent = domains[ row.region ];
+					if ( chapters[ row.chapter ] ) {
+						parent = chapters[ row.chapter ];
+					} else if ( chapters[ row.region ] ) {
+						parent = chapters[ row.region ];
 					}
 
 					if ( parent ) {
 						row.parentPath = parent.parentPath + '.';
-						return _.omit( row, [ 'region', 'domain' ] );
+						return _.omit( row, [ 'region', 'chapter' ] );
 					}
 					return null;
 				});
@@ -291,9 +291,9 @@ router.get( '/migrate/offices',
 				return Promise.map( units.toArray(), unit => {
 					if ( 'Venue' !== type ) {
 						return Promise.join(
-							Offices.makeOfficeForUnit( unit, 'coordinator', t ),
+							Offices.makeOfficeForUnit( unit, 'manager', t ),
 							Offices.makeOfficeForUnit( unit, 'storyteller', t ),
-							( c, st ) => ({ coordinator: c, storyteller: st })
+							( m, st ) => ({ manager: m, storyteller: st })
 						);
 					} else {
 						return Offices.makeOfficeForUnit( unit, 'storyteller', t );
@@ -305,7 +305,7 @@ router.get( '/migrate/offices',
 		knex( 'offices' ).whereNot( 'parentOrgID', 1 ).del()
 		.then( () => knex.raw( 'ALTER TABLE offices AUTO_INCREMENT = 1' ) )
 		.then( () => officeCreate( 'Region' ) )
-		.then( () => officeCreate( 'Domain' ) )
+		.then( () => officeCreate( 'Chapter' ) )
 		.then( () => officeCreate( 'Venue' ) )
 		.then( () => Offices.fetchAll() )
 		.then( offices => {

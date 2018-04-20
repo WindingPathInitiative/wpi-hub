@@ -270,12 +270,12 @@ module.exports = function() {
 
 		var data = {
 			id: 10,
-			name: 'Test Domain',
+			name: 'Test Chapter',
 			code: 'XX-000',
 			location: 'Narnia',
-			defDoc: 'Test domain, please ignore!',
+			defDoc: 'Test chapter, please ignore!',
 			website: 'http://www.example.com',
-			type: 'Domain',
+			type: 'Chapter',
 			parentID: 2
 		};
 
@@ -409,14 +409,14 @@ module.exports = function() {
 			let User    = require( '../models/user' );
 			let Office  = require( '../models/office' );
 
-			let domain = new OrgUnit({
+			let chapter = new OrgUnit({
 				id: 10,
-				name: 'Test Domain',
+				name: 'Test Chapter',
 				code: 'XX-000',
 				location: 'Narnia',
-				defDoc: 'Test domain, please ignore!',
+				defDoc: 'Test chapter, please ignore!',
 				website: 'http://www.example.com',
-				type: 'Domain',
+				type: 'Chapter',
 				parentPath: '1.2.10'
 			})
 			.save( {}, { method: 'insert' } );
@@ -437,7 +437,7 @@ module.exports = function() {
 			.save( {}, { method: 'insert' } );
 
 			Promise.join(
-				domain,
+				chapter,
 				user,
 				office,
 				() => done()
@@ -519,12 +519,12 @@ module.exports = function() {
 			let User    = require( '../models/user' );
 			let Office  = require( '../models/office' );
 
-			let domain = new OrgUnit({ id: 10 }).destroy();
+			let chapter = new OrgUnit({ id: 10 }).destroy();
 			let user   = new User({ id: 9, orgUnit: null }).save();
 			let office = new Office({ id: 11 }).destroy();
 
 			Promise.join(
-				domain,
+				chapter,
 				user,
 				office,
 				() => done()
@@ -554,7 +554,7 @@ module.exports = function() {
 			{ query: { code: 'NY' } },
 			{ query: { code: 'NY', name: 'unused' }, empty: true },
 			{ query: { code: 'NY', name: 'children' } },
-			{ query: { code: 'NE', type: 'domain' }, empty: true },
+			{ query: { code: 'NE', type: 'chapter' }, empty: true },
 			{ query: { code: 'NE', type: 'region' } },
 			{ query: { name: 'Apple', venue: 'AC' }, empty: true },
 			{ query: { name: 'Apple', venue: 'CL' } }

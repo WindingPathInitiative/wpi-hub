@@ -80,9 +80,9 @@ __Content__: Details of the user. Email and address are hidden without the `priv
 	"membershipExpiration": "2020-01-01T00:00:00.000Z",
 	"orgUnit": {
 		"id": 7,
-		"name": "Domain of Pending Doom",
+		"name": "Chapter of Pending Doom",
 		"code": "ME-008",
-		"type": "Domain"
+		"type": "Chapter"
 	},
 	"fullName": "Test Admin"
 }
@@ -142,16 +142,16 @@ __Code__: 400<br>
 __Content__: `{ status: 400, message: 'Invalid data provided: [errors]' }`
 
 
-## `PUT /v1/user/{id}/assign/{domain}`
-Moves a user to a given domain.
+## `PUT /v1/user/{id}/assign/{chapter}`
+Moves a user to a given chapter.
 
 __Params__
 
 * `{id}` - Required. Can be the numeric ID, WPI #, or "me" for the current user.
 
-* `{domain}` - Required. Numeric ID of the target domain.
+* `{chapter}` - Required. Numeric ID of the target chapter.
 
-* `token` - Required. Parameter or cookie of user token. Needs `user_assign` role over user _or_ domain, or be updating self _if_ not in a domain already.
+* `token` - Required. Parameter or cookie of user token. Needs `user_assign` role over user _or_ chapter, or be updating self _if_ not in a chapter already.
 
 __Responses__
 
@@ -166,23 +166,23 @@ __Content__: `{ status: 400, message: 'Invalid ID provided' }`
 __Content__: `{ status: 404, message: 'User not found' }`
 
 * __Code__: 404<br>
-__Content__: `{ status: 404, message: 'Domain not found' }`
+__Content__: `{ status: 404, message: 'Chapter not found' }`
 
-* Trying to assign to non-domain.<br>
+* Trying to assign to non-chapter.<br>
 __Code__: 500<br>
-__Content__: `{ status: 500, message: 'Assigning to non-domain' }`
+__Content__: `{ status: 500, message: 'Assigning to non-chapter' }`
 
-* User is already a member of the domain.<br>
+* User is already a member of the chapter.<br>
 __Code__: 500<br>
-__Content__: `{ status: 500, message: 'User already member of domain' }`
+__Content__: `{ status: 500, message: 'User already member of chapter' }`
 
-* If a user is assigning themselves, they can't leave a domain.<br>
+* If a user is assigning themselves, they can't leave a chapter.<br>
 __Code__: 403<br>
-__Content__: `{ status: 403, message: 'Cannot leave domain' }`
+__Content__: `{ status: 403, message: 'Cannot leave chapter' }`
 
 * If a user is assigning themselves, they can't be assigned outside their region.<br>
 __Code__: 403<br>
-__Content__: `{ status: 403, message: 'Domain not under current region' }`
+__Content__: `{ status: 403, message: 'Chapter not under current region' }`
 
 
 ## `PUT /v1/user/{id}/suspend`

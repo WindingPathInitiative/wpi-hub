@@ -79,7 +79,7 @@ function hasOverUser( user, permission, officer ) {
 
 		// If the user has an org unit.
 		if ( user.has( 'orgUnit' ) ) {
-			// Checks if user is attached to the office domain.
+			// Checks if user is attached to the office chapter.
 			if ( -1 !== officeOrgs.indexOf( user.get( 'orgUnit' ) ) ) {
 				return unmapCollection( offices, 'parentOrgID', user.get( 'orgUnit' ) );
 			}
@@ -93,7 +93,7 @@ function hasOverUser( user, permission, officer ) {
 				return unmapCollection( offices, 'parentOrgID', validOrgs );
 			}
 		}
-		// If the user isn't attached to a domain,
+		// If the user isn't attached to a chapter,
 		// the officer needs to be National.
 		// This operates under the assumption National is 1.
 		else {
@@ -143,7 +143,7 @@ function hasOverUnit( unit, permission, officer ) {
 			officeResponses.push(unmapCollection( offices, 'parentOrgID', 1 ));
 		}
 
-		// Checks if unit is one of the office domains.
+		// Checks if unit is one of the office chapters.
 		if ( -1 !== officeOrgs.indexOf( unit.id ) ) {
 			officeResponses.push(unmapCollection( offices, 'parentOrgID', unit.id ));
 		}

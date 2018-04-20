@@ -22,7 +22,7 @@ exports.seed = ( knex, Promise ) => {
 				id: 2,
 				name: 'Role Initiative Philadelphia',
 				code: 'WPI-PA-001',
-				type: 'Domain',
+				type: 'Chapter',
 				website: 'https://phillylarp.com/',
 				location: 'Philadelphia, PA',
 				defDoc: 'City of Philadelphia and metropolitan area, New Jersey',

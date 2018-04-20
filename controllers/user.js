@@ -253,9 +253,9 @@ router.put( '/:id',
 
 
 /**
- * Updates user domain assignment.
+ * Updates user chapter assignment.
  */
-router.put( '/:id/assign/:domain(\\d+)',
+router.put( '/:id/assign/:chapter(\\d+)',
 	token.parse(),
 	token.expired,
 	parseID,
@@ -273,16 +273,16 @@ router.put( '/:id/assign/:domain(\\d+)',
 		});
 
 		// Get the target org unit.
-		let orgQuery = new OrgUnit({ id: req.params.domain })
+		let orgQuery = new OrgUnit({ id: req.params.chapter })
 		.fetch({
 			require: true
 		})
 		.catch( err => {
-			throw new UserError( 'Domain not found', 404, err );
+			throw new UserError( 'Chapter not found', 404, err );
 		})
 		.then( unit => {
-			if ( 'Domain' !== unit.get( 'type' ) ) {
-				throw new UserError( 'Assigning to non-domain' );
+			if ( 'Chapter' !== unit.get( 'type' ) ) {
+				throw new UserError( 'Assigning to non-chapter' );
 			}
 			return unit;
 		});
@@ -291,10 +291,10 @@ router.put( '/:id/assign/:domain(\\d+)',
 
 			// Wasting everyone's time here.
 			if ( user.get( 'orgUnit' ) === org.id ) {
-				throw new UserError( 'User already member of domain' );
+				throw new UserError( 'User already member of chapter' );
 			}
 
-			user.targetDomain = org;
+			user.targetChapter = org;
 			return user;
 		})
 		.tap( user => {
@@ -308,18 +308,18 @@ router.put( '/:id/assign/:domain(\\d+)',
 					return;
 				}
 
-				// If the current org unit is a domain,
+				// If the current org unit is a chapter,
 				// the user can't do this!
-				if ( 'Domain' === curOrg.get( 'type' ) ) {
-					throw new UserError( 'Cannot leave domain', 403 );
+				if ( 'Chapter' === curOrg.get( 'type' ) ) {
+					throw new UserError( 'Cannot leave chapter', 403 );
 				}
 
-				// Otherwise, check if the domain is under the current org unit.
-				return user.targetDomain
+				// Otherwise, check if the chapter is under the current org unit.
+				return user.targetChapter
 				.isChild( curOrg )
 				.then( result => {
 					if ( ! result ) {
-						throw new UserError( 'Domain not under current region', 403 );
+						throw new UserError( 'Chapter not under current region', 403 );
 					}
 				});
 			}
@@ -329,16 +329,16 @@ router.put( '/:id/assign/:domain(\\d+)',
 				.then( offices => {
 					return Promise.any([
 						perm.hasOverUser( user, 'user_assign', offices ),
-						perm.hasOverUnit( user.targetDomain, 'user_assign', offices )
+						perm.hasOverUnit( user.targetChapter, 'user_assign', offices )
 					]);
 				});
 			}
 		})
-		.tap( user => audit( req, 'Updated user domain', user, { curOrg: user.get( 'orgUnit' ) } ) )
+		.tap( user => audit( req, 'Updated user chapter', user, { curOrg: user.get( 'orgUnit' ) } ) )
 		.then( user => {
 			// Validation passed, move the user now.
 			user
-			.save({ orgUnit: user.targetDomain.id }, { patch: true })
+			.save({ orgUnit: user.targetChapter.id }, { patch: true })
 			.then( user => {
 				res.json({ success: true });
 			});

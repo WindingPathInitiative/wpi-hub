@@ -9,7 +9,7 @@ const bookshelf = require( '../helpers/db' ).Bookshelf;
 const Base      = require( './base' );
 const _         = require( 'lodash' );
 
-const types     = [ 'Nation', 'Region', 'Domain', 'Venue' ];
+const types     = [ 'Nation', 'Region', 'Chapter', 'Venue' ];
 
 function getDepth( node ) {
 	return types.indexOf( node.get( 'type' ) );

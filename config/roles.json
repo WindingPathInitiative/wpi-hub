@@ -5,7 +5,7 @@
 	"user_suspend": "Suspend or restore a user",
 	"org_update": "Change unit information",
 	"org_create_region": "Create or delete a region",
-	"org_create_domain": "Create or delete a domain",
+	"org_create_chapter": "Create or delete a chapter",
 	"org_create_venue": "Create or delete a venue",
 	"office_create": "Create primary office",
 	"office_other_create": "Create other office",

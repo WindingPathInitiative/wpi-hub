@@ -21,7 +21,7 @@ module.exports = function() {
 			.expect( 403, done );
 		});
 
-		it( 'fails when querying invalid domain', function( done ) {
+		it( 'fails when querying invalid chapter', function( done ) {
 			request
 			.get( '/v1/user' )
 			.query({ token: 'user' })
@@ -384,7 +384,7 @@ module.exports = function() {
 		before( 'create tokens', function( done ) {
 			let makeToken = require( './helpers' ).makeToken;
 			Promise.join(
-				makeToken( 9, 'domainless' ),
+				makeToken( 9, 'chapterless' ),
 				makeToken( 8, 'dc' ),
 				() => done()
 			);
@@ -424,14 +424,14 @@ module.exports = function() {
 			.expect( 404, done );
 		});
 
-		it( 'fails if assigning to non-domain', function( done ) {
+		it( 'fails if assigning to non-chapter', function( done ) {
 			request
 			.put( '/v1/user/9/assign/2' )
 			.query({ token: 'nc' })
 			.expect( 500, done );
 		});
 
-		it( 'fails if assigning to invalid domain', function( done ) {
+		it( 'fails if assigning to invalid chapter', function( done ) {
 			request
 			.put( '/v1/user/9/assign/999999' )
 			.query({ token: 'nc' })
@@ -445,28 +445,28 @@ module.exports = function() {
 			.expect( 403, done );
 		});
 
-		it( 'works for user without domain assigning themselves', function( done ) {
+		it( 'works for user without chapter assigning themselves', function( done ) {
 			request
 			.put( '/v1/user/9/assign/3' )
-			.query({ token: 'domainless' })
+			.query({ token: 'chapterless' })
 			.expect( 200, done );
 		});
 
-		it( 'fails for user with domain assigning themselves', function( done ) {
+		it( 'fails for user with chapter assigning themselves', function( done ) {
 			request
 			.put( '/v1/user/me/assign/7' )
 			.query({ token: 'user' })
 			.expect( 403, done );
 		});
 
-		it( 'fails for user already in domain', function( done ) {
+		it( 'fails for user already in chapter', function( done ) {
 			request
 			.put( '/v1/user/5/assign/3' )
 			.query({ token: 'nc' })
 			.expect( 500, done );
 		});
 
-		it( 'works for assigning outside user with permission over domain', function( done ) {
+		it( 'works for assigning outside user with permission over chapter', function( done ) {
 			request
 			.put( '/v1/user/2/assign/3' )
 			.query({ token: 'dc' })
@@ -476,7 +476,7 @@ module.exports = function() {
 		after( 'destroy tokens', function( done ) {
 			let deleteToken = helpers.deleteToken;
 			Promise.join(
-				deleteToken( 'domainless' ),
+				deleteToken( 'chapterless' ),
 				deleteToken( 'dc' ),
 				() => done()
 			);

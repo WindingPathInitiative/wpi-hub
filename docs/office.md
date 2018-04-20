@@ -17,8 +17,8 @@ __Responses__
 ```
 {
 	"id":1,
-	"name":"National Coordinator",
-	"email":"nc@test.org",
+	"name":"Club Manager",
+	"email":"club.manager@windingpath.club",
 	"type":"Primary",
 	"roles":[
 		"user_read_private",
@@ -29,7 +29,7 @@ __Responses__
 	"children":[
 		{
 			"id":3,
-			"name":"Regional Coordinator",
+			"name":"Regional Manager",
 			"type":"Primary"
 		},
 		{

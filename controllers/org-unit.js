@@ -200,8 +200,8 @@ router.post( '/',
 			return perm.hasOverUnit( parent, role, req.token.get( 'user' ) );
 		})
 		.then( parent => {
-			// Make sure the new org unit is the correct type.
-			if ( types.indexOf( data.type ) - 1 !== types.indexOf( parent.get( 'type' ) ) ) {
+			// Make sure the new org unit is smaller than the current one
+			if ( types.indexOf( data.type ) <= types.indexOf( parent.get( 'type' ) ) ) {
 				throw new UserError( 'Org type doesn\'t match expected type', 400 );
 			}
 
@@ -218,7 +218,7 @@ router.post( '/',
 				location: { isString: true },
 				defDoc: { isString: true },
 				website: { url: true },
-				type: { inclusion: [ 'Venue', 'Domain', 'Region' ], presence: true },
+				type: { inclusion: [ 'Venue', 'Chapter', 'Region' ], presence: true },
 				parentPath: { length: { minimum: 1 }, presence: true }
 			};
 			if ( 'Venue' === data.type ) {
@@ -238,7 +238,7 @@ router.post( '/',
 				.insertWithPath( t )
 				.tap( unit => {
 					return Promise.join(
-						Office.makeOfficeForUnit( unit, 'coordinator', t ),
+						Office.makeOfficeForUnit( unit, 'manager', t ),
 						Office.makeOfficeForUnit( unit, 'storyteller', t ),
 						() => unit.load( 'offices', { transacting: t } )
 					);

@@ -80,19 +80,19 @@ __Content__: Details of org unit.<br>
 		"name":"United States",
 		"code":"US",
 		"location":null,
-		"website":"http://test.org",
+		"website":"https://windingpath.club",
 		"type":"Nation",
 		"defDoc":null,
 		"users":[],
 		"offices":[
 			{
 				"id":1,
-				"name":"National Coordinator",
+				"name":"Club Manager",
 				"type":"Primary",
 				"user":{
-					"membershipNumber":"US2016010002",
-					"firstName":"Test",
-					"lastName":"NC",
+					"membershipNumber":"WPI20180002",
+					"firstName":"Jeremy",
+					"lastName":"White",
 					"userID":2
 				}
 			}
@@ -109,7 +109,7 @@ __Content__: Details of org unit.<br>
 					"id":3,
 					"name":"Children of the Lost Eden",
 					"code":"NY-004",
-					"type":"Domain",
+					"type":"Chapter",
 					"children":[]
 				}
 			]
@@ -130,7 +130,7 @@ __Responses__
 * __Code__: 200<br>
 __Content__: List of org unit types.<br>
 ```
-["Nation","Region","Domain","Venue"]
+["Nation","Region","Chapter","Venue"]
 ```
 
 ## `POST /v1/org-unit`
@@ -154,7 +154,7 @@ __Body__
 
 * `location`: Location of the venue.
 
-* `defDoc`: A definition doc, such as a VSS or domain info.
+* `defDoc`: A definition doc, such as a VSS or chapter info.
 
 * `website`: A URL to find the org unit at.
 
@@ -209,7 +209,7 @@ __Body__
 
 * `location`: Location of the venue.
 
-* `defDoc`: A definition doc, such as a VSS or domain info.
+* `defDoc`: A definition doc, such as a VSS or chapter info.
 
 * `website`: A URL to find the org unit at.
 

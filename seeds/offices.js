@@ -12,12 +12,12 @@ exports.seed = ( knex, Promise ) => {
 				id: 1,
 				name: 'Club Manager',
 				type: 'Primary',
-				email: 'community.manager@windingpath.club',
+				email: 'club.manager@windingpath.club',
 				parentOrgID: 1,
 				parentPath: '1',
 				userID: 2,
 				roles: JSON.stringify([ 'user_read_private', 'user_update', 'user_assign', 'user_suspend', 'org_update', 'office_update', 'office_assign', 'office_create_assistants',
-				'office_create_own_assistants', 'org_create_domain' ])
+				'office_create_own_assistants', 'org_create_chapter' ])
 			},
 			{
 				id: 2,

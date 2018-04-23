@@ -246,7 +246,7 @@ __Code__: 400<br>
 __Content__: `{ status: 400, message: 'Office is not an assistant' }`
 
 ## `GET /v1/office/verify/orgunit/{unit}`
-_Internal endpoint only_. Verifies the user has a given role over an org unit.
+Verifies the user has a given role over an org unit.
 
 __Params__
 
@@ -269,7 +269,7 @@ __Code__: 403<br>
 __Content__: `{ status: 403, message: {mixed} }`
 
 ## `GET /v1/office/verify/user/{user}`
-_Internal endpoint only_. Verifies the user has a given role over a user.
+Verifies the user has a given role over a user.
 
 __Params__
 
@@ -292,7 +292,7 @@ __Code__: 403<br>
 __Content__: `{ status: 403, message: {mixed} }`
 
 ## `GET /v1/office/verify/office/{office}`
-_Internal endpoint only_. Verifies the user has a given role over an office.
+Verifies the user has a given role over an office.
 
 __Params__
 

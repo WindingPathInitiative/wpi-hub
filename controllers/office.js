@@ -396,7 +396,7 @@ router.get( '/verify/user/:user(\\d+)',
 
 
 /**
- * Verifies a user is an officer over a given user.
+ * Verifies a user is an officer over a given office.
  * Internal only.
  */
 router.get( '/verify/office/:office(\\d+)',

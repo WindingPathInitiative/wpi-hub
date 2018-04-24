@@ -17,17 +17,18 @@ exports.seed = ( knex, Promise ) => {
 				parentPath: '1',
 				userID: 2,
 				roles: JSON.stringify([ 'user_read_private', 'user_update', 'user_assign', 'user_suspend', 'org_update', 'office_update', 'office_assign', 'office_create_assistants',
-				'office_create_own_assistants', 'org_create_chapter' ])
+				'office_create_own_assistants', 'org_create_chapter', 'org_create_venue' ])
 			},
 			{
 				id: 2,
 				name: 'Creative Director',
-				type: 'Primary',
+				type: 'Assistant',
 				email: 'creative.director@windingpath.club',
 				parentOrgID: 1,
-				parentPath: '2',
+				parentOfficeID: 1,
+				parentPath: '1.2',
 				userID: 1,
-				roles: JSON.stringify([ 'user_read_private', 'office_assign', 'office_create_assistants', 'office_create_own_assistants', 'office_update' ])
+				roles: JSON.stringify([ 'user_read_private', 'office_create_assistants', 'office_create_own_assistants' ])
 			},
 			{
 				id: 5,
@@ -37,17 +38,8 @@ exports.seed = ( knex, Promise ) => {
 				parentOfficeID: 1,
 				parentPath: '1.5',
 				userID: 3,
-				roles: JSON.stringify([ 'user_read_private', 'user_update', 'user_assign', 'org_update', 'office_update', 'office_assign', 'office_create_assistants' ])
-			},
-			{
-				id: 6,
-				name: 'Chapter Storyteller',
-				type: 'Primary',
-				parentOrgID: 2,
-				parentOfficeID: 2,
-				parentPath: '2.6',
-				userID: 3
-			},
+				roles: JSON.stringify([ 'user_read_private', 'user_update', 'user_assign', 'org_update', 'office_update', 'office_assign', 'office_create_assistants', 'org_create_venue' ])
+			}
 		])
 	);
 };

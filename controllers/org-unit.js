@@ -239,7 +239,6 @@ router.post( '/',
 				.tap( unit => {
 					return Promise.join(
 						Office.makeOfficeForUnit( unit, 'manager', t ),
-						Office.makeOfficeForUnit( unit, 'storyteller', t ),
 						() => unit.load( 'offices', { transacting: t } )
 					);
 				});

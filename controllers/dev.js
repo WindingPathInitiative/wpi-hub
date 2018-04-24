@@ -289,15 +289,7 @@ router.get( '/migrate/offices',
 			return OrgUnits.where( 'type', type ).fetchAll()
 			.then( units => Bookshelf.transaction( t => {
 				return Promise.map( units.toArray(), unit => {
-					if ( 'Venue' !== type ) {
-						return Promise.join(
-							Offices.makeOfficeForUnit( unit, 'manager', t ),
-							Offices.makeOfficeForUnit( unit, 'storyteller', t ),
-							( m, st ) => ({ manager: m, storyteller: st })
-						);
-					} else {
-						return Offices.makeOfficeForUnit( unit, 'storyteller', t );
-					}
+					return Offices.makeOfficeForUnit( unit, 'manager', t );
 				});
 			}) );
 		};

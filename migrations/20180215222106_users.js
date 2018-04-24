@@ -1,26 +1,28 @@
 'use strict';
 
-exports.up = ( knex, Promise ) => {
-	return knex.schema.createTable( 'users', ( table ) => {
+exports.up = function(knex, Promise) {
+	return knex.schema.alterTable('users', (table) => {
 		var membershipTypes = [ 'None', 'Trial', 'Full', 'Suspended', 'Expelled' ];
-
-		table.increments().primary();
-		table.string( 'portalID', 36).index().unique();
-		table.string( 'firstName' ).notNullable();
-		table.string( 'lastName' ).notNullable();
-		table.string( 'nickname' );
-		table.text( 'address' );
-		table.string( 'email' ).notNullable().index();
 		table
 			.enum( 'membershipType', membershipTypes )
 			.notNullable()
-			.defaultTo( 'Full' );
-		table.string( 'membershipNumber', 15 ).notNullable().index();
-		table.date( 'membershipExpiration' ).notNullable().index();
-		table.integer( 'orgUnit' ).index();
+			.defaultTo( 'None' ).alter();
+		table.string( 'portalID', 36 ).alter();
+		table.string( 'membershipNumber', 15 ).notNullable().alter();
+		
 	});
 };
 
 exports.down = ( knex, Promise ) => {
-	return knex.schema.dropTable( 'users' );
+	return knex.schema.alterTable('users', (table) => {
+		var membershipTypes = [ 'None', 'Trial', 'Full', 'Suspended' ];
+		table
+			.enum( 'membershipType', membershipTypes )
+			.notNullable()
+			.defaultTo( 'Full' ).alter();
+		table.integer( 'portalID' ).alter();
+		table.string( 'membershipNumber', 12 ).notNullable().alter();
+		
+	});
 };
+

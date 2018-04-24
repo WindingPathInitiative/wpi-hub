@@ -5,7 +5,7 @@ exports.up = ( knex, Promise ) => {
 		var membershipTypes = [ 'None', 'Trial', 'Full', 'Suspended' ];
 
 		table.increments().primary();
-		table.integer( 'portalID' ).index().unique();
+		table.integer( 'portalID' ).unique();
 		table.string( 'firstName' ).notNullable();
 		table.string( 'lastName' ).notNullable();
 		table.string( 'nickname' );

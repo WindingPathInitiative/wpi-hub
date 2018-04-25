@@ -37,8 +37,8 @@ router.get( '/',
 			});
 		} else if ( params.email ) {
 			query.where( 'email', params.email );
-		} else if ( params.mes ) {
-			query.where( 'membershipNumber', params.mes );
+		} else if ( params.membershipNumber ) {
+			query.where( 'membershipNumber', params.membershipNumber );
 		}
 
 		if ( undefined !== params.type ) {

@@ -100,7 +100,7 @@ router.get( '/',
 
 
 /**
- * Gets node information for user.
+ * Gets node information for org unit.
  */
 router.get( '/:id',
 	token.validate(),
@@ -474,9 +474,7 @@ function getChain( unit ) {
 		}
 
 		// Sorts children.
-		if ( resp.children.length > 1 ) {
-			resp.children = sortChain( resp.children );
-		}
+		resp.children = sortChain( resp.children );
 		return resp;
 	});
 }

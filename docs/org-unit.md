@@ -10,6 +10,8 @@ __Params__
 
 * `type` - Type of org unit to show.
 
+* `types` - A comma-separated list of org unit types to show.
+
 * `venue` - Venue type.
 
 * `code` - Search of codes. Cannot be venue `type`.

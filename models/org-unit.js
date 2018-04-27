@@ -22,7 +22,8 @@ const OrgUnit = bookshelf.model( 'OrgUnit', Base.extend({
 		'name',
 		'code',
 		'type',
-		'venueType'
+		'venueType',
+		'location'
 	],
 
 	users: function() {

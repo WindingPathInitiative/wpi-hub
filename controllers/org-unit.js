@@ -35,6 +35,15 @@ router.get( '/',
 		if ( params.type && -1 === types.indexOf( params.type ) ) {
 			return next( new UserError( 'Invalid type specified', 400 ) );
 		}
+		let searchTypes = [];
+		if(params.types){
+			searchTypes = params.types.split(',');
+			for(let i = 0; i < searchTypes.length; i++){
+				if(-1 === types.indexOf( searchTypes[i] )){
+					return next( new UserError( 'Invalid type specified', 400 ) );
+				}
+			}
+		}
 
 		// Must be a venue when specifying venue type.
 		if ( params.venue && undefined === params.type ) {
@@ -58,6 +67,9 @@ router.get( '/',
 		}
 		if ( params.type ) {
 			query.where( 'type', '=', params.type );
+		}
+		if ( searchTypes && searchTypes.length ){
+			query.where( 'type', 'in', searchTypes );
 		}
 		if ( params.venue ) {
 			query.where( 'venueType', '=', params.venue );

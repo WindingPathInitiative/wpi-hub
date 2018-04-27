@@ -16,7 +16,7 @@ exports.seed = ( knex, Promise ) => {
 				nickname: 'Joe Terranova',
 				email: 'joeterranova@gmail.com',
 				membershipType: 'Full',
-				membershipNumber: 'WPI2018020001',
+				membershipNumber: 'WPI20180004',
 				membershipExpiration: '2020-01-01',
 				orgUnit: 2
 			},
@@ -27,7 +27,7 @@ exports.seed = ( knex, Promise ) => {
 				nickname: 'Jeremy White',
 				email: 'smackhammer@gmail.com',
 				membershipType: 'Full',
-				membershipNumber: 'WPI2018020002',
+				membershipNumber: 'WPI20180002',
 				membershipExpiration: '2020-01-01',
 				orgUnit: 2
 			},
@@ -38,7 +38,29 @@ exports.seed = ( knex, Promise ) => {
 				nickname: 'Jaclyn Terranova',
 				email: 'jaclyn.terranova@gmail.com ',
 				membershipType: 'Full',
-				membershipNumber: 'WPI2018020003',
+				membershipNumber: 'WPI20180003',
+				membershipExpiration: '2020-01-01',
+				orgUnit: 2
+			},
+			{
+				id: 4,
+				firstName: 'Emily',
+				lastName: 'Mentrek',
+				nickname: 'Emily Mentrek',
+				email: 'emilymentrek@gmail.com ',
+				membershipType: 'Full',
+				membershipNumber: 'WPI20180006',
+				membershipExpiration: '2020-01-01',
+				orgUnit: 2
+			},
+			{
+				id: 5,
+				firstName: 'Sarah',
+				lastName: 'Farley',
+				nickname: 'Sarah Farley',
+				email: 'sarahfarley@gmail.com ',
+				membershipType: 'Full',
+				membershipNumber: 'WPI20180008',
 				membershipExpiration: '2020-01-01',
 				orgUnit: 2
 			}

@@ -16,6 +16,8 @@ __Params__
 
 * `code` - Search of codes. Cannot be venue `type`.
 
+* `parent` - Search for org units which are the parent id or its children
+
 * `name` - Search of names.
 
 * `limit` - Integer. Number of results to return, defaults to 100.

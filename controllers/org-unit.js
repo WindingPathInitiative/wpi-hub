@@ -71,6 +71,20 @@ router.get( '/',
 		if ( searchTypes && searchTypes.length ){
 			query.where( 'type', 'in', searchTypes );
 		}
+		if(params.parent && !isNaN( Number.parseInt( params.parent ) )){
+			//we want to get all org_units where the parent id is in the parentPath
+			query.query(
+				function(qb1){
+					qb1.andWhere(function (qb2){
+						qb2.where('parentPath','=', params.parent)
+						.orWhere('parentPath', 'LIKE', params.parent + '.%')
+						.orWhere('parentPath', 'LIKE', '%.' + params.parent)
+						.orWhere('parentPath', 'LIKE', '%.' + params.parent + '.%');
+					});
+				}
+			);
+		}
+		
 		if ( params.venue ) {
 			query.where( 'venueType', '=', params.venue );
 		}

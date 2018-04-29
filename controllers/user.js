@@ -281,8 +281,8 @@ router.put( '/:id/assign/:chapter(\\d+)',
 			throw new UserError( 'Chapter not found', 404, err );
 		})
 		.then( unit => {
-			if ( 'Chapter' !== unit.get( 'type' ) ) {
-				throw new UserError( 'Assigning to non-chapter' );
+			if ( 'Venue' == unit.get( 'type' ) ) {
+				throw new UserError( 'Cannot assign user to venue' );
 			}
 			return unit;
 		});

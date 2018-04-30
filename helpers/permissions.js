@@ -280,6 +280,14 @@ function setPresetOffice( req, res, next ) {
 	next();
 }
 
+function checkOfficeRoles(newRoles, officerRoles, currentRoles = null, primaryRoles = null){
+	let rolesArray = {'newRoles': newRoles, 'officerRoles': officerRoles};
+	if(currentRoles != null) rolesArray['currentRoles'] = currentRoles;
+	if(primaryRoles != null) rolesArray['primaryRoles'] = primaryRoles;
+	console.log('checking roles!');
+	console.log(rolesArray);
+}
+
 
 module.exports = {
 	has,
@@ -287,5 +295,6 @@ module.exports = {
 	hasOverUser,
 	hasOverOffice,
 	prefetch: normalizeOfficer,
-	presetOffice: setPresetOffice
+	presetOffice: setPresetOffice,
+	checkOfficeRoles: checkOfficeRoles
 };

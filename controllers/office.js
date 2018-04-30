@@ -203,11 +203,16 @@ router.put( '/:id(\\d+)',
 	( req, res, next ) => {
 		let attributes  = {}; // Whitelisted attributes.
 		let body        = req.body;
+		if(body.roles && typeof body.roles ==='string'){
+			body.roles = [body.roles];
+		}
 		let constraints = {
 			name: { length: { minimum: 1 } },
 			email: { email: true },
 			roles: { isArray: true }
 		};
+		
+		let primaryRoles = null;
 
 		validate.async( body, constraints )
 		.catch( errs => {
@@ -231,6 +236,33 @@ router.put( '/:id(\\d+)',
 		})
 		.tap( office => {
 			return perm.hasOverOffice( office, 'office_update', req.token.get( 'user' ) );
+		}).tap( office => {
+			if(!body.roles) return false;
+			let promises = [];
+			promises[0] = perm.prefetch( req.token.get( 'user' ) )
+			.then( offices => {
+				console.log('checking perm prefetch offices');
+				console.log(offices);
+				let officeRoles = [];
+				for(let i = 0; i < offices.models.length; i++){
+					console.log('checking office '+i);
+					officeRoles = officeRoles.concat(offices.models[i].get('roles'));	
+				}
+				return officeRoles;
+			});
+			if(office.parentOfficeID){
+				promises[1] =  new Office({ id: req.params.id })
+				.fetch({
+						require: true
+					})
+				.then( (parentOffice) => {return parentOffice.get('roles')});
+			}
+			return Promise.all(promises)
+			.then((results) =>{
+				if(results[1]) primaryRoles = results[1];
+				else primaryRoles = null;
+				return perm.checkOfficeRoles(body.roles, results[0],office.get('roles'),primaryRoles);
+			});
 		})
 		.tap( office => audit( req, 'Updated office', office, {}, office.toJSON() ) )
 		.then( office => office.save( attributes ) )

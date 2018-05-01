@@ -142,7 +142,7 @@ __Body__
 
 * `email` - The office email.
 
-* `roles` - Array of roles.
+* `roles` - Array of roles. Editing officer cannot add or remove permissions from office which they don't have themselves, and cannot add permissions to an assistant not held by the primary officer.
 
 __Responses__
 

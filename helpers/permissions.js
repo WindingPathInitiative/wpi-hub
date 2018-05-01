@@ -282,10 +282,35 @@ function setPresetOffice( req, res, next ) {
 
 function checkOfficeRoles(newRoles, officerRoles, currentRoles = null, primaryRoles = null){
 	let rolesArray = {'newRoles': newRoles, 'officerRoles': officerRoles};
-	if(currentRoles != null) rolesArray['currentRoles'] = currentRoles;
-	if(primaryRoles != null) rolesArray['primaryRoles'] = primaryRoles;
+	if(currentRoles != null){
+		rolesArray['currentRoles'] = currentRoles;
+	}else{
+		rolesArray.currentRoles['currentRoles'] = [];
+	}
+	if(primaryRoles != null){
+		rolesArray['primaryRoles'] = primaryRoles;
+	}else{
+		rolesArray['primaryRoles'] = [];
+	}
 	console.log('checking roles!');
 	console.log(rolesArray);
+	
+	//OK let's run through it!
+	if(primaryRoles != null && _.difference(rolesArray['newRoles'],rolesArray['primaryRoles']).length){
+		//Don't let us give an assistant more permissions than the primary
+		throw new UserError( 'Role not in parent office', 400 );
+	}
+	
+	if(currentRoles != null && _.difference(rolesArray['currentRoles'],rolesArray['newRoles'],rolesArray['officerRoles']).length){
+		//This officer currently has a role the officer editing doesn't have. They therefore can't remove it.
+		throw new UserError( 'Cannot remove role from office that your office does not have', 400 );
+	}
+	
+	if(_.difference(rolesArray['newRoles'],rolesArray['currentRoles'],rolesArray['officerRoles'],rolesArray['primaryRoles']).length){
+		if(primaryRoles != null){
+			throw new UserError( 'Cannot add role to office not held by your office or primary office', 400 );
+		}else throw new UserError( 'Cannot add role to office not held by your office', 400 );
+	}
 }
 
 

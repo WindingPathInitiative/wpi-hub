@@ -213,6 +213,7 @@ router.put( '/:id(\\d+)',
 		};
 		
 		let primaryRoles = null;
+		let officeRoles = null;
 
 		validate.async( body, constraints )
 		.catch( errs => {
@@ -226,6 +227,7 @@ router.put( '/:id(\\d+)',
 			attributes = attr;
 		})
 		.then( () => {
+			//get the office we're editing
 			return new Office({ id: req.params.id })
 			.fetch({
 				require: true
@@ -235,34 +237,26 @@ router.put( '/:id(\\d+)',
 			});
 		})
 		.tap( office => {
-			return perm.hasOverOffice( office, 'office_update', req.token.get( 'user' ) );
+			//get the office we're editing with
+			return perm.hasOverOffice( office, 'office_update', req.token.get( 'user' ) )
+				.tap((usingOffice) => {
+					//get the roles for the office we're using to edit
+					officeRoles = usingOffice[0].get('roles');
+				});
 		}).tap( office => {
 			if(!body.roles) return false;
-			let promises = [];
-			promises[0] = perm.prefetch( req.token.get( 'user' ) )
-			.then( offices => {
-				console.log('checking perm prefetch offices');
-				console.log(offices);
-				let officeRoles = [];
-				for(let i = 0; i < offices.models.length; i++){
-					console.log('checking office '+i);
-					officeRoles = officeRoles.concat(offices.models[i].get('roles'));	
-				}
-				return officeRoles;
-			});
+			//Get the parent office if this is an assistant
 			if(office.parentOfficeID){
-				promises[1] =  new Office({ id: req.params.id })
+				return new Office({ id: req.params.id })
 				.fetch({
 						require: true
 					})
-				.then( (parentOffice) => {return parentOffice.get('roles')});
-			}
-			return Promise.all(promises)
-			.then((results) =>{
-				if(results[1]) primaryRoles = results[1];
-				else primaryRoles = null;
-				return perm.checkOfficeRoles(body.roles, results[0],office.get('roles'),primaryRoles);
-			});
+				.then( (parentOffice) => { primaryRoles = parentOffice.get('roles')});
+			}else return false;
+		}).tap(office => {
+			if(!body.roles) return false;
+			//check to make sure the roles we're setting are kosher
+			return perm.checkOfficeRoles(body.roles, officeRoles,office.get('roles'),primaryRoles);
 		})
 		.tap( office => audit( req, 'Updated office', office, {}, office.toJSON() ) )
 		.then( office => office.save( attributes ) )

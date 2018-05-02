@@ -11,12 +11,20 @@ const _         = require( 'lodash' );
 const UserError = require( '../helpers/errors' );
 const perm      = require( '../helpers/permissions' );
 const audit     = require( '../helpers/audit' );
+const organizations = require( '../config/organizations.json' );
 
 router.get('/types',
 	//don't really need a valid token for this
 	( req, res, next ) => {
 		let types = OrgUnit.getTypes();
 		res.json(types);
+	}
+);
+
+router.get('/organizations',
+	//don't really need a valid token for this
+	( req, res, next ) => {
+		res.json(organizations);
 	}
 );
 
@@ -165,8 +173,7 @@ router.get( '/:id',
 					user = null;
 				}
 				office
-				.set( 'user', user )
-				.unset( 'parentOrgID' );
+				.set( 'user', user );
 			});
 		});
 

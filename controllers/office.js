@@ -176,7 +176,21 @@ router.put( '/:id(\\d+)/assign/:user(\\d+)',
 			}
 			// Check if we're a parent office.
 			else {
-				return perm.hasOverOffice( office, 'office_assign', curUser );
+				// Check for permissions.
+				return perm.prefetch( req.token.get( 'user' ) )
+				.then( offices => {
+					// If we're editing our own assistant, check that.
+					let self = offices.filter( o => o.id === office.get('parentOfficeID') );
+					if ( self.length ) {
+						return perm.has( 'office_create_own_assistants', self );
+					}
+					// Otherwise, make sure we're over the office.
+					return perm.hasOverOffice(
+						office,
+						'office_assign',
+						offices
+					);
+				});
 			}
 		})
 		.tap( office => audit( req, 'Updated user in office', office, { curUser } ) )

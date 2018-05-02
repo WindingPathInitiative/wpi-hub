@@ -74,24 +74,27 @@ function hasOverUser( user, permission, officer ) {
 		}
 	})
 	.then( offices => {
-
 		let officeOrgs = mapCollection( offices, 'parentOrgID' );
-
 		// If the user has an org unit.
 		if ( user.has( 'orgUnit' ) ) {
+			let returnOffices = [];
 			// Checks if user is attached to the office chapter.
 			if ( -1 !== officeOrgs.indexOf( user.get( 'orgUnit' ) ) ) {
-				return unmapCollection( offices, 'parentOrgID', user.get( 'orgUnit' ) );
+				returnOffices = unmapCollection( offices, 'parentOrgID', user.get( 'orgUnit' ) );
 			}
-
 			// Checks if current org has the parents org.
 			let unit = user.related( 'orgUnit' );
 			let validOrgs = _.intersection( unit.parents(), officeOrgs );
-			if ( ! validOrgs.length ) {
-				throw new Error( 'Officer not found in chain' );
+			if ( ! validOrgs.length) {
+				if(!returnOffices.length) throw new Error( 'Officer not found in chain' );
 			} else {
-				return unmapCollection( offices, 'parentOrgID', validOrgs );
+				let validOrgOffices = unmapCollection( offices, 'parentOrgID', validOrgs );
+				returnOffices = returnOffices.concat(validOrgOffices);
 			}
+			returnOffices = _.uniq(returnOffices, function(item, key, a) { 
+			    return item['id'];
+			});
+			return returnOffices;
 		}
 		// If the user isn't attached to a chapter,
 		// the officer needs to be National.
@@ -137,32 +140,27 @@ function hasOverUnit( unit, permission, officer ) {
 	.then( offices => {
 		let officeOrgs = mapCollection( offices, 'parentOrgID' );
 		let officesReturn = [];
-		let officeResponses = [];
 		// If one of these is National, we're good.
 		if ( -1 !== officeOrgs.indexOf( 1 ) ) {
-			officeResponses.push(unmapCollection( offices, 'parentOrgID', 1 ));
+			officesReturn = officesReturn.concat(unmapCollection( offices, 'parentOrgID', 1 ));
 		}
 
 		// Checks if unit is one of the office chapters.
 		if ( -1 !== officeOrgs.indexOf( unit.id ) ) {
-			officeResponses.push(unmapCollection( offices, 'parentOrgID', unit.id ));
+			officesReturn = officesReturn.concat(unmapCollection( offices, 'parentOrgID', unit.id ));
 		}
 
 		// Checks if current org has the parents org.
 		let valid = _.intersection( unit.parents(), officeOrgs );
 		if ( ! valid.length ) {
-			if(officeResponses.length == 0) throw new Error( 'Officer not found in chain' );
+			if(officesReturn.length == 0) throw new Error( 'Officer not found in chain' );
 		} else {
-			officeResponses.push(unmapCollection( offices, 'parentOrgID', valid ));
+			officesReturn = officesReturn.concat(unmapCollection( offices, 'parentOrgID', valid ));
 		}
-		//it's not pretty, but it works
-		for(let j = 0; j < officeResponses.length; j++){
-			for(let k = 0; k < officeResponses[j].length; k++){
-				if(-1 == officesReturn.indexOf(officeResponses[j][k])){
-					officesReturn.push(officeResponses[j][k]);
-				}
-			}
-		}
+		
+		officesReturn = _.uniq(officesReturn, function(item, key, a) { 
+			    return item['id'];
+			});
 		return officesReturn;
 	});
 }
@@ -204,15 +202,19 @@ function hasOverOffice( office, permission, officer ) {
 		let parentOfficeIDs = offices
 		.filter( o => 'Assistant' === o.get( 'type' ) )
 		.map( o => parseInt( o.get( 'parentOfficeID' ) ) );
-
+		let officesReturn = [];
 		for ( let i = 0; i < parents.length; i++ ) {
 			if ( -1 !== officeIds.indexOf( parents[ i ] ) ) {
-				return unmapCollection( offices, 'id', parents[ i ] );
+				officesReturn = officesReturn.concat(unmapCollection( offices, 'id', parents[ i ] ));
 			} else if ( -1 !== parentOfficeIDs.indexOf( parents[ i ] ) ) {
-				return unmapCollection( offices, 'parentOfficeID', parents[ i ] );
+				officesReturn = officesReturn.concat(unmapCollection( offices, 'parentOfficeID', parents[ i ] ));
 			}
 		}
-		throw new Error( 'Officer not found in chain' );
+		if(!officesReturn.length) throw new Error( 'Officer not found in chain' );
+		officesReturn = _.uniq(officesReturn, function(item, key, a) { 
+			    return item['id'];
+			});
+		return officesReturn;
 	});
 }
 

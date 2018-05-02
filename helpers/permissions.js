@@ -92,7 +92,7 @@ function hasOverUser( user, permission, officer ) {
 				returnOffices = returnOffices.concat(validOrgOffices);
 			}
 			returnOffices = _.uniq(returnOffices, function(item, key, a) { 
-			    return item['id'];
+				return item['id'];
 			});
 			return returnOffices;
 		}
@@ -159,7 +159,7 @@ function hasOverUnit( unit, permission, officer ) {
 		}
 		
 		officesReturn = _.uniq(officesReturn, function(item, key, a) { 
-			    return item['id'];
+				return item['id'];
 			});
 		return officesReturn;
 	});
@@ -212,7 +212,7 @@ function hasOverOffice( office, permission, officer ) {
 		}
 		if(!officesReturn.length) throw new Error( 'Officer not found in chain' );
 		officesReturn = _.uniq(officesReturn, function(item, key, a) { 
-			    return item['id'];
+				return item['id'];
 			});
 		return officesReturn;
 	});

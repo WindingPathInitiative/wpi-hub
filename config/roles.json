@@ -1,6 +1,7 @@
 {
 	"user_read_private": "Read private user data",
 	"user_update": "Change user data",
+	"user_approve": "Approve user membership and issue membership number",
 	"user_assign": "Change user location",
 	"user_suspend": "Suspend or restore a user",
 	"org_update": "Change unit information",
@@ -10,6 +11,7 @@
 	"office_create": "Create primary office",
 	"office_other_create": "Create other office",
 	"office_create_assistants": "Create assistant office",
+	"office_create_own_assistants": "Create assistants for their own office",
 	"office_update": "Change office information",
 	"office_assign": "Assign an officeholder"
 }

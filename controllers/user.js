@@ -251,6 +251,59 @@ router.put( '/:id',
 	}
 );
 
+/**
+ * Updates a user.
+ */
+router.put( '/:id/approve',
+	token.parse(),
+	token.expired,
+	parseID,
+	( req, res, next ) => {
+		let body = req.body;
+		console.log('request body', body);
+
+		let organization = null;
+		if(body.organization) organization = body.organization;
+
+		var userJSON;
+
+		// User checking.
+		let userPromise = new User( req.id )
+		.fetch({
+			require: true,
+			withRelated: 'orgUnit'
+		})
+		.catch( err => {
+			throw new UserError( 'User not found', 404, err );
+		})
+		.tap( user => {
+			userJSON = user.toJSON();
+			if ( req.token.get( 'user' ) === user.id ) {
+				return;
+			} else {
+				return perm.hasOverUser( user, 'user_approve', req.token.get( 'user' ) );
+			}
+		}).then( (user) =>{
+			return User.prepareApproveMember(organization)
+			.then(attributes =>{
+				user.set(attributes);
+				return user;
+			});
+		}).then(
+			(user ) => {
+				return user.save();
+			}
+		)
+		.tap( user => audit( req, 'Updated user data', user, {}, userJSON ) )
+		.then( user => {
+			user.show();
+			user.showPrivate = true;
+			res.json( user.toJSON() );
+		})
+		.catch( err => UserError.catch( err, next ) );
+	}
+);
+
 
 /**
  * Updates user chapter assignment.

@@ -184,6 +184,28 @@ __Content__: `{ status: 403, message: 'Cannot leave chapter' }`
 __Code__: 403<br>
 __Content__: `{ status: 403, message: 'Chapter not under current region' }`
 
+## `PUT /v1/user/{id}/approve`
+Approves a user's membership.
+
+__Params__
+
+* `{id}` - Required. Can be the numeric ID, or WPI #.
+
+* `{organization}` - Required if more than one organization defined in config/organizations.json. ID of organization.
+
+* `token` - Required. Parameter or cookie of user token. Needs `user_approve` role over user.
+
+__Responses__
+
+* __Code__: 200<br>
+__Content__: `{ success: true }`
+
+* User ID provided is invalid.<br>
+__Code__: 400<br>
+__Content__: `{ status: 400, message: 'Invalid ID provided' }`
+
+* __Code__: 404<br>
+__Content__: `{ status: 404, message: 'User not found' }`
 
 ## `PUT /v1/user/{id}/suspend`
 Suspends a user, or restores a suspended user.

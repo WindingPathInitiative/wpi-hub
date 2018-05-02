@@ -1,0 +1,28 @@
+[
+	{
+		"id": "WPI",
+		"name":"Winding Path Initiative",
+		"numberFormat": [
+			{"type": "string", "value": "WPI"},
+			{"type": "year", "length":4},
+			{"type":"max", "length":4}
+		],
+		"approvalState": "Full",
+		"initialMembershipLength": {"years": 1},
+		"renewalMembershipLength": {"years": 1},
+		"attendanceMembershipLength": {"months": 6}
+	},
+	{
+		"id": "TC",
+		"name":"That Club",
+		"numberFormat": [
+			{"type": "string", "value": "US"},
+			{"type": "year", "length":4},
+			{"type":"month", "length": 2},
+			{"type":"max", "length":4}
+		],
+		"approvalState": "Trial",
+		"initialMembershipLength": {"months": 6},
+		"renewalMembershipLength": {"years": 1}
+	}
+]

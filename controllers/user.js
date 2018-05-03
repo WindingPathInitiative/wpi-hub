@@ -270,14 +270,14 @@ router.put( '/:id/approve',
 		// User checking.
 		let userPromise = new User( req.id )
 		.fetch({
-			require: true,
-			withRelated: 'orgUnit'
+			require: true
 		})
 		.catch( err => {
 			throw new UserError( 'User not found', 404, err );
 		})
 		.tap( user => {
 			userJSON = user.toJSON();
+			if(user.get('membershipNumber')) throw new UserError( 'User already a member');
 			if ( req.token.get( 'user' ) === user.id ) {
 				return;
 			} else {

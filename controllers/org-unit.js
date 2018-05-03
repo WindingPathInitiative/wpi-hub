@@ -21,6 +21,14 @@ router.get('/types',
 	}
 );
 
+router.get('/venues',
+	//don't really need a valid token for this
+	( req, res, next ) => {
+		let venues = OrgUnit.getVenues();
+		res.json(venues);
+	}
+);
+
 router.get('/organizations',
 	//don't really need a valid token for this
 	( req, res, next ) => {

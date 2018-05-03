@@ -10,6 +10,7 @@ const Base      = require( './base' );
 const _         = require( 'lodash' );
 
 const types     = [ 'Nation', 'Region', 'Chapter', 'Venue' ];
+const venues = require( '../config/venues.json' );
 
 function getDepth( node ) {
 	return types.indexOf( node.get( 'type' ) );
@@ -128,6 +129,9 @@ const OrgUnit = bookshelf.model( 'OrgUnit', Base.extend({
 	 */
 	getTypes: function() {
 		return types;
+	},
+	getVenues: function(){
+		return venues;
 	}
 }) );
 

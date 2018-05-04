@@ -102,7 +102,7 @@ router.get( '/:id',
 	( req, res, next ) => {
 		let showPrivate = normalizeBool( req.query.private );
 		if ( showPrivate ) {
-			new User({ id: req.token.get( 'user' ) })
+			new User({ id: req.user.get( 'id' ) })
 			.fetch({ require: true })
 			.catch( err => next( new UserError( 'User not found', err, 500 ) ) )
 			.then( user => {
@@ -136,7 +136,7 @@ router.get( '/:id',
 				showPrivate = true;
 			} else if ( showPrivate ) {
 				return perm
-				.hasOverUser( user, 'user_read_private', req.token.get( 'user' ) )
+				.hasOverUser( user, 'user_read_private', req.user )
 				.catch( err => {
 					// If the check fails, just don't show private data.
 					showPrivate = false;
@@ -151,6 +151,7 @@ router.get( '/:id',
 			user.related( 'offices' ).each( o => o.show() );
 		})
 		.then( user => {
+			console.log('showPrivate:', showPrivate);
 			user.show();
 			user.showPrivate = showPrivate;
 			return user.toJSON();

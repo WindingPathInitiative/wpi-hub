@@ -76,7 +76,7 @@ module.exports = bookshelf.model( 'User', Base.extend({
 	serialize: function( options ) {
 		let attrs = Base.prototype.serialize.apply( this, arguments );
 		if ( ! this.showPrivate ) {
-			attrs = _.omit( attrs, [ 'email', 'address' ] );
+			attrs = _.omit( attrs, [ 'email', 'address', 'firstName', 'lastName', 'fullName' ] );
 		}
 		delete attrs.portalID;
 		return attrs;

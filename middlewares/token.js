@@ -162,7 +162,13 @@ function fakeToken( req, id, fetch, next ) {
 			.then( user => {
 				console.log('get portal by ID in fake token');
 				//console.log(user);
-				if(user) return user;
+				if(user){
+					if(req.query.refresh){ //We're updating cognito details and sending a new token with them
+						console.log('updating user from token');
+						return user.save(id);
+					}
+					else return user;
+				}
 				else if (id.email && id.email_verified){
 					//See if we have an existing user with the same email, so we can just update them.
 					return new User({'email': id.email}).fetch().then( user => {
@@ -177,6 +183,7 @@ function fakeToken( req, id, fetch, next ) {
 				console.log('setting user in request and token');
 				console.log(user);
 				req.user = user;
+				req.tokenInfo= id;
 				req.token = {
 					get: () => {console.log('fetching user'); return user;},
 					destroy: () => null,

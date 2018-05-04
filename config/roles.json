@@ -1,5 +1,6 @@
 {
 	"user_read_private": "Read private user data",
+	"user_add": "Manually add a user",
 	"user_update": "Change user data",
 	"user_approve": "Approve user membership and issue membership number",
 	"user_assign": "Change user location",

@@ -132,7 +132,7 @@ router.get( '/:id',
 			throw new UserError( 'User not found', 404, err );
 		})
 		.tap( user => {
-			if ( req.token.get( 'user' ) === user.id ) {
+			if ( req.token.get( 'user' ).id === user.id ) {
 				showPrivate = true;
 			} else if ( showPrivate ) {
 				return perm
@@ -432,6 +432,93 @@ router.put( '/:id/suspend',
 	}
 );
 
+/**
+ * Manually creates a new user
+ */
+router.post( '/',
+	token.parse(),
+	token.expired,
+	( req, res, next ) => {
+		const OrgUnit = require( '../models/org-unit' );
+		let data  = req.body;
+
+		if ( _.isEmpty( data ) ) {
+			return next( new UserError( 'No data provided', 400 ) );
+		}
+
+		if ( ! data.orgUnit ) {
+			return next( new UserError( 'No organization unit provided', 400 ) );
+		}
+
+		// Get the target org unit.
+		new OrgUnit({ id: data.orgUnit })
+		.fetch({
+			require: true
+		})
+		.catch( err => {
+			throw new UserError( 'Chapter not found', 404, err );
+		})
+		.tap( unit => {
+			if ( 'Venue' == unit.get( 'type' ) ) {
+				throw new UserError( 'Cannot assign user to venue' );
+			}
+		})
+		.tap( parent => {
+			let role = 'user_add';
+			return perm.hasOverUnit( parent, role, req.token.get( 'user' ) );
+		})
+		.then( parent => {
+			const validate = require( '../helpers/validation' );
+			let constraints = {
+				firstName: { length: { minimum: 1 }, isString: true, presence: true },
+				lastName: { length: { minimum: 1, isString: true,  presence: true } },
+				nickname: { length: { minimum: 1 }, isString: true, presence: true },
+				address: { length: { minimum: 1 }, isString: true},
+				email: { email: true, presence: true }
+			};
+			return validate.async( data, constraints )
+			.catch( errs => {
+				throw new UserError( 'Invalid data provided: ' + validate.format( errs ), 400 );
+			})
+			.then( attributes => {
+				if ( _.isEmpty( attributes ) ) {
+					throw new UserError( 'No data provided', 400 );
+				}
+				return attributes;
+			});
+		})
+		.tap( () => {
+			return new User({ email: data.email })
+			.fetch()
+			.then(
+				(user)=>
+				{
+					if(user) throw new UserError( 'User with email already exists', 400 );
+				}
+			)
+		})
+		.then( attributes => {
+			let member = new User();
+			return member.save({
+				firstName: data.firstName,
+				lastName: data.lastName,
+				nickname: data.nickname,
+				email: data.email,
+				address: data.address,
+				orgUnit: data.orgUnit,
+				membershipType: 'None'
+			});
+		})
+		.tap( member => audit( req, 'Manually adding new member', member ) )
+		.then( member => member.refresh() )
+		.then( member => {
+			member.show();
+			member.showPrivate = true;
+			res.json( member.toJSON() );
+		})
+		.catch( err => UserError.catch( err, next ) );
+	}
+);
 
 /**
  * Updates a user based off the Portal changing.

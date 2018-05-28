@@ -62,10 +62,16 @@ exports.parse = required => {
 exports.expired = ( req, res, next ) => {
 	if ( ! req.user ) {
 		next( new UserError( 'User not loaded', 500 ) );
-	} else if ( req.user.get( 'membershipExpiration' ).getTime() < Date.now() ) {
-		next( new UserError( 'User is expired', 403 ) );
-	} else if ( 'Suspended' === req.user.get( 'membershipType' ) ) {
+	}else if ( 'None' === req.user.get( 'membershipType') || 'Pending' === req.user.get( 'membershipType' ) ) {
+		next( new UserError( 'User is not a member', 403 ) );
+	}else if ( 'Suspended' === req.user.get( 'membershipType' ) ) {
 		next( new UserError( 'User is suspended', 403 ) );
+	}else if ( 'Expelled' === req.user.get( 'membershipType' ) ) {
+		next( new UserError( 'User is expelled', 403 ) );
+	}else if ( 'Uninvited' === req.user.get( 'membershipType' ) ) {
+		next( new UserError( 'User has been declined membership', 403 ) );
+	}else if ( req.user.get( 'membershipExpiration' ).getTime() < Date.now() ) {
+		next( new UserError( 'User is expired', 403 ) );
 	} else {
 		next();
 	}

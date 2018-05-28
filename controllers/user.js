@@ -107,10 +107,20 @@ router.get( '/:id',
 			.catch( err => next( new UserError( 'User not found', err, 500 ) ) )
 			.then( user => {
 				req.user = user;
-				token.expired( req, res, next );
+				next();
 			});
+			
 		} else {
 			next();
+		}
+	},
+	( req, res, next ) => {
+		//check permissions if we're not getting our own user record
+		if(req.id.id == req.user.get('id')){
+			next();
+		}
+		else{
+			token.expired( req, res, next );
 		}
 	},
 	( req, res, next ) => {
@@ -134,13 +144,15 @@ router.get( '/:id',
 		.tap( user => {
 			if ( req.token.get( 'user' ).id === user.id ) {
 				showPrivate = true;
-			} else if ( showPrivate ) {
-				return perm
-				.hasOverUser( user, 'user_read_private', req.user )
-				.catch( err => {
-					// If the check fails, just don't show private data.
-					showPrivate = false;
-				});
+			} else{
+				if ( showPrivate ) {
+					return perm
+					.hasOverUser( user, 'user_read_private', req.user )
+					.catch( err => {
+						// If the check fails, just don't show private data.
+						showPrivate = false;
+					});
+				}
 			}
 		})
 		.tap( user => {

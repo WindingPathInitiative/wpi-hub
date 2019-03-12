@@ -3,7 +3,7 @@ This system is a REST API designed to handle member and org unit hierarchy and p
 
 Documentation can be found [here](https://windingpathinitiative.github.io/wpi-hub/)
 
-Based on the [User Hub](https://github.com/MindsEyeSociety/mes-hub) by [Ephraim Gregor](https://github.com/ChaosExAnima)
+Based on the [User Hub](https://github.com/MindsEyeSociety/mes-hub) by [Echo](https://github.com/ChaosExAnima)
 
 ## Installation
 1. `npm install`.

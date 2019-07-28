@@ -113,7 +113,7 @@ function query( req, next, required, fetch ) {
 		return;
 	}
 	
-	var token_info = verifyToken(req.headers['authorization']);
+	var token_info = verifyToken(req.headers['authorization'].replace('bearer ', ''));
 	if(token_info == false){
 		next( new UserError( 'Invalid jwt', 403 ) );
 		return;

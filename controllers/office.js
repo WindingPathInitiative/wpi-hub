@@ -100,10 +100,10 @@ router.get( '/me',
 	token.validate(),
 	( req, res, next ) => {
 		new Office()
-		.where( 'userID', '=', req.token.get( 'user' ) )
+		.where( 'userID', '=', req.token.get( 'user' ).id )
 		.fetchAll()
 		.then( offices => {
-			offices.each( o => o.show() );
+			offices.each( o => o.getChildren() );
 			res.json( offices.toJSON() );
 		})
 		.catch( err => {

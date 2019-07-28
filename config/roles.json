@@ -14,5 +14,8 @@
 	"office_create_assistants": "Create assistant office",
 	"office_create_own_assistants": "Create assistants for their own office",
 	"office_update": "Change office information",
-	"office_assign": "Assign an officeholder"
+	"office_assign": "Assign an officeholder",
+	"vip_view" : "View VIP for other members",
+	"vip_nominate": "Nominate other members for VIP",
+	"vip_award": "Award VIP"
 }

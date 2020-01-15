@@ -1,4 +1,4 @@
-{
+
 	"user_read_private": "Read private user data",
 	"user_add": "Manually add a user",
 	"user_update": "Change user data",
@@ -17,5 +17,10 @@
 	"office_assign": "Assign an officeholder",
 	"vip_view" : "View VIP for other members",
 	"vip_nominate": "Nominate other members for VIP",
-	"vip_award": "Award VIP"
+	"vip_award": "Award VIP",
+	"checkin_event_create": "Create an event",
+	"checkin_event_update": "Update an event",
+	"checkin_event_checkin": "Check in members to an event",
+	"checkin_event_attendance": "View full attendance information for an event",
+	"checkin_event_finance": "View financial information for an event"
 }

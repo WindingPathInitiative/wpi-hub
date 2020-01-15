@@ -5,19 +5,20 @@
 	"Nation": {
 		"manager": {
 			"name": "Club Manager",
-			"roles": [ "user_read_private", "user_add","user_update", "user_assign", "user_approve", "user_suspend", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants", "org_create_chapter", "org_create_venue", "view_vip", "nominate_vip", "award_vip" ]
+			"roles": [ "user_read_private", "user_add","user_update", "user_assign", "user_approve", "user_suspend", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants", "org_create_chapter", "org_create_venue" , "view_vip", "nominate_vip", "award_vip", "checkin_event_create","checkin_event_update","checkin_event_checkin","checkin_event_attendance","checkin_event_finance"]
 		}
 	},
 	"Chapter": {
 		"manager": {
 			"name": "Chapter Owner",
-			"roles": [ "user_read_private", "user_update", "user_assign", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants", "org_create_venue" , "view_vip", "nominate_vip", "award_vip"]
+			"roles": [ "user_read_private", "user_update", "user_assign", "org_update", "office_update", "office_assign", "office_create_own_assistants",  "office_create_assistants", "org_create_venue" , "view_vip", "nominate_vip", "award_vip" , "checkin_event_create","checkin_event_update","checkin_event_checkin","checkin_event_attendance","checkin_event_finance"]
+
 		}
 	},
 	"Venue": {
 		"manager": {
 			"name": "Game Storyteller",
-			"roles": [ "user_read_private", "org_update", "office_create_own_assistants",  "office_update" , "view_vip", "nominate_vip"]
+			"roles": [ "user_read_private", "org_update", "office_create_own_assistants",  "office_update" , "view_vip", "nominate_vip", "checkin_event_create","checkin_event_update","checkin_event_checkin","checkin_event_attendance"]
 		}
 	}
 }

@@ -97,10 +97,18 @@ function query( req, next, required, fetch ) {
 	if ( undefined === fetch ) {
 		fetch = false;
 	}
-	
+
 	// Development mode bypass.
-	if ( 'development' === req.app.get( 'env' ) && 'DEV' === req.query.token ) {
-		return fakeToken( req, 1, fetch, next );
+	if ( 'development' === req.app.get( 'env' )){
+		console.log('using dev token checking');
+		console.log(req.headers);
+		if('DEV' === req.query.token ) {
+			return fakeToken( req, 1, fetch, next );
+		}
+		if(req.headers['authorization'] && !isNaN(req.headers['authorization'])){
+			console.log('passing numeric authorization');
+			return fakeToken( req, req.headers['authorization'], fetch, next );
+		}
 	}
 
 	// Throw error if a token is required.
@@ -116,6 +124,12 @@ function query( req, next, required, fetch ) {
 	var token_info = verifyToken(req.headers['authorization'].replace('bearer ', ''));
 	if(token_info == false){
 		next( new UserError( 'Invalid jwt', 403 ) );
+		return;
+	}else if(!token_info.email){
+		next( new UserError( 'Token does not include email', 403 ) );
+		return;
+	}else if(!token_info.email_verified){
+		next( new UserError( 'Token needs email verification', 403 ) );
 		return;
 	}
 	
@@ -198,22 +212,22 @@ function fakeToken( req, id, fetch, next ) {
 				next();
 			});
 	}else{
-		req.token = {
-			get: () => id,
-			destroy: () => null,
-			id: req.query.token
-		};
-		if ( fetch ) {
-			return new User({ id })
-			.fetch({ require: true })
-			.then( user => {
-				req.user = user;
-				next();
-			})
-			.catch( err => {
-				next( new UserError( 'Invalid token', 403, err ) );
-			});
-		}
+		return new User({ id })
+		.fetch({ require: true })
+		.then( user => {
+			req.user = user;
+			req.tokenInfo= id;
+			req.token = {
+				get: () => {console.log('fetching user'); return user;},
+				destroy: () => null,
+				id: req.query.token
+			};
+			next();
+		})
+		.catch( err => {
+			next( new UserError( 'Invalid token', 403, err ) );
+		});
+		
 		next();
 	}
 }

@@ -122,6 +122,8 @@ function query( req, next, required, fetch ) {
 	}
 	
 	var token_info = verifyToken(req.headers['authorization'].replace('bearer ', ''));
+	console.log('verify token_info');
+	console.log(token_info);
 	if(token_info == false){
 		next( new UserError( 'Invalid jwt', 403 ) );
 		return;
@@ -129,8 +131,14 @@ function query( req, next, required, fetch ) {
 		next( new UserError( 'Token does not include email', 403 ) );
 		return;
 	}else if(!token_info.email_verified){
-		next( new UserError( 'Token needs email verification', 403 ) );
-		return;
+		if(required){
+			next( new UserError( 'Token needs email verification', 403 ) );
+			return;
+		}else{
+			req.unverified_user = token_info;
+			next();
+			return;
+		}
 	}
 	
 	req.query.token = token_info.event_id;

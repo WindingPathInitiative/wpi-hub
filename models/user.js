@@ -10,6 +10,8 @@ const bookshelf = require( '../helpers/db' ).Bookshelf;
 const _         = require( 'lodash' );
 const Base      = require( './base' );
 const moment   = require( 'moment' );
+const config     = require( '../config' );
+const auth = config.get( 'auth' );
 
 const organizations = require( '../config/organizations.json' );
 
@@ -34,17 +36,29 @@ module.exports = bookshelf.model( 'User', Base.extend({
 	},
 
 	saving: function( model, attrs, options ) {
-		console.log('saving user');
+		console.log('saving user', model);
 		if(model.has('sub')){ // Convert from Cognito data format
 			model.set('portalID', model.get('sub'));
+
+			if(auth.metadata_key && model.has(auth.metadata_key)){
+				//console.log('metadata', model[auth.metadata_key]);
+				var metadata = model.get(auth.metadata_key);
+				model.set('name', metadata.full_name);
+				model.set('nickname', metadata.preferred_name);
+				model.set('address',metadata.address);
+				
+				model.unset(auth.metadata_key);
+			}
+
 			var name = model.get('name');
 			var nameSplit = name.lastIndexOf(' ');
 			if(nameSplit!=-1){
+				console.log('got split name', nameSplit);
 				model.set('firstname',name.slice(0,nameSplit));
 				model.set('lastname',name.slice(nameSplit+1,name.length));
 			}else model.set('firstname',name);
 			
-			console.log('cognito address', model.get('address'));
+			/*console.log('cognito address', model.get('address'));
 			var addressformat = model.get('address');
 			if(addressformat.formatted){
 				var address = JSON.parse(addressformat.formatted);
@@ -53,7 +67,7 @@ module.exports = bookshelf.model( 'User', Base.extend({
 						+ address['locality']+', ' + address['region'] + ' '
 						+ address['postal_code'] + ', ' + address['country']);
 				}
-			}
+			}*/
 			if(!model.has('membershipType')){ //set the defaults
 				model.set('membershipType','None');
 				model.set('membershipNumber','');
@@ -62,7 +76,7 @@ module.exports = bookshelf.model( 'User', Base.extend({
 
 			if(!model.has('nickname')) model.set('nickname',model.get('firstName')+' '+model.get('lastName'));
 			
-			model.unset(['aud','auth_time','birthdate','cognito:username', 'custom:preferred_name','email_verified', 'event_id','exp','iat','iss','name','sub','token_use']);
+			model.unset(['aud','auth_time','birthdate','cognito:username', 'custom:preferred_name','email_verified', 'event_id','exp','iat','iss','name','nonce', 'picture','sub','token_use','updated_at']);
 		}
 		if ( ! model.has( 'email' ) ) {
 			model.set( 'email', model.get( 'emailAddress' ) );

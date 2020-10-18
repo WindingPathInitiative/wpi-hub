@@ -10,6 +10,7 @@
   "license": "ISC",
   "repository": "https://github.com/WindingPathInitiative/wpi-hub",
   "dependencies": {
+    "auth0": "^2.20.0",
     "bluebird": "^3.3.4",
     "body-parser": "^1.13.2",
     "bookshelf": "^0.13.3",

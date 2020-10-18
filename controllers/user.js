@@ -16,6 +16,7 @@ const UserError     = require( '../helpers/errors' );
 const normalizeBool = require( '../helpers/validation' ).normalizeBool;
 const perm          = require( '../helpers/permissions' );
 const audit         = require( '../helpers/audit' );
+const auth0         = require( '../helpers/auth0' );
 
 
 
@@ -200,11 +201,19 @@ router.get( '/:id',
  * Updates a user.
  */
 router.put( '/:id',
-	token.parse(),
+	token.validate(),
 	token.expired,
 	parseID,
 	( req, res, next ) => {
 		let body = req.body;
+		if(body.name){
+			var nameSplit = body.name.lastIndexOf(' ');
+			if(nameSplit!=-1){
+				console.log('got split name', nameSplit);
+				body.firstName = body.name.slice(0,nameSplit);
+				body.lastName = body.name.slice(nameSplit+1,body.name.length);
+			}
+		}
 		const validate = require( '../helpers/validation' );
 		let constraints = {
 			firstName: { length: { minimum: 1 } },
@@ -255,7 +264,20 @@ router.put( '/:id',
 			}
 		)
 		.tap( user => audit( req, 'Updated user data', user, {}, userJSON ) )
+		.then(user => {
+			console.log('Do we need to update auth0?');
+			console.log(user);
+			if(user.attributes.portalID && user.attributes.portalID.indexOf("auth0|") === 0){
+				console.log('need to update auth0 record');
+				return auth0.updateUser(user)
+					.then((response) => {return user});
+			}else{
+				console.log('Do not need auth0 update');
+			}
+			return user;
+		})
 		.then( user => {
+			console.log('returning user record');
 			user.show();
 			user.showPrivate = true;
 			res.json( user.toJSON() );
@@ -568,6 +590,26 @@ router.post( '/portal',
 	}
 );
 
+router.post('/resend-confirm',
+	token.validate(false),
+	( req, res, next ) => {
+		console.log('got into confirm');
+		if(req.user){
+			console.log('we have a user already');
+			res.json({ success: true });
+			return;
+		}
+		if(!req.unverified_user){
+			console.log('No unverified user');
+			next( new UserError( 'Unverified user not sent', 403 ) );
+			return;
+		}
+		console.log(req.unverified_user);
+
+		res.json({ success: true });
+		return;
+	}
+);
 
 /**
  * Shows a user's private information. Internal only.
